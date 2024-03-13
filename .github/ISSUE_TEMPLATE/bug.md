@@ -1,7 +1,7 @@
 ---
 name: bug
 about: 발생한 오류를 해결합니다.
-title: ''
+title: "[bug] "
 labels: ''
 assignees: ''
 

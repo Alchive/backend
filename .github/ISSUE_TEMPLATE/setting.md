@@ -1,7 +1,7 @@
 ---
 name: setting
 about: Docker 및 기타 환경을 수정합니다.
-title: ''
+title: "[setting]"
 labels: ''
 assignees: ''
 
