@@ -3,7 +3,7 @@ package com.Alchive.backend.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Getter
@@ -15,7 +15,7 @@ public class Code {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codeId")
-    private int codeId;
+    private Long codeId;
 
     @ManyToOne
     @JoinColumn(name = "problemId", nullable = false)
