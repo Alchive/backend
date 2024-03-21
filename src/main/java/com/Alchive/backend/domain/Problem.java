@@ -3,7 +3,7 @@ package com.Alchive.backend.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Getter
@@ -15,10 +15,10 @@ public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "problemId")
-    private int problemId;
+    private Long problemId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false, foreignKey = @ForeignKey(name = "FK_problem_user"))
     private User user;
 
     @Column(name = "problemNumber", nullable = false)
