@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: oauth, jwt
   datasource:
     url: ${MYSQL_URL}
     username: ${MYSQL_USERNAME}

@@ -14,7 +14,7 @@ public class Problem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "problemId")
+    @Column(name = "problemId", columnDefinition = "INT")
     private Long problemId;
 
     @ManyToOne
