@@ -1,9 +1,9 @@
 package com.Alchive.backend.domain;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Getter
@@ -15,7 +15,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userId")
-    private int userId;
+    private Long userId;
 
     @Column(name = "userEmail", nullable = false, unique = true)
     private String userEmail;

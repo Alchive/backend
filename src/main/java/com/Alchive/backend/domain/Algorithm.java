@@ -3,7 +3,7 @@ package com.Alchive.backend.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter
@@ -14,7 +14,7 @@ public class Algorithm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "algorithmId")
-    private int algorithmId;
+    private Long algorithmId;
 
     @Column(name = "algorithmName", nullable = false)
     private String algorithmName;
