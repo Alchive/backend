@@ -14,7 +14,7 @@ public class Code {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "codeId")
+    @Column(name = "codeId", columnDefinition = "INT")
     private Long codeId;
 
     @ManyToOne

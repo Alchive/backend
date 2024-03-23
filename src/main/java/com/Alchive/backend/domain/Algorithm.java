@@ -13,7 +13,7 @@ public class Algorithm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "algorithmId")
+    @Column(name = "algorithmId", columnDefinition = "INT")
     private Long algorithmId;
 
     @Column(name = "algorithmName", nullable = false)
