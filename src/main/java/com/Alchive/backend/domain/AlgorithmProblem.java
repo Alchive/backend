@@ -13,7 +13,7 @@ public class AlgorithmProblem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "algo_proId")
+    @Column(name = "algo_proId", columnDefinition = "INT")
     private Long algoProId;
 
     @ManyToOne
