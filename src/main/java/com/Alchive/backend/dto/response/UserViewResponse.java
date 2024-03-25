@@ -1,4 +1,4 @@
-package com.Alchive.backend.dto;
+package com.Alchive.backend.dto.response;
 
 import com.Alchive.backend.domain.User;
 import lombok.Getter;
