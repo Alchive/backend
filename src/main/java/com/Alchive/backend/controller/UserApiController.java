@@ -1,13 +1,11 @@
 package com.Alchive.backend.controller;
 
 import com.Alchive.backend.domain.User;
-import com.Alchive.backend.dto.UserViewResponse;
+import com.Alchive.backend.dto.response.UserViewResponse;
 import com.Alchive.backend.service.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,4 +18,11 @@ public class UserApiController {
         return ResponseEntity.ok()
                 .body(new UserViewResponse(user));
     }
+
+//    @GetMapping("/api/v1/users/{userId}")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public ApiResponse<UserViewResponse> findUser(@PathVariable Long userId) {
+//        User user = userDetailService.getUserDetail(userId);
+//        return ApiResponse.createSuccess(UserViewResponse.createInstance(user));
+//    }
 }
