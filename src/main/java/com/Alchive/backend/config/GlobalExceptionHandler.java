@@ -30,4 +30,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // 아래에 자유롭게 처리할 예외 핸들러 추가 가능
+    // 예시: userId를 매개변수로 받지 않는 경우
+    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
+        return ResponseEntity.status(errorCode.getHttpStatusCode())
+                .body(makeErrorResponse(errorCode));
+    }
+
+    private ErrorResponse makeErrorResponse(ErrorCode errorCode) {
+        return ErrorResponse.builder()
+                .code(String.valueOf(errorCode.getHttpStatusCode()))
+                .message(errorCode.getMessage())
+                .build();
+    }
 }

@@ -18,11 +18,4 @@ public class UserApiController {
         return ResponseEntity.ok()
                 .body(new UserViewResponse(user));
     }
-
-//    @GetMapping("/api/v1/users/{userId}")
-//    @ResponseStatus(HttpStatus.ACCEPTED)
-//    public ApiResponse<UserViewResponse> findUser(@PathVariable Long userId) {
-//        User user = userDetailService.getUserDetail(userId);
-//        return ApiResponse.createSuccess(UserViewResponse.createInstance(user));
-//    }
 }
