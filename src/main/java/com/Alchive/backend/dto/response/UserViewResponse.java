@@ -4,25 +4,16 @@ import com.Alchive.backend.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 public class UserViewResponse {
-    private Long userId;
-    private String userEmail;
-    private String userNickName;
-    private String userDescription;
-    private boolean autoSave;
-    private Date createdAt;
-    private Date updatedAt;
+    private int code;
+    private String message;
+    private UserDetailData data;
 
     public UserViewResponse(User user) {
-        this.userId= user.getUserId();
-        this.userEmail=user.getUserEmail();
-        this.userNickName=user.getUserNickName();
-        this.userDescription=user.getUserDescription();
-        this.createdAt=user.getCreatedAt();
-        this.updatedAt=user.getUpdatedAt();
+        this.code=200;
+        this.message="유저 정보를 불러왔습니다. ";
+        this.data= new UserDetailData(user);
     }
 }
