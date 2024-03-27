@@ -1,4 +1,4 @@
-package com.Alchive.backend.dto;
+package com.Alchive.backend.dto.response;
 
 import com.Alchive.backend.domain.User;
 import lombok.Getter;
@@ -8,8 +8,7 @@ import java.util.Date;
 
 @NoArgsConstructor
 @Getter
-public class UserViewResponse {
-    private Long userId;
+public class UserDetailData {
     private String userEmail;
     private String userNickName;
     private String userDescription;
@@ -17,8 +16,7 @@ public class UserViewResponse {
     private Date createdAt;
     private Date updatedAt;
 
-    public UserViewResponse(User user) {
-        this.userId= user.getUserId();
+    public UserDetailData(User user) {
         this.userEmail=user.getUserEmail();
         this.userNickName=user.getUserNickName();
         this.userDescription=user.getUserDescription();
