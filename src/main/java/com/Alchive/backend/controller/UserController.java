@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-public class UserApiController {
+public class UserController {
     private final UserDetailService userDetailService;
 
     @GetMapping("/api/v1/users/{userId}")
