@@ -20,6 +20,7 @@ public class UserDetailData {
         this.userEmail=user.getUserEmail();
         this.userNickName=user.getUserNickName();
         this.userDescription=user.getUserDescription();
+        this.autoSave=user.getAutoSave();
         this.createdAt=user.getCreatedAt();
         this.updatedAt=user.getUpdatedAt();
     }
