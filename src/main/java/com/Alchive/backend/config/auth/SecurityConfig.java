@@ -1,5 +1,8 @@
 package com.Alchive.backend.config.auth;
 
+import com.Alchive.backend.config.auth.handler.OAuth2FailureHandler;
+import com.Alchive.backend.config.auth.handler.OAuth2SuccessHandler;
+import com.Alchive.backend.config.auth.service.CustomOAuth2UserService;
 import com.Alchive.backend.config.jwt.JwtAuthFilter;
 import com.Alchive.backend.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
