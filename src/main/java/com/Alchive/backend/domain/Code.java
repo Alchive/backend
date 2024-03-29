@@ -18,7 +18,7 @@ public class Code {
     private Long codeId;
 
     @ManyToOne
-    @JoinColumn(name = "problemId", referencedColumnName = "problemId", nullable = false, foreignKey = @ForeignKey(name = "FK_code_problem"))
+    @JoinColumn(name = "problemId", nullable = false)
     private Problem problem;
 
     @Column(name = "solution")
