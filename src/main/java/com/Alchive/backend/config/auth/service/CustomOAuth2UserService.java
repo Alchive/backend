@@ -1,4 +1,4 @@
-package com.Alchive.backend.config.auth;
+package com.Alchive.backend.config.auth.service;
 
 import com.Alchive.backend.config.auth.dto.OAuth2Attributes;
 import com.Alchive.backend.domain.User;
@@ -50,8 +50,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private User saveOrUpdate(OAuth2Attributes attributes) {
         User user = userRepository.findByUserEmail(attributes.getEmail())
-                // 구글 사용자 정보 업데이트(이미 가입된 사용자) => 업데이트
-                .map(entity -> entity.update(attributes.getName()))
                 // 가입되지 않은 사용자 => User 엔티티 생성
                 .orElse(attributes.toEntity());
         // 생성해서 DB에 등록(회원가입)
