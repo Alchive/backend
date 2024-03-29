@@ -45,9 +45,6 @@ public class Problem {
     @Column(name = "problemState", nullable = false)
     private String problemState;
 
-    @Column(name = "postContent")
-    private String postContent;
-
     @Column(name = "createdAt", nullable = false)
     private Date createdAt;
 
