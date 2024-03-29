@@ -1,4 +1,4 @@
-package com.Alchive.backend.config.auth;
+package com.Alchive.backend.config.auth.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

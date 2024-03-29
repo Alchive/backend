@@ -1,4 +1,4 @@
-package com.Alchive.backend.config.auth;
+package com.Alchive.backend.config.auth.handler;
 
 import com.Alchive.backend.config.jwt.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
