@@ -9,9 +9,9 @@ import lombok.Setter;
 import java.util.Date;
 
 @NoArgsConstructor
+@Entity
 @Getter
 @Setter
-@Entity
 @Table(name = "user")
 public class User {
 
@@ -23,8 +23,8 @@ public class User {
     @Column(name = "userEmail", nullable = false, unique = true)
     private String userEmail;
 
-    @Column(name = "userNickName")
-    private String userNickName;
+    @Column(name = "userName", nullable = false, unique = true)
+    private String userName;
 
     @Column(name = "userDescription")
     private String userDescription;
@@ -41,14 +41,8 @@ public class User {
     @Builder // 빌더 패턴 구현
     public User(String userEmail, String userNickName) {
         this.userEmail = userEmail;
-        this.userNickName = userNickName;
+        this.userName = userNickName;
         this.createdAt = new Date(); // 현재 시간
-    }
-
-    public User update(String nickname) { // 구글 소셜 로그인 시에 사용
-        this.userNickName = nickname;
-
-        return this;
     }
 
     public User update(String userDescription, Boolean autoSave) { // 프로필 수정 시 사용
