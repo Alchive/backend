@@ -1,17 +1,14 @@
 package com.Alchive.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
-@NoArgsConstructor
-@Entity
+@RequiredArgsConstructor
 @Getter
 @Setter
+@Entity
 @Table(name = "user")
 public class User {
 

@@ -16,13 +16,13 @@ public class UserService {
 
     public User getUserDetail(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(Code.RESOURCE_NOT_FOUND,userId));
+                .orElseThrow(() -> new GeneralException(Code.USER_NOT_FOUND, userId));
     }
 
     @Transactional
     public void updateUserDetail(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(Code.RESOURCE_NOT_FOUND, userId));
+                .orElseThrow(() -> new GeneralException(Code.USER_NOT_FOUND, userId));
         user.update(request.getUserDescription(), request.getAutoSave());
     }
 }
