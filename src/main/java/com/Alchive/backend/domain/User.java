@@ -30,7 +30,7 @@ public class User {
     private String userDescription;
 
     @Column(name = "autoSave", nullable = false)
-    private boolean autoSave = true;
+    private Boolean autoSave = true;
 
     @Column(name = "createdAt", nullable = false)
     private Date createdAt;
@@ -51,9 +51,8 @@ public class User {
         return this;
     }
 
-    public User update(String nickname, String description, boolean autoSave) { // 프로필 수정 시 사용
-        this.userNickName = nickname;
-        this.userDescription = description;
+    public User update(String userDescription, Boolean autoSave) { // 프로필 수정 시 사용
+        this.userDescription = userDescription;
         this.autoSave = autoSave;
         this.updatedAt = new Date();
 
