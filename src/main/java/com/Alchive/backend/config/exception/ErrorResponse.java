@@ -1,4 +1,4 @@
-package com.Alchive.backend.config;
+package com.Alchive.backend.config.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

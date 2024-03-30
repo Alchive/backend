@@ -1,7 +1,7 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.GeneralException;
+import com.Alchive.backend.config.exception.Code;
+import com.Alchive.backend.config.exception.NoSuchPlatformException;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.AlgorithmProblem;
 import com.Alchive.backend.domain.Problem;
@@ -26,12 +26,12 @@ public class ProblemService {
     public List<ProblemListDTO> getProblemsByPlatform(String platform) {
         // Baekjoon, Programmers, Leetcde가 아닌 경우
 //        if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
-//            throw new GeneralException(Code.PLATFORM_INVALID, platform);
+//            throw new NoSuchPlatformException(Code.PLATFORM_INVALID, platform);
 //        }
         // problem 테이블에서 플랫폼으로 문제 조회
         List<Problem> problems = problemRepository.findByProblemPlatform(platform);
         if (problems.isEmpty()) {
-            throw new GeneralException(Code.PROBLEM_NOT_FOUND, platform);
+            throw new NoSuchPlatformException(Code.PROBLEM_NOT_FOUND, platform);
         }
 
         return addAlgorithm(problems);
