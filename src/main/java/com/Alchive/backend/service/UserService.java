@@ -1,6 +1,6 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.exception.Code;
+import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchUserException;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
