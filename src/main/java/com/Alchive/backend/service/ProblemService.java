@@ -1,6 +1,6 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.exception.Code;
+import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.AlgorithmProblem;

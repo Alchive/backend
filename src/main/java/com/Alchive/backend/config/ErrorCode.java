@@ -1,4 +1,4 @@
-package com.Alchive.backend.config.exception;
+package com.Alchive.backend.config;
 
 public interface ErrorCode {
 //    String name();

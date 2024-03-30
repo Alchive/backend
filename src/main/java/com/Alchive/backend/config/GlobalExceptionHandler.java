@@ -1,5 +1,9 @@
-package com.Alchive.backend.config.exception;
+package com.Alchive.backend.config;
 
+import com.Alchive.backend.config.ErrorCode;
+import com.Alchive.backend.config.ErrorResponse;
+import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.exception.NoSuchUserException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

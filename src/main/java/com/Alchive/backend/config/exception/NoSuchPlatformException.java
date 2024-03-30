@@ -1,5 +1,6 @@
 package com.Alchive.backend.config.exception;
 
+import com.Alchive.backend.config.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
