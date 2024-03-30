@@ -1,6 +1,7 @@
 package com.Alchive.backend.domain;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ public class Problem {
     private Long problemId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false, foreignKey = @ForeignKey(name = "FK_problem_user"))
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @Column(name = "problemNumber", nullable = false)
@@ -45,13 +46,9 @@ public class Problem {
     @Column(name = "problemState", nullable = false)
     private String problemState;
 
-    @Column(name = "postContent")
-    private String postContent;
-
     @Column(name = "createdAt", nullable = false)
     private Date createdAt;
 
     @Column(name = "updatedAt")
     private Date updatedAt;
-
 }

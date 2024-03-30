@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 public class UserDetailData {
     private String userEmail;
-    private String userNickName;
+    private String userName;
     private String userDescription;
     private boolean autoSave;
     private Date createdAt;
@@ -18,7 +18,7 @@ public class UserDetailData {
 
     public UserDetailData(User user) {
         this.userEmail=user.getUserEmail();
-        this.userNickName=user.getUserNickName();
+        this.userName=user.getUserName();
         this.userDescription=user.getUserDescription();
         this.autoSave=user.getAutoSave();
         this.createdAt=user.getCreatedAt();

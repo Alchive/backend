@@ -21,16 +21,22 @@ public class Code {
     @JoinColumn(name = "problemId", nullable = false)
     private Problem problem;
 
-    @Column(name = "codeCorrect", nullable = false)
-    private boolean codeCorrect;
+    @Column(name = "solution")
+    private String solution;
+
+    @Column(name = "codeLanguage")
+    private String codeLanguage;
 
     @Column(name = "codeContent", nullable = false)
     private String codeContent;
 
-    @Column(name = "codeMemory", nullable = false)
+    @Column(name = "codeCorrect", nullable = false)
+    private boolean codeCorrect;
+
+    @Column(name = "codeMemory")
     private int codeMemory;
 
-    @Column(name = "codeTime", nullable = false)
+    @Column(name = "codeTime")
     private int codeTime;
 
     @Column(name = "createdAt", nullable = false)
