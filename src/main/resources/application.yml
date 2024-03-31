@@ -16,3 +16,20 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         show_sql: true
         format_sql: true
+
+springdoc:
+  swagger-ui:
+    path: /api/v1 # 접속 경로
+    groups-order: DESC # 내림차순
+    tags-sorter: alpha # 알파벳순 정렬
+    operations-sorter: method # 메소드 별 정렬
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /api/v1/api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true # 예쁘게
+  paths-to-match:
+    - /api/v1/**
