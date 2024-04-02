@@ -64,4 +64,28 @@ public class ProblemService {
         return problemListDataList;
     }
 
+
+    // 모든 문제 조회
+    public List<ProblemListDTO> getAllProblems() {
+        List<Problem> problems = problemRepository.findAll();
+        return convertToDTOList(problems);
+    }
+
+    // Problem 엔티티를 ProblemListDTO로 변환하는 메서드
+    private List<ProblemListDTO> convertToDTOList(List<Problem> problems) {
+        List<ProblemListDTO> dtoList = new ArrayList<>();
+        for (Problem problem : problems) {
+            ProblemListDTO dto = new ProblemListDTO();
+            dto.setProblemId(problem.getProblemId());
+            dto.setProblemNumber(problem.getProblemNumber());
+            dto.setProblemTitle(problem.getProblemTitle());
+            dto.setProblemDifficulty(problem.getProblemDifficulty());
+            dto.setProblemPlatform(problem.getProblemPlatform());
+            dto.setProblemState(problem.getProblemState());
+            // 알고리즘 정보는 여기서 추가할 수도 있습니다.
+            // dto.setAlgorithmName(problem.getAlgorithmName()); // 예시일 뿐 실제 코드에는 맞게 수정해야 합니다.
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
 }
