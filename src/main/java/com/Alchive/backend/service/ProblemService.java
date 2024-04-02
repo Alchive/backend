@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -24,20 +26,49 @@ public class ProblemService {
 
     // 플랫폼 별 조회
     public List<ProblemListDTO> getProblemsByPlatform(String platform) {
-        // Baekjoon, Programmers, Leetcde가 아닌 경우
-//        if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
-//            throw new NoSuchPlatformException(Code.PLATFORM_INVALID, platform);
-//        }
+        // Baekjoon, Programmers, Leetcode가 아닌 경우
+        if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
+            throw new NoSuchPlatformException(Code.PLATFORM_INVALID, platform);
+        }
         // problem 테이블에서 플랫폼으로 문제 조회
         List<Problem> problems = problemRepository.findByProblemPlatform(platform);
         if (problems.isEmpty()) {
             throw new NoSuchPlatformException(Code.PROBLEM_NOT_FOUND, platform);
         }
 
+        // 문제 리스트를 보내서 알고리즘 이름 추가하기
         return addAlgorithm(problems);
     }
 
-    // 알고리즘 배열 추가하기 - 전체 목록 조회 & 플랫폼 별 조회
+    // 문제 검색
+    public List<ProblemListDTO> getProblemsSearch(String keyword, String category) {
+        List<Problem> problems = new ArrayList<>();
+        if (category == null) {
+            // 문제 번호 검색과 제목 검색에서의 중복을 제거하기 위한 해시세트 사용
+            Set<Problem> uniqueProblems = new HashSet<>();
+            List<Problem> numbers = problemRepository.findByProblemNumberContaining(keyword);
+            List<Problem> titles = problemRepository.findByProblemTitleContaining(keyword);
+            uniqueProblems.addAll(numbers);
+            uniqueProblems.addAll(titles);
+
+            problems = List.copyOf(uniqueProblems);
+        } else {
+            if (category.equals("number")) {
+                problems = problemRepository.findByProblemNumberContaining(keyword);
+            } else if (category.equals("title")) {
+                problems = problemRepository.findByProblemTitleContaining(keyword);
+            } else {
+                throw new NoSuchPlatformException(Code.CATEGORY_INVALID, category);
+            }
+        }
+        if (problems.isEmpty()) {
+            throw new NoSuchPlatformException(Code.KEYWORD_NOT_FOUND, keyword);
+        }
+
+        return addAlgorithm(problems);
+    }
+
+    // 알고리즘 배열 추가하기 - 전체 목록 조회 & 플랫폼 별 조회 & 문제 검색
     public List<ProblemListDTO> addAlgorithm(List<Problem> problems) {
         List<ProblemListDTO> problemListDataList = new ArrayList<>();
 
