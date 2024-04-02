@@ -30,4 +30,12 @@ public class ProblemController {
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "플랫폼 별 문제 목록을 불러왔습니다.", problemData));
     }
+
+    @Operation(summary = "모든 문제 목록 조회 메서드", description = "모든 문제 목록을 조회하는 메서드입니다.")
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getAllProblems() {
+        List<ProblemListDTO> problemData = problemService.getAllProblems();
+        return ResponseEntity.ok()
+                .body(new ApiResponse(HttpStatus.OK.value(), "모든 문제 목록을 불러왔습니다.", problemData));
+    }
 }
