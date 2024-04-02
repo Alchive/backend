@@ -8,7 +8,7 @@ import java.util.Date;
 
 @NoArgsConstructor
 @Getter
-public class UserDetailData {
+public class UserDetailResponseDTO {
     private String userEmail;
     private String userName;
     private String userDescription;
@@ -16,7 +16,7 @@ public class UserDetailData {
     private Date createdAt;
     private Date updatedAt;
 
-    public UserDetailData(User user) {
+    public UserDetailResponseDTO(User user) {
         this.userEmail=user.getUserEmail();
         this.userName=user.getUserName();
         this.userDescription=user.getUserDescription();

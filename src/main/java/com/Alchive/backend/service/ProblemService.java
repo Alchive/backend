@@ -5,7 +5,7 @@ import com.Alchive.backend.config.exception.NoSuchPlatformException;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.AlgorithmProblem;
 import com.Alchive.backend.domain.Problem;
-import com.Alchive.backend.dto.response.ProblemListDTO;
+import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.repository.AlgorithmProblemRepository;
 import com.Alchive.backend.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class ProblemService {
     private final AlgorithmProblemRepository algorithmProblemRepository;
 
     // 플랫폼 별 조회
-    public List<ProblemListDTO> getProblemsByPlatform(String platform) {
+    public List<ProblemListResponseDTO> getProblemsByPlatform(String platform) {
         // Baekjoon, Programmers, Leetcode가 아닌 경우
         if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
             throw new NoSuchPlatformException(Code.PLATFORM_INVALID, platform);
@@ -41,25 +41,21 @@ public class ProblemService {
     }
 
     // 문제 검색
-    public List<ProblemListDTO> getProblemsSearch(String keyword, String category) {
+    public List<ProblemListResponseDTO> getProblemsSearch(Long userId, String keyword, String category) {
         List<Problem> problems = new ArrayList<>();
-        if (category == null) {
-            // 문제 번호 검색과 제목 검색에서의 중복을 제거하기 위한 해시세트 사용
-            Set<Problem> uniqueProblems = new HashSet<>();
-            List<Problem> numbers = problemRepository.findByProblemNumberContaining(keyword);
-            List<Problem> titles = problemRepository.findByProblemTitleContaining(keyword);
-            uniqueProblems.addAll(numbers);
-            uniqueProblems.addAll(titles);
-
-            problems = List.copyOf(uniqueProblems);
-        } else {
-            if (category.equals("number")) {
-                problems = problemRepository.findByProblemNumberContaining(keyword);
-            } else if (category.equals("title")) {
-                problems = problemRepository.findByProblemTitleContaining(keyword);
-            } else {
-                throw new NoSuchPlatformException(Code.CATEGORY_INVALID, category);
+        switch (category) {
+            case "all" -> {
+                // 문제 번호 검색과 제목 검색에서의 중복을 제거하기 위한 해시세트 사용
+                Set<Problem> uniqueProblems = new HashSet<>();
+                List<Problem> numbers = problemRepository.findByUserIdAndProblemNumberContaining(userId, keyword);
+                List<Problem> titles = problemRepository.findByUserIdAndProblemTitleContaining(userId, keyword);
+                uniqueProblems.addAll(numbers);
+                uniqueProblems.addAll(titles);
+                problems = List.copyOf(uniqueProblems);
             }
+            case "number" -> problems = problemRepository.findByUserIdAndProblemNumberContaining(userId, keyword);
+            case "title" -> problems = problemRepository.findByUserIdAndProblemTitleContaining(userId, keyword);
+            default -> throw new NoSuchPlatformException(Code.CATEGORY_INVALID, category);
         }
         if (problems.isEmpty()) {
             throw new NoSuchPlatformException(Code.KEYWORD_NOT_FOUND, keyword);
@@ -69,11 +65,11 @@ public class ProblemService {
     }
 
     // 알고리즘 배열 추가하기 - 전체 목록 조회 & 플랫폼 별 조회 & 문제 검색
-    public List<ProblemListDTO> addAlgorithm(List<Problem> problems) {
-        List<ProblemListDTO> problemListDataList = new ArrayList<>();
+    public List<ProblemListResponseDTO> addAlgorithm(List<Problem> problems) {
+        List<ProblemListResponseDTO> problemListDataList = new ArrayList<>();
 
         for (Problem problem : problems) {
-            ProblemListDTO problemData = new ProblemListDTO();
+            ProblemListResponseDTO problemData = new ProblemListResponseDTO();
             problemData.setProblemId(problem.getProblemId());
             problemData.setProblemNumber(problem.getProblemNumber());
             problemData.setProblemTitle(problem.getProblemTitle());

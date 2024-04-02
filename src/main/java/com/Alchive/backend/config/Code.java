@@ -24,7 +24,8 @@ public enum Code implements ErrorCode {
 
     // SEARCH
     CATEGORY_INVALID(HttpStatus.NOT_FOUND.value(), "지원하지 않는 카테고리입니다. [category: "),
-    KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "문제를 불러오는 데 실패했습니다. [keyword: ")
+    KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "키워드에 해당하는 문제가 없습니다. [keyword: "),
+    DECODE_FAILED(HttpStatus.BAD_REQUEST.value(), "디코딩에 실패하였습니다. [keyword: "),
     ;
 
     private final int httpStatus;
