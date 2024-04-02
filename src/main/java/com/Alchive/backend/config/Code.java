@@ -18,9 +18,13 @@ public enum Code implements ErrorCode {
     USER_CREATED(HttpStatus.CREATED.value(), "유저가 생성되었습니다. [id: "),
 
     // PROBLEM
-    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "문제를 불러오는 데 실패했습니다. [problem: ]"),
+    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "문제를 불러오는 데 실패했습니다. [problem: "),
     PROBLEM_CREATED(HttpStatus.CREATED.value(), "문제가 생성되었습니다. [problem: "),
     PLATFORM_INVALID(HttpStatus.NOT_FOUND.value(), "지원하지 않는 플랫폼입니다. [platform: "),
+
+    // SEARCH
+    CATEGORY_INVALID(HttpStatus.NOT_FOUND.value(), "지원하지 않는 카테고리입니다. [category: "),
+    KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "문제를 불러오는 데 실패했습니다. [keyword: ")
     ;
 
     private final int httpStatus;
