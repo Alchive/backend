@@ -25,13 +25,13 @@ public class ProblemService {
     private final AlgorithmProblemRepository algorithmProblemRepository;
 
     // 플랫폼 별 조회
-    public List<ProblemListResponseDTO> getProblemsByPlatform(String platform) {
+    public List<ProblemListResponseDTO> getProblemsByPlatform(Long userId, String platform) {
         // Baekjoon, Programmers, Leetcode가 아닌 경우
         if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
             throw new NoSuchPlatformException(Code.PLATFORM_INVALID, platform);
         }
         // problem 테이블에서 플랫폼으로 문제 조회
-        List<Problem> problems = problemRepository.findByProblemPlatform(platform);
+        List<Problem> problems = problemRepository.findByUserUserIdAndProblemPlatform(userId, platform);
         if (problems.isEmpty()) {
             throw new NoSuchPlatformException(Code.PROBLEM_NOT_FOUND, platform);
         }
