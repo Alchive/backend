@@ -9,7 +9,7 @@ import java.util.List;
 @ToString // json 형식으로 반환하기 위함
 @Setter // "
 @Getter // "
-public class ProblemListDTO {
+public class ProblemListResponseDTO {
 
     private Long problemId;
     private int problemNumber;

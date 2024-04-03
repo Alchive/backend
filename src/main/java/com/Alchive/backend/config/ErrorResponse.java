@@ -10,23 +10,4 @@ import lombok.RequiredArgsConstructor;
 public class ErrorResponse {
     private final String code;
     private final String message;
-
-//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-//    private final List<ValidationErrors> errors;
-//
-//    @Getter
-//    @Builder
-//    @RequiredArgsConstructor
-//    public static class ValidationError {
-//        private final String field;
-//        private final String message;
-//
-//        public static ValidationError of(final FieldError fieldError) {
-//            return ValidationError.builder()
-//                    .field(fieldError.getField())
-//                    .message(fieldError.getDefaultMessage())
-//                    .build();
-//        }
-//    }
-
 }
