@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +26,13 @@ public class ProblemController {
         List<ProblemListDTO> problemData = problemService.getProblemsByPlatform(platform);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "플랫폼 별 문제 목록을 불러왔습니다.", problemData));
+    }
+
+    @Operation(summary = "문제 목록 조회 메서드", description = "문제 목록을 조회하는 메서드입니다.")
+    @GetMapping()
+    public ResponseEntity<ApiResponse> getProblemsByUserId(@RequestParam Long userId) {
+        List<ProblemListDTO> problemData = problemService.getProblemsByUserId(userId);
+        return ResponseEntity.ok()
+                .body(new ApiResponse(HttpStatus.OK.value(), "문제 목록을 불러왔습니다.", problemData));
     }
 }
