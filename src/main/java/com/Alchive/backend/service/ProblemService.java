@@ -2,25 +2,32 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.exception.NoSuchUserException;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.AlgorithmProblem;
 import com.Alchive.backend.domain.Problem;
 import com.Alchive.backend.dto.response.ProblemListDTO;
 import com.Alchive.backend.repository.AlgorithmProblemRepository;
 import com.Alchive.backend.repository.ProblemRepository;
+import com.Alchive.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Repository
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
     private final AlgorithmProblemRepository algorithmProblemRepository;
+    private final UserRepository userRepository;
 
     // 플랫폼 별 조회
     public List<ProblemListDTO> getProblemsByPlatform(String platform) {
@@ -64,4 +71,39 @@ public class ProblemService {
         return problemListDataList;
     }
 
+
+    // 사용자가 작성한 문제 조회
+    public List<ProblemListDTO> getProblemsByUserId(Long userId) {
+        List<Problem> userProblems = problemRepository.findByUserUserId(userId);
+        if (!userRepository.existsByUserId(userId)) {
+            throw new NoSuchUserException(Code.USER_NOT_FOUND, userId);
+        }
+        return addAlgorithmToList(userProblems);
+    }
+
+    // 알고리즘 배열 포함한 DTO 리스트 반환하는 메서드
+    private List<ProblemListDTO> addAlgorithmToList(List<Problem> problems) {
+        List<ProblemListDTO> dtoList = new ArrayList<>();
+        for (Problem problem : problems) {
+            ProblemListDTO dto = new ProblemListDTO();
+            dto.setProblemId(problem.getProblemId());
+            dto.setProblemNumber(problem.getProblemNumber());
+            dto.setProblemTitle(problem.getProblemTitle());
+            dto.setProblemDifficulty(problem.getProblemDifficulty());
+            dto.setProblemPlatform(problem.getProblemPlatform());
+            dto.setProblemState(problem.getProblemState());
+
+            // 알고리즘 정보 추가
+            List<String> algorithmNames = new ArrayList<>();
+            List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findByProblem(problem);
+            for (AlgorithmProblem algorithmProblem : algorithmProblems) {
+                Algorithm algorithm = algorithmProblem.getAlgorithm();
+                algorithmNames.add(algorithm.getAlgorithmName());
+            }
+            dto.setAlgorithmName(algorithmNames);
+
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
 }
