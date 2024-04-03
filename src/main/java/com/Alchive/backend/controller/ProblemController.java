@@ -40,7 +40,7 @@ public class ProblemController {
             Long userId,
             @RequestParam(required = true, name = "k") @Schema(description = "검색 내용")
             String keyword,
-            @RequestParam(required = true, name = "c") @Schema(description = "카테고리")
+            @RequestParam(required = false, name = "c") @Schema(description = "카테고리")
             String category
             ) {
         List<ProblemListResponseDTO> problemData = problemService.getProblemsSearch(userId, keyword, category);
