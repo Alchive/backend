@@ -2,25 +2,32 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.exception.NoSuchUserException;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.AlgorithmProblem;
 import com.Alchive.backend.domain.Problem;
 import com.Alchive.backend.dto.response.ProblemListDTO;
 import com.Alchive.backend.repository.AlgorithmProblemRepository;
 import com.Alchive.backend.repository.ProblemRepository;
+import com.Alchive.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Repository
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
     private final AlgorithmProblemRepository algorithmProblemRepository;
+    private final UserRepository userRepository;
 
     // 플랫폼 별 조회
     public List<ProblemListDTO> getProblemsByPlatform(String platform) {
@@ -65,14 +72,17 @@ public class ProblemService {
     }
 
 
-    // 모든 문제 조회
-    public List<ProblemListDTO> getAllProblems() {
-        List<Problem> problems = problemRepository.findAll();
-        return convertToDTOList(problems);
+    // 사용자가 작성한 문제 조회
+    public List<ProblemListDTO> getProblemsByUserId(Long userId) {
+        List<Problem> userProblems = problemRepository.findByUserUserId(userId);
+        if (!userRepository.existsByUserId(userId)) {
+            throw new NoSuchUserException(Code.USER_NOT_FOUND, userId);
+        }
+        return addAlgorithmToList(userProblems);
     }
 
-    // Problem 엔티티를 ProblemListDTO로 변환하는 메서드
-    private List<ProblemListDTO> convertToDTOList(List<Problem> problems) {
+    // 알고리즘 배열 포함한 DTO 리스트 반환하는 메서드
+    private List<ProblemListDTO> addAlgorithmToList(List<Problem> problems) {
         List<ProblemListDTO> dtoList = new ArrayList<>();
         for (Problem problem : problems) {
             ProblemListDTO dto = new ProblemListDTO();
@@ -82,8 +92,16 @@ public class ProblemService {
             dto.setProblemDifficulty(problem.getProblemDifficulty());
             dto.setProblemPlatform(problem.getProblemPlatform());
             dto.setProblemState(problem.getProblemState());
-            // 알고리즘 정보는 여기서 추가할 수도 있습니다.
-            // dto.setAlgorithmName(problem.getAlgorithmName()); // 예시일 뿐 실제 코드에는 맞게 수정해야 합니다.
+
+            // 알고리즘 정보 추가
+            List<String> algorithmNames = new ArrayList<>();
+            List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findByProblem(problem);
+            for (AlgorithmProblem algorithmProblem : algorithmProblems) {
+                Algorithm algorithm = algorithmProblem.getAlgorithm();
+                algorithmNames.add(algorithm.getAlgorithmName());
+            }
+            dto.setAlgorithmName(algorithmNames);
+
             dtoList.add(dto);
         }
         return dtoList;
