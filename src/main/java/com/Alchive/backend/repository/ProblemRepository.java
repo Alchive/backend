@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
+    List<Problem> findByUserUserId(Long userId);
 
     List<Problem> findByUserUserIdAndProblemPlatform(Long userId, String problemPlatform);
 
@@ -18,5 +19,4 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     @Query("SELECT p FROM Problem p WHERE p.user.userId = :userId AND p.problemTitle LIKE %:keyword%")
     List<Problem> findByUserIdAndProblemTitleContaining(@Param("userId") Long userId, @Param("keyword") String keyword);
-
 }

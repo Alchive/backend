@@ -47,4 +47,12 @@ public class ProblemController {
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "검색 결과를 불러왔습니다.", problemData));
     }
+
+    @Operation(summary = "문제 목록 조회 메서드", description = "문제 목록을 조회하는 메서드입니다.")
+    @GetMapping
+    public ResponseEntity<ApiResponse> getProblemsByUserId(@RequestParam Long userId) {
+        List<ProblemListResponseDTO> problemData = problemService.getProblemsByUserId(userId);
+        return ResponseEntity.ok()
+                .body(new ApiResponse(HttpStatus.OK.value(), "문제 목록을 불러왔습니다.", problemData));
+    }
 }
