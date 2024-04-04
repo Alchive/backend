@@ -25,4 +25,11 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchUserException(Code.USER_NOT_FOUND, userId));
         user.update(request.getUserDescription(), request.getAutoSave());
     }
+
+    @Transactional
+    public void deleteUserDetail(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchUserException(Code.USER_NOT_FOUND, userId));
+        userRepository.delete(user);
+    }
 }
