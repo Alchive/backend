@@ -32,6 +32,14 @@ public class UserController {
     public ResponseEntity<ApiResponse> updateUser(@PathVariable Long userId, @RequestBody UserUpdateRequest request) {
         userService.updateUserDetail(userId, request);
         return ResponseEntity.ok()
-                .body(new ApiResponse(HttpStatus.OK.value(), "프로필 수정이 완료되었습니다."));
+                .body(new ApiResponse(HttpStatus.OK.value(), "사용자 프로필 수정이 완료되었습니다."));
+    }
+
+    @Operation(summary = "사용자 정보 삭제 메서드", description = "특정 사용자 정보를 삭제하는 메서드입니다. ")
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long userId) {
+        userService.deleteUserDetail(userId);
+        return ResponseEntity.ok()
+                .body(new ApiResponse(HttpStatus.OK.value(),"유저 정보를 삭제했습니다. "));
     }
 }
