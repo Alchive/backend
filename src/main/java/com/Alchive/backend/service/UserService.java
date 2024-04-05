@@ -1,7 +1,7 @@
 package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchUserException;
+import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
 import com.Alchive.backend.repository.UserRepository;
@@ -16,20 +16,20 @@ public class UserService {
 
     public User getUserDetail(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
     }
 
     @Transactional
     public void updateUserDetail(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
         user.update(request.getUserDescription(), request.getAutoSave());
     }
 
     @Transactional
     public void deleteUserDetail(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
         userRepository.delete(user);
     }
 }

@@ -1,9 +1,7 @@
 package com.Alchive.backend.config;
 
-import com.Alchive.backend.config.ErrorCode;
-import com.Alchive.backend.config.ErrorResponse;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
-import com.Alchive.backend.config.exception.NoSuchUserException;
+import com.Alchive.backend.config.exception.NoSuchIdException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,14 +10,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // NoSuchElementException 예외를 처리하는 ExceptionHandler
-    @ExceptionHandler(NoSuchUserException.class) // GeneralException가 발생했을 때 처리됨
-    public ResponseEntity<Object> handleNoSuchUserException(NoSuchUserException exception) {
+    @ExceptionHandler(NoSuchIdException.class) // NoSuchIdException 발생했을 때 처리됨
+    public ResponseEntity<Object> handleNoSuchUserException(NoSuchIdException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        Long userId = exception.getUserId();
+        Long userId = exception.getId();
         return handleExceptionInternal(errorCode, userId);
     }
 
-    @ExceptionHandler(NoSuchPlatformException.class) // GeneralException가 발생했을 때 처리됨
+    @ExceptionHandler(NoSuchPlatformException.class) // NoSuchPlatformException 발생했을 때 처리됨
     public ResponseEntity<Object> handleNoSuchPlatformException(NoSuchPlatformException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         String platform = exception.getPlatform();
