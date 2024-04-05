@@ -2,7 +2,7 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
-import com.Alchive.backend.config.exception.NoSuchUserException;
+import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.AlgorithmProblem;
 import com.Alchive.backend.domain.Problem;
@@ -10,6 +10,7 @@ import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.repository.AlgorithmProblemRepository;
 import com.Alchive.backend.repository.ProblemRepository;
 import com.Alchive.backend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class ProblemService {
     public List<ProblemListResponseDTO> getProblemsByPlatform(Long userId, String platform) {
         // userId가 db에 존재하지 않을 경우
         if (!userRepository.existsByUserId(userId)) {
-            throw new NoSuchUserException(Code.USER_NOT_FOUND, userId);
+            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
         }
         // Baekjoon, Programmers, Leetcode가 아닌 경우
         if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
@@ -49,7 +50,7 @@ public class ProblemService {
     public List<ProblemListResponseDTO> getProblemsSearch(Long userId, String keyword, String category) {
         // userId가 db에 존재하지 않을 경우
         if (!userRepository.existsByUserId(userId)) {
-            throw new NoSuchUserException(Code.USER_NOT_FOUND, userId);
+            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
         }
 //        List<Problem> problems = new ArrayList<>();
         List<Problem> problems;
@@ -78,7 +79,7 @@ public class ProblemService {
     public List<ProblemListResponseDTO> getProblemsByUserId(Long userId) {
         List<Problem> userProblems = problemRepository.findByUserUserId(userId);
         if (!userRepository.existsByUserId(userId)) {
-            throw new NoSuchUserException(Code.USER_NOT_FOUND, userId);
+            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
         }
         return addAlgorithm(userProblems);
     }
@@ -108,6 +109,14 @@ public class ProblemService {
         }
 
         return problemListDataList;
+    }
+
+    // 문제 삭제
+    @Transactional
+    public void deleteProblem(Long problemId) {
+        Problem problem = problemRepository.findById(problemId)
+                        .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+        problemRepository.delete(problem);
     }
 
 //    // 알고리즘 배열 포함한 DTO 리스트 반환하는 메서드

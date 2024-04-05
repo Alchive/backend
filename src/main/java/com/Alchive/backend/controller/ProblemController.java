@@ -55,4 +55,12 @@ public class ProblemController {
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "문제 목록을 불러왔습니다.", problemData));
     }
+
+    @Operation(summary = "문제 삭제 메서드", description = "문제 정보를 삭제하는 메서드입니다. ")
+    @DeleteMapping("/{problemId}")
+    public ResponseEntity<ApiResponse> deleteProblem(@PathVariable Long problemId) {
+        problemService.deleteProblem(problemId);
+        return ResponseEntity.ok()
+                .body(new ApiResponse((HttpStatus.OK.value()),"문제를 삭제했습니다. "));
+    }
 }
