@@ -1,10 +1,13 @@
 package com.Alchive.backend.domain;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.*;
 import java.util.Date;
+
+@RequiredArgsConstructor
 
 @Getter
 @Setter
@@ -42,4 +45,9 @@ public class Code {
     @Column(name = "createdAt", nullable = false)
     private Date createdAt;
 
+    public Code update(String solution) {
+        this.solution = solution;
+
+        return this;
+    }
 }
