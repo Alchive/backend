@@ -1,6 +1,8 @@
 package com.Alchive.backend.config.auth.handler;
 
 import com.Alchive.backend.config.jwt.TokenService;
+import com.Alchive.backend.domain.User;
+import com.Alchive.backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +14,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final TokenService tokenService;
+    private final UserRepository userRepository;
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response
@@ -27,7 +32,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
-        String token = tokenService.generateToken(name, email);
+        // 신규, 기존 유저 확인
+        Optional<User> user = userRepository.findByUserEmail(email);
+        Long userId = null;
+
+        if (user.isPresent()) { // 기존 유저인 경우
+            userId = user.get().getUserId();
+            name = user.get().getUserName();
+        }
+
+        String token = tokenService.generateToken(userId, email, name);
 
         String targetUrl = UriComponentsBuilder.fromUriString("/")
                 .queryParam("token", token)
