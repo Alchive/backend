@@ -30,8 +30,9 @@ public class TokenService {
         secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
-    public String generateToken(String name, String email) {
-        Claims claims = Jwts.claims().setSubject(email);
+    public String generateToken(Long userId, String email, String name) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
+        claims.put("email", email);
         claims.put("name", name);
 
         return Jwts.builder().setClaims(claims)
