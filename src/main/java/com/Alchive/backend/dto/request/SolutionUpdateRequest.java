@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CodeUpdateRequest {
-    private Long codeId;
-    private String solution;
+public class SolutionUpdateRequest {
+    private Long solutionId;
+    private String content;
 }
