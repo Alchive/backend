@@ -14,6 +14,8 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     List<Problem> findByUserUserIdAndProblemPlatform(Long userId, String problemPlatform);
 
+    Problem findByUserUserIdAndProblemNumber(Long userId, int problemNumber);
+
     @Query("SELECT p FROM Problem p WHERE p.user.userId = :userId AND CAST(p.problemNumber AS string) LIKE %:number%")
     List<Problem> findByUserIdAndProblemNumberContaining(@Param("userId") Long userId, @Param("number") String number);
 
