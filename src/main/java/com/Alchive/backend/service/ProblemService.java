@@ -6,6 +6,7 @@ import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.AlgorithmProblem;
 import com.Alchive.backend.domain.Problem;
+import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.repository.AlgorithmProblemRepository;
 import com.Alchive.backend.repository.ProblemRepository;
@@ -15,10 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -118,6 +116,60 @@ public class ProblemService {
                         .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
         problemRepository.delete(problem);
     }
+
+
+    // 단일 문제 검색
+    public ProblemListResponseDTO getProblemByProblemId(Long userId, Long problemId) {
+        // userId가 db에 존재하지 않을 경우
+        if (!userRepository.existsByUserId(userId)) {
+            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
+        }
+
+        // problemId로 문제를 찾음
+        Optional<Problem> optionalProblem = problemRepository.findByUserUserIdAndProblemId(userId, problemId);
+        Problem problem = optionalProblem.orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+
+        // 알고리즘 정보 추가
+        List<String> algorithmNames = new ArrayList<>();
+        List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findByProblem(problem);
+        for (AlgorithmProblem algorithmProblem : algorithmProblems) {
+            Algorithm algorithm = algorithmProblem.getAlgorithm();
+            algorithmNames.add(algorithm.getAlgorithmName());
+        }
+
+        // 문제 정보를 DTO로 변환하여 반환
+        ProblemListResponseDTO problemData = new ProblemListResponseDTO();
+        problemData.setProblemId(problem.getProblemId());
+        problemData.setProblemNumber(problem.getProblemNumber());
+        problemData.setProblemTitle(problem.getProblemTitle());
+        problemData.setProblemDifficulty(problem.getProblemDifficulty());
+        problemData.setProblemPlatform(problem.getProblemPlatform());
+        problemData.setProblemState(problem.getProblemState());
+        problemData.setAlgorithmName(algorithmNames);
+
+        return problemData;
+    }
+
+    @Transactional
+    public void updateProblemMemo(Long userId, Long problemId, String memo) {
+        // 해당 사용자와 문제가 존재하는지 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+
+        // 문제의 소유자인지 확인
+        if (!problem.getUser().equals(user)) {
+            throw new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId);
+        }
+
+        // 메모 업데이트
+        problem.setProblemMemo(memo);
+        problemRepository.save(problem);
+    }
+
+
 
 //    // 알고리즘 배열 포함한 DTO 리스트 반환하는 메서드
 //    private List<ProblemListResponseDTO> addAlgorithmToList(List<Problem> problems) {

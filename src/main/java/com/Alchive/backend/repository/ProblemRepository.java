@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
@@ -19,4 +20,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     @Query("SELECT p FROM Problem p WHERE p.user.userId = :userId AND p.problemTitle LIKE %:keyword%")
     List<Problem> findByUserIdAndProblemTitleContaining(@Param("userId") Long userId, @Param("keyword") String keyword);
+
+    Optional<Problem> findByUserUserIdAndProblemId(Long userId, Long problemId);
 }
