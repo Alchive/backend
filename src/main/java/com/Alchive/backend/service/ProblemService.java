@@ -15,15 +15,22 @@ import com.Alchive.backend.repository.ProblemRepository;
 import com.Alchive.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
 @Repository
 public class ProblemService {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
@@ -39,12 +46,13 @@ public class ProblemService {
         // 문제 중복 검사
         Problem problem = problemRepository.findByUserUserIdAndProblemNumber(userId, request.getProblemNumber());
         if (problem != null) {
+            log.info("이미 저장된 문제");
             // 이미 저장된 문제인 경우: 메모만 업데이트
             problem.update(request.getProblemMemo());
             problemRepository.save(problem);
         } else {
+            log.info("신규 문제");
             // 신규 문제인 경우: 문제 저장, 알고리즘 저장
-            // 신규 문제 저장되는 함수를 따로 분리하는 게 좋을 듯.
             Problem newProblem = Problem.builder()
                     .user(user)
                     .problemNumber(request.getProblemNumber())
@@ -57,25 +65,28 @@ public class ProblemService {
                     .problemState(request.getProblemState())
                     .build();
             problemRepository.save(newProblem);
-            // 알고리즘 배열 저장
-            List<String> algorithmNames = request.getAlgorithmNames();
-            for (String algorithmName : algorithmNames) {
-                // 알고리즘 존재 여부 확인
-                if (!algorithmRepository.existsByAlgorithmName(algorithmName)) {
-                    // 존재하지 않는 알고리즘인 경우: 저장
-                    Algorithm algorithm = Algorithm.builder()
-                            .algorithmName(algorithmName)
-                            .build();
-                    algorithmRepository.save(algorithm);
-                }
-                // 알고리즘-문제 정보 저장
-                Algorithm algorithm = algorithmRepository.findByAlgorithmName(algorithmName);
-                AlgorithmProblem algorithmProblem = AlgorithmProblem.builder()
-                        .algorithm(algorithm)
-                        .problem(newProblem)
+            saveAlgorihtmNames(newProblem, request.getAlgorithmNames());
+        }
+    }
+
+    public void saveAlgorihtmNames(Problem problem, List<String> algorithmNames) { // 알고리즘 저장
+        log.info("알고리즘 저장 함수 호출");
+        for (String algorithmName : algorithmNames) {
+            // 알고리즘 존재 여부 확인
+            if (!algorithmRepository.existsByAlgorithmName(algorithmName)) {
+                // 존재하지 않는 알고리즘인 경우: 저장
+                Algorithm algorithm = Algorithm.builder()
+                        .algorithmName(algorithmName)
                         .build();
-                algorithmProblemRepository.save(algorithmProblem);
+                algorithmRepository.save(algorithm);
             }
+            // 알고리즘-문제 정보 저장
+            Algorithm algorithm = algorithmRepository.findByAlgorithmName(algorithmName);
+            AlgorithmProblem algorithmProblem = AlgorithmProblem.builder()
+                    .algorithm(algorithm)
+                    .problem(problem)
+                    .build();
+            algorithmProblemRepository.save(algorithmProblem);
         }
     }
 
