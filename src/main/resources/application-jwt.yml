@@ -2,3 +2,5 @@ jwt:
   token:
     secret-key: ${JWT_SECRET_KEY}
     expire-length: ${JWT_EXPIRE_LENGTH}
+    access-expire-length: ${ACCESS_EXPIRE_LENGTH}
+    refresh-expire-length: ${REFRESH_EXPIRE_LENGTH}

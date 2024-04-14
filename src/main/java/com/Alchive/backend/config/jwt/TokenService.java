@@ -1,5 +1,8 @@
 package com.Alchive.backend.config.jwt;
 
+import com.Alchive.backend.config.Code;
+import com.Alchive.backend.config.exception.TokenExpiredException;
+import com.Alchive.backend.config.exception.TokenNotFoundException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -22,27 +25,36 @@ public class TokenService {
     @Value("${jwt.token.secret-key}")
     private String SECRET_KEY;
 
-    @Value("${jwt.token.expire-length}")
-    private Long EXPIRE_LENGTH; // Jwt 토큰의 만료 시간
+    @Value("${jwt.token.access-expire-length}")
+    private Long ACCESS_EXPIRE_LENGTH;
+    @Value("${jwt.token.refresh-expire-length}")
+    private Long REFRESH_EXPIRE_LENGTH;
 
     @PostConstruct
     protected void init() {
         secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
-    public String generateToken(Long userId, String email, String name) {
+    public String generateAccessToken(Long userId) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
-        claims.put("email", email);
-        claims.put("name", name);
 
         return Jwts.builder().setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_LENGTH))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRE_LENGTH))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public String generateRefreshToken(Long userId) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
+        return Jwts.builder().setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRE_LENGTH))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public boolean validateAccessToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey)
                     .build().parseClaimsJws(token);
@@ -51,17 +63,69 @@ public class TokenService {
                     .after(new Date(System.currentTimeMillis()));
 
         } catch (Exception e) {
-            return false;
+            throw new TokenExpiredException(Code.ACCESS_TOKEN_EXPIRED, token);
         }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey)
+                    .build().parseClaimsJws(token);
+
+            return claims.getBody().getExpiration()
+                    .after(new Date(System.currentTimeMillis()));
+
+        } catch (Exception e) {
+            throw new TokenExpiredException(Code.REFRESH_TOKEN_EXPIRED, token);
+        }
+    }
+
+    public String resolveAccessToken(HttpServletRequest request) {
+        String header = request.getHeader("AUTHORIZATION");
+        try {
+            String token = header.substring("Bearer ".length());
+            return token;
+        } catch (Exception e ){
+            throw new TokenNotFoundException(Code.TOKEN_NOT_FOUND, "ACCESS");
+        }
+    }
+
+    public String resolveRefreshToken(HttpServletRequest request) {
+        try {
+            String token = request.getHeader("REFRESH-TOKEN");
+            return token;
+        } catch (Exception e) {
+            throw new TokenNotFoundException(Code.TOKEN_NOT_FOUND, "REFRESH");
+        }
+    }
+
+    // 리프레시 토큰으로 새로운 액세스 토큰 발급
+    public String refreshAccessToken(HttpServletRequest request) {
+        String accessToken;
+        String refreshToken = resolveRefreshToken(request);
+        if (refreshToken == null ) { // 리프레시 토큰이 만료된 경우
+            throw new TokenExpiredException(Code.REFRESH_TOKEN_EXPIRED,refreshToken+"(refresh)");
+        }
+        validateRefreshToken(refreshToken); // 리프레시 토큰 검증
+        Long userId = getUserIdFromToken(request);
+        accessToken = generateAccessToken(userId);
+        return accessToken;
+    }
+
+    public Long getUserIdFromToken(HttpServletRequest request) { // 토큰에서 userId 정보 꺼내기
+        String token = resolveRefreshToken(request);
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return Long.parseLong(claims.getSubject());
     }
 
     public String getEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build().parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN");
     }
 }
