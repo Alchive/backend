@@ -20,11 +20,12 @@ public class JwtAuthFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
-        //HttpServletRequest에서 헤더에 "X-AUTH-TOKEN"에 작성된 token을 가져옴
-        String token = tokenService.resolveToken((HttpServletRequest) request);
+        //HttpServletRequest에서 헤더에 "ACCESS-TOKEN"에 작성된 token을 가져옴
+        String token = tokenService.resolveAccessToken((HttpServletRequest) request);
 
         //헤더에 작성된 토큰이 있는지 확인하고, 토큰이 만료되었는지 확인
-        if (token != null && tokenService.validateToken(token)) {
+        if (token != null && !tokenService.validateAccessToken(token)) {
+
             //토큰에서 secret key를 사용하여 회원의 이메일을 가져옴
             String email = tokenService.getEmail(token);
 

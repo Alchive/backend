@@ -1,8 +1,6 @@
 package com.Alchive.backend.config;
 
-import com.Alchive.backend.config.exception.NoSuchPlatformException;
-import com.Alchive.backend.config.exception.NoSuchIdException;
-import com.Alchive.backend.config.exception.NoSuchUserException;
+import com.Alchive.backend.config.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,25 +9,40 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // NoSuchElementException 예외를 처리하는 ExceptionHandler
-    @ExceptionHandler(NoSuchIdException.class) // NoSuchIdException 발생했을 때 처리됨
+    @ExceptionHandler(NoSuchIdException.class) // 찾으려는 id가 존재하지 않는 경우
     public ResponseEntity<Object> handleNoSuchUserException(NoSuchIdException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         Long userId = exception.getId();
         return handleExceptionInternal(errorCode, userId);
     }
 
-    @ExceptionHandler(NoSuchPlatformException.class) // NoSuchPlatformException 발생했을 때 처리됨
+    @ExceptionHandler(NoSuchPlatformException.class) // 찾으려는 platform이 존재하지 않는 경우
     public ResponseEntity<Object> handleNoSuchPlatformException(NoSuchPlatformException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         String platform = exception.getPlatform();
         return handleExceptionInternal(errorCode, platform);
     }
 
-    @ExceptionHandler(NoSuchUserException.class) // NoSuchUserException 발생했을 때 처리됨
+    @ExceptionHandler(NoSuchUserException.class) // 찾으려는 user가 존재하지 않는 경우
     public ResponseEntity<Object> handleNoSuchUserException(NoSuchUserException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         String user = exception.getUser();
         return handleExceptionInternal(errorCode, user);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class) // token이 만료된 경우
+    public ResponseEntity<Object> handleTokenExpiredException(TokenExpiredException exception)
+    {
+        ErrorCode errorCode = exception.getErrorCode();
+        String token = exception.getToken();
+        return handleExceptionInternal(errorCode, token);
+    }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException exception) { // token이 존재하지 않는 경우
+        ErrorCode errorCode = exception.getErrorCode();
+        String tokenType = exception.getTokenType();
+        return handleExceptionInternal(errorCode, tokenType);
     }
 
     // 에러 코드를 전달받아 에러 메시지 작성
