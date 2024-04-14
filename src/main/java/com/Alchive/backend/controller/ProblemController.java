@@ -11,8 +11,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +27,27 @@ import java.util.List;
 @RequestMapping("/api/v1/problems") // 공통 api
 public class ProblemController {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private final ProblemService problemService;
 
     @Operation(summary = "미제출 문제 저장 메서드", description = "코드 없이 문    제 설명 페이지에서 가져온 문제 정보만을 저장하는 메서드입니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse> createProblem(@RequestParam Long userId, @RequestBody @Valid ProblemCreateRequest request) {
+    public ResponseEntity<ApiResponse> createProblem(
+            @RequestParam Long userId,
+            @RequestBody @Valid ProblemCreateRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.error("valide error");
+            StringBuilder sb = new StringBuilder();
+            bindingResult.getAllErrors().forEach(objectError -> {
+                FieldError field = (FieldError) objectError;
+                String message = objectError.getDefaultMessage();
+                sb.append("field :" + field.getField());
+                sb.append("message :" + message);
+            });
+            log.error(sb.toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(HttpStatus.BAD_REQUEST.value(), sb.toString()));
+        }
         problemService.createProblem(userId, request);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "미제출 문제 정보를 저장했습니다."));
