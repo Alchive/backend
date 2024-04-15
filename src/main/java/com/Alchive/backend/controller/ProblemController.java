@@ -1,6 +1,7 @@
 package com.Alchive.backend.controller;
 
 import com.Alchive.backend.dto.response.ApiResponse;
+import com.Alchive.backend.dto.response.ProblemDetailResponseDTO;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,7 +70,7 @@ public class ProblemController {
     public ResponseEntity<ApiResponse> getProblemByProblemId(
             @PathVariable @Schema(description = "사용자 아이디") Long userId,
             @PathVariable @Schema(description = "문제 아이디") Long problemId) {
-        ProblemListResponseDTO problemData = problemService.getProblemByProblemId(userId, problemId);
+        ProblemDetailResponseDTO problemData = problemService.getProblemByProblemId(userId, problemId);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "문제를 조회했습니다.", problemData));
     }
@@ -85,3 +86,13 @@ public class ProblemController {
                 .body(new ApiResponse(HttpStatus.OK.value(), "문제 메모를 수정했습니다.", null));
     }
 }
+
+//    @Operation(summary = "단일 문제 조회 메서드", description = "특정 문제를 조회하는 메서드입니다.")
+//    @GetMapping("/{userId}/{problemId}")
+//    public ResponseEntity<ApiResponse> getProblemByProblemId(
+//            @PathVariable @Schema(description = "사용자 아이디") Long userId,
+//            @PathVariable @Schema(description = "문제 아이디") Long problemId) {
+//        ProblemListResponseDTO problemData = problemService.getProblemByProblemId(userId, problemId);
+//        return ResponseEntity.ok()
+//                .body(new ApiResponse(HttpStatus.OK.value(), "문제를 조회했습니다.", problemData));
+//    }
