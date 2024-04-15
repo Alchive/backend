@@ -3,8 +3,6 @@ package com.Alchive.backend.config.auth;
 import com.Alchive.backend.config.auth.handler.OAuth2FailureHandler;
 import com.Alchive.backend.config.auth.handler.OAuth2SuccessHandler;
 import com.Alchive.backend.config.auth.service.CustomOAuth2UserService;
-import com.Alchive.backend.config.jwt.JwtAuthFilter;
-import com.Alchive.backend.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
