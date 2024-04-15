@@ -165,96 +165,27 @@ public class ProblemService {
         return problemData;
     }
 
-    @Operation(summary = "문제 메모 수정 메서드", description = "특정 문제의 메모를 수정하는 메서드입니다.")
-    @PutMapping
-    public ResponseEntity<ApiResponse> updateProblemMemo(
-            @RequestParam(name = "userId") @Schema(description = "사용자 아이디") Long userId,
-            @RequestParam(name = "problemId") @Schema(description = "문제 아이디") Long problemId,
-            @RequestBody @Schema(description = "수정할 메모 내용") String problemMemo) {
-        problemService.updateProblemMemo(userId, problemId, problemMemo);
-        return ResponseEntity.ok()
-                .body(new ApiResponse(HttpStatus.OK.value(), "문제 메모를 수정했습니다.", null));
+
+    // problemMemo 내용 수정
+    @Transactional
+    public void updateProblemMemo(Long userId, Long problemId, String memo) {
+        // 해당 사용자와 문제가 존재하는지 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+
+        // 문제의 소유자인지 확인
+        if (!problem.getUser().equals(user)) {
+            // throw new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId);
+             throw new NoSuchIdException("해당 사용자는 문제를 수정할 권한이 없습니다.", Code.UNAUTHORIZED_USER, userId);
+
+        }
+
+        // 메모 업데이트
+        problem.setProblemMemo(memo.replaceAll("\"", ""));
+        problemRepository.save(problem);
+
     }
-}    
-
-
-
-//    @Transactional
-//    public void updateProblemMemo(Long userId, Long problemId, String memo) {
-//        // 해당 사용자와 문제가 존재하는지 확인
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
-//
-//        Problem problem = problemRepository.findById(problemId)
-//                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
-//
-//        // 문제의 소유자인지 확인
-//        if (!problem.getUser().equals(user)) {
-//            throw new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId);
-////            throw new NoSuchIdException("해당 사용자는 문제를 수정할 권한이 없습니다.", Code.UNAUTHORIZED_USER);
-//
-//        }
-//
-//        // 메모 업데이트
-//        problem.setProblemMemo(memo.replaceAll("\"", ""));
-//        problemRepository.save(problem);
-
-
-//    // 단일 문제 검색
-//    public ProblemListResponseDTO getProblemByProblemId(Long userId, Long problemId) {
-//        // userId가 db에 존재하지 않을 경우
-//        if (!userRepository.existsByUserId(userId)) {
-//            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
-//        }
-//
-//        // problemId로 문제를 찾음
-//        Optional<Problem> optionalProblem = problemRepository.findByUserUserIdAndProblemId(userId, problemId);
-//        Problem problem = optionalProblem.orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
-//
-//        // 알고리즘 정보 추가
-//        List<String> algorithmNames = new ArrayList<>();
-//        List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findByProblem(problem);
-//        for (AlgorithmProblem algorithmProblem : algorithmProblems) {
-//            Algorithm algorithm = algorithmProblem.getAlgorithm();
-//            algorithmNames.add(algorithm.getAlgorithmName());
-//        }
-//
-//        // 문제 정보를 DTO로 변환하여 반환
-//        ProblemListResponseDTO problemData = new ProblemListResponseDTO();
-//        problemData.setProblemId(problem.getProblemId());
-//        problemData.setProblemNumber(problem.getProblemNumber());
-//        problemData.setProblemTitle(problem.getProblemTitle());
-//        problemData.setProblemDifficulty(problem.getProblemDifficulty());
-//        problemData.setProblemPlatform(problem.getProblemPlatform());
-//        problemData.setProblemState(problem.getProblemState());
-//        problemData.setAlgorithmName(algorithmNames);
-//
-//        return problemData;
-//    }
-
-//    // 알고리즘 배열 포함한 DTO 리스트 반환하는 메서드
-//    private List<ProblemListResponseDTO> addAlgorithmToList(List<Problem> problems) {
-//        List<ProblemListResponseDTO> dtoList = new ArrayList<>();
-//        for (Problem problem : problems) {
-//            ProblemListResponseDTO dto = new ProblemListResponseDTO();
-//            dto.setProblemId(problem.getProblemId());
-//            dto.setProblemNumber(problem.getProblemNumber());
-//            dto.setProblemTitle(problem.getProblemTitle());
-//            dto.setProblemDifficulty(problem.getProblemDifficulty());
-//            dto.setProblemPlatform(problem.getProblemPlatform());
-//            dto.setProblemState(problem.getProblemState());
-//
-//            // 알고리즘 정보 추가
-//            List<String> algorithmNames = new ArrayList<>();
-//            List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findByProblem(problem);
-//            for (AlgorithmProblem algorithmProblem : algorithmProblems) {
-//                Algorithm algorithm = algorithmProblem.getAlgorithm();
-//                algorithmNames.add(algorithm.getAlgorithmName());
-//            }
-//            dto.setAlgorithmName(algorithmNames);
-//
-//            dtoList.add(dto);
-//        }
-//        return dtoList;
-//        }
-
+}

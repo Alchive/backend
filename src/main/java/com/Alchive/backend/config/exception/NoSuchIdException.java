@@ -9,4 +9,10 @@ import lombok.RequiredArgsConstructor;
 public class NoSuchIdException extends RuntimeException {
     private final ErrorCode errorCode;
     private final Long id;
+
+    public NoSuchIdException(String message, ErrorCode errorCode, Long id) {
+        super(message);
+        this.errorCode = errorCode;
+        this.id = id;
+    }
 }
