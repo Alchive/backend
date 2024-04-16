@@ -1,12 +1,12 @@
 package com.Alchive.backend.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Getter
-@Setter
 @Entity
 @Table(name = "algorithm")
 public class Algorithm {
@@ -19,4 +19,8 @@ public class Algorithm {
     @Column(name = "algorithmName", nullable = false)
     private String algorithmName;
 
+    @Builder
+    public Algorithm(String algorithmName) {
+        this.algorithmName = algorithmName;
+    }
 }
