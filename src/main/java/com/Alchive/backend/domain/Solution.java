@@ -1,15 +1,14 @@
 package com.Alchive.backend.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
-@Setter
 @Entity
 @Table(name = "solution")
 public class Solution {
@@ -46,6 +45,18 @@ public class Solution {
 
     @Column(name = "updatedAt")
     private Date updatedAt;
+
+    @Builder
+    public Solution(Problem problem, String content, String code, String codeLanguage, boolean codeCorrect, int codeMemory, int codeTime) {
+        this.problem = problem;
+        this.content = content;
+        this.code = code;
+        this.codeLanguage = codeLanguage;
+        this.codeCorrect = codeCorrect;
+        this.codeMemory = codeMemory;
+        this.codeTime = codeTime;
+        this.createdAt = new Date();
+    }
 
     public Solution update(String content) {
         this.content = content;

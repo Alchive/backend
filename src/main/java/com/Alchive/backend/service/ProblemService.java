@@ -8,6 +8,7 @@ import com.Alchive.backend.domain.AlgorithmProblem;
 import com.Alchive.backend.domain.Problem;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.request.SubmitProblemCreateRequest;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.repository.AlgorithmProblemRepository;
 import com.Alchive.backend.repository.AlgorithmRepository;
@@ -32,6 +33,7 @@ public class ProblemService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    private final SolutionService solutionService;
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
     private final AlgorithmRepository algorithmRepository;
@@ -67,6 +69,41 @@ public class ProblemService {
             problemRepository.save(newProblem);
             saveAlgorihtmNames(newProblem, request.getAlgorithmNames());
         }
+    }
+
+    // 맞/틀 문제 저장
+    public void createProblemSubmit(Long userId, SubmitProblemCreateRequest request) {
+        // user 무결성 확인 - 임시
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+        // 문제 중복 검사 - userid, problemnumber, platform으로 검사
+        Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, request.getProblemNumber(), request.getProblemPlatform());
+        // 문제 저장 or 업데이트
+        if (problem != null) {
+            log.info("이미 저장된 문제");
+            // 이미 저장된 문제인 경우: 메모만 업데이트
+            problem.update(request.getProblemMemo());
+            problemRepository.save(problem);
+        } else {
+            log.info("신규 문제");
+            // 신규 문제인 경우: 문제 저장, 알고리즘 저장
+            Problem newProblem = Problem.builder()
+                    .user(user)
+                    .problemNumber(request.getProblemNumber())
+                    .problemTitle(request.getProblemTitle())
+                    .problemUrl(request.getProblemUrl())
+                    .problemDescription(request.getProblemDescription())
+                    .problemDifficulty(request.getProblemDifficulty())
+                    .problemPlatform(request.getProblemPlatform())
+                    .problemMemo(request.getProblemMemo())
+                    .problemState(request.getProblemState())
+                    .build();
+            problem = problemRepository.save(newProblem);
+            saveAlgorihtmNames(newProblem, request.getAlgorithmNames());
+        }
+        log.warn("problem: " + problem);
+        // 풀이 저장
+        solutionService.saveSolution(problem, request);
     }
 
     public void saveAlgorihtmNames(Problem problem, List<String> algorithmNames) { // 알고리즘 저장

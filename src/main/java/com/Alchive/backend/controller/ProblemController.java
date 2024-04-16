@@ -3,6 +3,7 @@ package com.Alchive.backend.controller;
 import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchProblemException;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.request.SubmitProblemCreateRequest;
 import com.Alchive.backend.dto.response.ApiResponse;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.service.ProblemService;
@@ -51,6 +52,16 @@ public class ProblemController {
         problemService.createProblem(userId, request);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "미제출 문제 정보를 저장했습니다."));
+    }
+
+    @Operation(summary = "제출 후(맞/틀) 문제 저장 메서드", description = "코드 제출 후 문제 정보와 정답 여부, 코드 정보를 저장하는 메서드입니다.")
+    @PostMapping("/submit")
+    public ResponseEntity<ApiResponse> createProblemSubmit(
+            @RequestParam Long userId,
+            @RequestBody @Valid SubmitProblemCreateRequest request) {
+        problemService.createProblemSubmit(userId, request);
+        return ResponseEntity.ok()
+                .body(new ApiResponse(HttpStatus.OK.value(), "제출한 문제와 코드 정보를 저장했습니다."));
     }
 
     @Operation(summary = "문제 저장 여부 검사 메서드", description = "문제 번호를 이용해 저장된 문제인지를 검사하는 메서드입니다.")
