@@ -31,7 +31,7 @@ public class ProblemController {
 
     private final ProblemService problemService;
 
-    @Operation(summary = "미제출 문제 저장 메서드", description = "코드 없이 문    제 설명 페이지에서 가져온 문제 정보만을 저장하는 메서드입니다.")
+    @Operation(summary = "미제출 문제 저장 메서드", description = "코드 없이 문제 설명 페이지에서 가져온 문제 정보만을 저장하는 메서드입니다.")
     @PostMapping
     public ResponseEntity<ApiResponse> createProblem(
             @RequestParam Long userId,
@@ -55,8 +55,8 @@ public class ProblemController {
 
     @Operation(summary = "문제 저장 여부 검사 메서드", description = "문제 번호를 이용해 저장된 문제인지를 검사하는 메서드입니다.")
     @GetMapping("/check/{problemNumber}")
-    public ResponseEntity<ApiResponse> checkProblem(@RequestParam Long userId, @PathVariable int problemNumber) {
-        if (problemService.checkProblem(userId, problemNumber)) { // 존재하는 경우
+    public ResponseEntity<ApiResponse> checkProblem(@RequestParam Long userId, @PathVariable int problemNumber, @RequestParam String platform) {
+        if (problemService.checkProblem(userId, problemNumber, platform)) { // 존재하는 경우
             return ResponseEntity.ok()
                     .body(new ApiResponse(HttpStatus.OK.value(), "저장된 문제입니다."));
         } else {

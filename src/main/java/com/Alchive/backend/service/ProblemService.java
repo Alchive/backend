@@ -43,8 +43,8 @@ public class ProblemService {
         // user 무결성 확인 - 임시
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
-        // 문제 중복 검사
-        Problem problem = problemRepository.findByUserUserIdAndProblemNumber(userId, request.getProblemNumber());
+        // 문제 중복 검사 - userid, problemnumber, platform으로 검사
+        Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, request.getProblemNumber(), request.getProblemPlatform());
         if (problem != null) {
             log.info("이미 저장된 문제");
             // 이미 저장된 문제인 경우: 메모만 업데이트
@@ -91,8 +91,8 @@ public class ProblemService {
     }
 
     // 문제 저장 여부 검사
-    public boolean checkProblem(Long userId, int problemNumber) {
-        Problem problem = problemRepository.findByUserUserIdAndProblemNumber(userId, problemNumber);
+    public boolean checkProblem(Long userId, int problemNumber, String platform) {
+        Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemNumber, platform);
         return (problem != null);
     }
 
