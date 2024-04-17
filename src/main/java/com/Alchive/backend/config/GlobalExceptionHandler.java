@@ -1,9 +1,6 @@
 package com.Alchive.backend.config;
 
-import com.Alchive.backend.config.exception.NoSuchIdException;
-import com.Alchive.backend.config.exception.NoSuchPlatformException;
-import com.Alchive.backend.config.exception.NoSuchProblemException;
-import com.Alchive.backend.config.exception.NoSuchUserException;
+import com.Alchive.backend.config.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
