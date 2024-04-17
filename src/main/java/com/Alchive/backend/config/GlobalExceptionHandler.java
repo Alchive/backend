@@ -1,9 +1,13 @@
 package com.Alchive.backend.config;
 
 import com.Alchive.backend.config.exception.*;
+import com.Alchive.backend.config.exception.NoSuchIdException;
+import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.exception.NoSuchProblemException;
+import com.Alchive.backend.config.exception.NoSuchUserException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
@@ -28,6 +32,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = exception.getErrorCode();
         String user = exception.getUser();
         return handleExceptionInternal(errorCode, user);
+    }
+
+    @ExceptionHandler(NoSuchProblemException.class) // NoSuchProblemException 발생했을 때 처리됨
+    public ResponseEntity<Object> handleNoSuchProblemException(NoSuchProblemException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
+        int problemId = exception.getProblemId();
+        return handleExceptionInternal(errorCode, problemId);
     }
 
     @ExceptionHandler(TokenExpiredException.class) // token이 만료된 경우
