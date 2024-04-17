@@ -68,7 +68,14 @@ public class Problem {
 
     public Problem update(String problemMemo) { // 메모 update 시 사용
         this.problemMemo = problemMemo;
-        this.updatedAt = getUpdatedAt();
+        this.updatedAt = new Date();
+        return this;
+    }
+
+    public Problem update(String problemMemo,String problemState) {
+        this.problemMemo = problemMemo;
+        this.problemState = problemState;
+        this.updatedAt = new Date();
         return this;
     }
 
