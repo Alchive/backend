@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class NoSuchUserException extends RuntimeException{
+public class NoSuchUserException extends RuntimeException {
     private final ErrorCode errorCode;
     private final String user;
 }

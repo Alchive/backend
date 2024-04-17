@@ -1,12 +1,12 @@
 package com.Alchive.backend.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Getter
-@Setter
 @Entity
 @Table(name = "algorithm_problem")
 public class AlgorithmProblem {
@@ -23,5 +23,12 @@ public class AlgorithmProblem {
     @ManyToOne
     @JoinColumn(name = "problemId", nullable = false)
     private Problem problem;
+
+    @Builder
+    public AlgorithmProblem(Long algoProId, Algorithm algorithm, Problem problem) {
+        this.algoProId = algoProId;
+        this.algorithm = algorithm;
+        this.problem = problem;
+    }
 
 }
