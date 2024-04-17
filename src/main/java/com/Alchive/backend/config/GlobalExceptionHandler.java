@@ -1,6 +1,5 @@
 package com.Alchive.backend.config;
 
-import com.Alchive.backend.config.exception.*;
 import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
 import com.Alchive.backend.config.exception.NoSuchProblemException;
@@ -40,6 +39,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         int problemId = exception.getProblemId();
         return handleExceptionInternal(errorCode, problemId);
     }
+
 
     @ExceptionHandler(TokenExpiredException.class) // token이 만료된 경우
     public ResponseEntity<Object> handleTokenExpiredException(TokenExpiredException exception)
