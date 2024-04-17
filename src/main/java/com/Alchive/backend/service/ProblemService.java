@@ -81,8 +81,8 @@ public class ProblemService {
         // 문제 저장 or 업데이트
         if (problem != null) {
             log.info("이미 저장된 문제");
-            // 이미 저장된 문제인 경우: 메모만 업데이트
-            problem.update(request.getProblemMemo());
+            // 이미 저장된 문제인 경우: 메모와 정답 여부 업데이트
+            problem.update(request.getProblemMemo(), request.getProblemState());
             problemRepository.save(problem);
         } else {
             log.info("신규 문제");
