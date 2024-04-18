@@ -3,11 +3,13 @@ package com.Alchive.backend.service;
 import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
 import com.Alchive.backend.dto.response.UserResponseDTO;
 import com.Alchive.backend.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.Date;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final TokenService tokenService;
 
     public UserResponseDTO createUser(UserCreateRequest request) {
         String email = request.getUserEmail();
@@ -29,10 +32,7 @@ public class UserService {
             throw new NoSuchPlatformException(Code.USER_NAME_EXISTS, username);
         }
 
-        User user = new User(); // 유저 생성
-        user.setUserEmail(email);
-        user.setUserName(username);
-        user.setCreatedAt(new Date());
+        User user = new User(email,username);
         user = userRepository.save(user); // db에 유저 저장 - 회원 가입
         return new UserResponseDTO(user);
     }
@@ -43,7 +43,9 @@ public class UserService {
         }
     }
 
-    public User getUserDetail(Long userId) {
+    public User getUserDetail(HttpServletRequest request) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(request));
+        Long userId = tokenService.getUserIdFromToken(request);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
     }
