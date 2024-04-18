@@ -51,14 +51,18 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserDetail(Long userId, UserUpdateRequest request) {
+    public void updateUserDetail(HttpServletRequest request, UserUpdateRequest updateRequest) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(request));
+        Long userId = tokenService.getUserIdFromToken(request);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
-        user.update(request.getUserDescription(), request.getAutoSave());
+        user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
     }
 
     @Transactional
-    public void deleteUserDetail(Long userId) {
+    public void deleteUserDetail(HttpServletRequest request) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(request));
+        Long userId = tokenService.getUserIdFromToken(request);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
         userRepository.delete(user);
