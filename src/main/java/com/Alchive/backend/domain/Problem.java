@@ -51,4 +51,15 @@ public class Problem {
 
     @Column(name = "updatedAt")
     private Date updatedAt;
+
+    @Column(name = "algorithmId")
+    private Long algorithmId;
+
+    public Long getAlgorithmId() {
+        return algorithmId;
+    }
+
+    public void setAlgorithmId(Long algorithmId) {
+        this.algorithmId = algorithmId;
+    }
 }
