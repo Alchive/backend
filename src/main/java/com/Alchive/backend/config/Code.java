@@ -31,7 +31,12 @@ public enum Code implements ErrorCode {
     KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "키워드에 해당하는 문제가 없습니다. [keyword: "),
 
     // SOLUTION
-    SOLUTION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "풀이를 불러오는 데 실패했습니다. [solution: ");
+    SOLUTION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "풀이를 불러오는 데 실패했습니다. [solution: "),
+
+    // AUTH
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), "액세스 토큰이 만료되었습니다. [token: "),
+    REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), "리프레시 토큰이 만료되었습니다. [token: "),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED.value(), "토큰이 없습니다. [token type: "),
     ;
 
     private final int httpStatus;

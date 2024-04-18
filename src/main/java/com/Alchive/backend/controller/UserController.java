@@ -1,5 +1,6 @@
 package com.Alchive.backend.controller;
 
+import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
@@ -9,6 +10,7 @@ import com.Alchive.backend.dto.response.UserResponseDTO;
 import com.Alchive.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +22,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users") // 공통 url
 public class UserController {
     private final UserService userService;
+    private final TokenService tokenService;
 
-    @Operation(summary = "user 생성", description = "user를 생성하는 메서드 입니다.")
-    @PostMapping
-    public ResponseEntity<ApiResponse> createUser(@RequestBody UserCreateRequest request) {
-        UserResponseDTO user = userService.createUser(request);
+    @Operation(summary = "user 생성", description = "user를 생성하는 메서드입니다.")
+    @PostMapping("/")
+    public ResponseEntity<ApiResponse> createUser(@RequestBody UserCreateRequest createRequest) {
+        UserResponseDTO newUser = userService.createUser(createRequest);
         return ResponseEntity.ok()
-                .body(new ApiResponse(HttpStatus.OK.value(), "유저 생성이 완료되었습니다.", user));
+                .body(new ApiResponse(HttpStatus.OK.value(), "유저 생성이 완료되었습니다.", newUser));
     }
 
     @Operation(summary = "username 중복 확인", description = "username 중복을 검사하는 메서드입니다.")
@@ -38,9 +41,9 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 조회 메서드", description = "특정 사용자의 프로필 정보를 조회하는 메서드입니다. ")
-    @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse> findUser(@PathVariable Long userId) {
-        User user = userService.getUserDetail(userId);
+    @GetMapping("/")
+    public ResponseEntity<ApiResponse> findUser(HttpServletRequest request) {
+        User user = userService.getUserDetail(request);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "유저 정보를 불러왔습니다.", new UserDetailResponseDTO(user)));
     }
@@ -59,5 +62,13 @@ public class UserController {
         userService.deleteUserDetail(userId);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(),"유저 정보를 삭제했습니다. "));
+    }
+
+    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰으로 액세스 토큰을 재발급하는 메서드입니다. ")
+    @GetMapping("/auth/token")
+    public ResponseEntity<ApiResponse> refreshAccessToken(HttpServletRequest request) {
+        String accessToken = tokenService.refreshAccessToken(request);
+        return ResponseEntity.ok()
+                .body(new ApiResponse(HttpStatus.OK.value(), "액세스 토큰을 재발급했습니다. ", accessToken));
     }
 }

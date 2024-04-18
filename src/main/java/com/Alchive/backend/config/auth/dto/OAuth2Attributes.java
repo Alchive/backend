@@ -18,7 +18,7 @@ public class OAuth2Attributes {
     @Builder
     public OAuth2Attributes(Map<String, Object> attributes,
                            String nameAttributeKey, String name,
-                           String email) {
+                           String email, boolean isNewUser) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.name = name;
