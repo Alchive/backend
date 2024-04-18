@@ -25,6 +25,15 @@ public class ProblemDetailResponseDTO {
     private Long algorithmId;
     private List<String> algorithmName;
 
+    private Long solutionId;
+    private String content;
+    private String code;
+    private String codeLanguage;
+    private boolean codeCorrect;
+    private int codeMemory;
+    private int codeTime;
+
+
     public void setAlgorithmName(List<String> algorithmName) {
         this.algorithmName = algorithmName;
     }

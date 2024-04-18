@@ -43,7 +43,7 @@ public class ProblemController {
             String keyword,
             @RequestParam(required = false, name = "c") @Schema(description = "카테고리")
             String category
-            ) {
+    ) {
         List<ProblemListResponseDTO> problemData = problemService.getProblemsSearch(userId, keyword, category);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "검색 결과를 불러왔습니다.", problemData));
@@ -66,9 +66,9 @@ public class ProblemController {
     }
 
     @Operation(summary = "단일 문제 조회 메서드", description = "특정 문제를 조회하는 메서드입니다.")
-    @GetMapping("/{userId}/{problemId}")
+    @GetMapping("/{problemId}")
     public ResponseEntity<ApiResponse> getProblemByProblemId(
-            @PathVariable @Schema(description = "사용자 아이디") Long userId,
+            @RequestParam @Schema(description = "사용자 아이디") Long userId,
             @PathVariable @Schema(description = "문제 아이디") Long problemId) {
         ProblemDetailResponseDTO problemData = problemService.getProblemByProblemId(userId, problemId);
         return ResponseEntity.ok()
@@ -76,23 +76,13 @@ public class ProblemController {
     }
 
     @Operation(summary = "문제 메모 수정 메서드", description = "특정 문제의 메모를 수정하는 메서드입니다.")
-    @PutMapping("/{userId}/{problemId}/memo")
+    @PutMapping("/memo/{problemId}")
     public ResponseEntity<ApiResponse> updateProblemMemo(
-            @PathVariable @Schema(description = "사용자 아이디") Long userId,
-            @PathVariable @Schema(description = "문제 아이디") Long problemId,
-            @RequestBody @Schema(description = "수정할 메모 내용") String memo) {
-        problemService.updateProblemMemo(userId, problemId, memo);
+            @RequestParam(name = "userId") @Schema(description = "사용자 아이디") Long userId,
+            @PathVariable(name = "problemId") @Schema(description = "문제 아이디") Long problemId,
+            @RequestBody @Schema(description = "수정할 메모 내용") String problemMemo) {
+        problemService.updateProblemMemo(userId, problemId, problemMemo);
         return ResponseEntity.ok()
-                .body(new ApiResponse(HttpStatus.OK.value(), "문제 메모를 수정했습니다.", null));
+                .body(new ApiResponse(HttpStatus.OK.value(), "문제 메모를 수정했습니다."));
     }
 }
-
-//    @Operation(summary = "단일 문제 조회 메서드", description = "특정 문제를 조회하는 메서드입니다.")
-//    @GetMapping("/{userId}/{problemId}")
-//    public ResponseEntity<ApiResponse> getProblemByProblemId(
-//            @PathVariable @Schema(description = "사용자 아이디") Long userId,
-//            @PathVariable @Schema(description = "문제 아이디") Long problemId) {
-//        ProblemListResponseDTO problemData = problemService.getProblemByProblemId(userId, problemId);
-//        return ResponseEntity.ok()
-//                .body(new ApiResponse(HttpStatus.OK.value(), "문제를 조회했습니다.", problemData));
-//    }
