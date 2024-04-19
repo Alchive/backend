@@ -1,15 +1,16 @@
 package com.Alchive.backend.dto.response;
 
+import com.Alchive.backend.domain.Algorithm;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
 
+@Builder
 @Getter
-@Setter
 public class ProblemDetailResponseDTO {
-
+    // 문제 정보
     private Long problemId;
     private Long userId;
     private int problemNumber;
@@ -22,19 +23,21 @@ public class ProblemDetailResponseDTO {
     private String problemState;
     private Date createdAt;
     private Date updatedAt;
-    private Long algorithmId;
-    private List<String> algorithmName;
+    private List<Algorithm> algorithmList;
+    private List<SolutionInfo> solutionList;
 
-    private Long solutionId;
-    private String content;
-    private String code;
-    private String codeLanguage;
-    private boolean codeCorrect;
-    private int codeMemory;
-    private int codeTime;
-
-
-    public void setAlgorithmName(List<String> algorithmName) {
-        this.algorithmName = algorithmName;
+    @Builder
+    @Getter
+    public static class SolutionInfo {
+        // 풀이 정보
+        private Long solutionId;
+        private String content;
+        private String code;
+        private String codeLanguage;
+        private boolean codeCorrect;
+        private int codeMemory;
+        private int codeTime;
+        private Date createdAt;
+        private Date updatedAt;
     }
 }

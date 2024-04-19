@@ -20,7 +20,8 @@ public class Algorithm {
     private String algorithmName;
 
     @Builder
-    public Algorithm(String algorithmName) {
+    public Algorithm(Long algorithmId, String algorithmName) {
+        this.algorithmId = algorithmId;
         this.algorithmName = algorithmName;
     }
 }

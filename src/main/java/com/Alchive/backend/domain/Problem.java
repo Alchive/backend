@@ -51,7 +51,7 @@ public class Problem {
 
     @Column(name = "updatedAt")
     private Date updatedAt;
-    
+
     @Builder
     public Problem(User user, int problemNumber, String problemTitle, String problemUrl, String problemDescription, String problemDifficulty, String problemPlatform, String problemMemo, String problemState, Date createdAt) {
         this.user = user;

@@ -3,6 +3,7 @@ package com.Alchive.backend.service;
 import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.*;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import com.Alchive.backend.dto.request.SubmitProblemCreateRequest;
@@ -12,26 +13,24 @@ import com.Alchive.backend.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
-@Repository
+@RequiredArgsConstructor
 public class ProblemService {
-
+    private final TokenService tokenService;
     private final SolutionService solutionService;
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
+    private final SolutionRepository solutionRepository;
     private final AlgorithmRepository algorithmRepository;
     private final AlgorithmProblemRepository algorithmProblemRepository;
-    private ProblemService problemService;
-    @Autowired
-    private SolutionRepository solutionRepository;
 
     // 미제출 문제 저장
     @Transactional
@@ -106,7 +105,7 @@ public class ProblemService {
             // 알고리즘 존재 여부 확인
             if (!algorithmRepository.existsByAlgorithmName(algorithmName)) {
                 // 존재하지 않는 알고리즘인 경우: 저장
-                Algorithm algorithm = Algorithm.builder()
+                Algorithm algorithm = com.Alchive.backend.domain.Algorithm.builder()
                         .algorithmName(algorithmName)
                         .build();
                 algorithmRepository.save(algorithm);
@@ -141,7 +140,7 @@ public class ProblemService {
         List<Problem> problems = problemRepository.findByUserUserIdAndProblemPlatform(userId, platform);
 
         // 문제 리스트를 보내서 알고리즘 이름 추가하기
-        return addAlgorithm(problems);
+        return addProblemList(problems);
     }
 
     // 문제 검색
@@ -169,43 +168,35 @@ public class ProblemService {
             }
         }
 
-        return addAlgorithm(problems);
+        return addProblemList(problems);
     }
 
-    // 사용자가 작성한 문제 조회
+    // 사용자가 작성한 전체 목록 조회
     public List<ProblemListResponseDTO> getProblemsByUserId(Long userId) {
         List<Problem> userProblems = problemRepository.findByUserUserId(userId);
         if (!userRepository.existsByUserId(userId)) {
             throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
         }
-        return addAlgorithm(userProblems);
+        return addProblemList(userProblems);
     }
 
-    // 알고리즘 배열 추가하기 - 전체 목록 조회 & 플랫폼 별 조회 & 문제 검색
-    public List<ProblemListResponseDTO> addAlgorithm(List<Problem> problems) {
-        List<ProblemListResponseDTO> problemListDataList = new ArrayList<>();
-
+    // 문제 목록 반환하기 - 전체 목록 조회 & 플랫폼 별 조회 & 문제 검색
+    public List<ProblemListResponseDTO> addProblemList(List<Problem> problems) {
+        List<ProblemListResponseDTO> problemDataList = new ArrayList<>();
         for (Problem problem : problems) {
-            ProblemListResponseDTO problemData = new ProblemListResponseDTO();
-            problemData.setProblemId(problem.getProblemId());
-            problemData.setProblemNumber(problem.getProblemNumber());
-            problemData.setProblemTitle(problem.getProblemTitle());
-            problemData.setProblemDifficulty(problem.getProblemDifficulty());
-            problemData.setProblemPlatform(problem.getProblemPlatform());
-            problemData.setProblemState(problem.getProblemState());
-
-            List<String> algorithmNames = new ArrayList<>();
-            List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findByProblem(problem);
-            for (AlgorithmProblem algorithmProblem : algorithmProblems) {
-                Algorithm algorithm = algorithmProblem.getAlgorithm();
-                algorithmNames.add(algorithm.getAlgorithmName());
-            }
-            problemData.setAlgorithmName(algorithmNames);
-
-            problemListDataList.add(problemData);
+            List<Algorithm> algorithmList = addAlgorithmList(problem); // 알고리즘 배열 추가
+            ProblemListResponseDTO problemData = ProblemListResponseDTO.builder()
+                    .problemId(problem.getProblemId())
+                    .problemNumber(problem.getProblemNumber())
+                    .problemTitle(problem.getProblemTitle())
+                    .problemDifficulty(problem.getProblemDifficulty())
+                    .problemPlatform(problem.getProblemPlatform())
+                    .problemState(problem.getProblemState())
+                    .algorithmList(algorithmList)
+                    .build();
+            problemDataList.add(problemData);
         }
-
-        return problemListDataList;
+        return problemDataList;
     }
 
     // 문제 삭제
@@ -217,87 +208,56 @@ public class ProblemService {
     }
 
     // 단일 문제 조회
-    public ProblemDetailResponseDTO getProblemByProblemId(Long userId, Long problemId) {
-        // userId가 db에 존재하지 않을 경우
-        if (!userRepository.existsByUserId(userId)) {
-            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
+    public ProblemDetailResponseDTO getProblemByProblemId(Long problemId) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+        // Algorithm 정보
+        List<Algorithm> algorithmList = addAlgorithmList(problem);
+        // Solution 정보
+        List<ProblemDetailResponseDTO.SolutionInfo> solutionInfos = new ArrayList<>();
+        List<Solution> solutions = solutionRepository.findAllByProblemProblemId(problemId);
+        for (Solution solution : solutions) {
+            ProblemDetailResponseDTO.SolutionInfo solutionInfo = ProblemDetailResponseDTO.SolutionInfo.builder()
+                    .solutionId(solution.getSolutionId())
+                    .content(solution.getContent())
+                    .code(solution.getCode())
+                    .codeLanguage(solution.getCodeLanguage())
+                    .codeCorrect(solution.isCodeCorrect())
+                    .codeMemory(solution.getCodeMemory())
+                    .codeTime(solution.getCodeTime())
+                    .build();
+            solutionInfos.add(solutionInfo);
         }
-
-        // problemId로 문제를 찾음
-        Optional<Problem> optionalProblem = problemRepository.findByUserUserIdAndProblemId(userId, problemId);
-        Problem problem = optionalProblem.orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
-
-        // 알고리즘 정보 추가
-        List<String> algorithmNames = new ArrayList<>();
-        List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findByProblem(problem);
-        for (AlgorithmProblem algorithmProblem : algorithmProblems) {
-            Algorithm algorithm = algorithmProblem.getAlgorithm();
-            algorithmNames.add(algorithm.getAlgorithmName());
-        }
-
-        // Solution 정보 추가
-        Optional<Solution> optionalSolution = solutionRepository.findByProblemProblemId(problemId);
-        Solution solution = optionalSolution.orElseThrow(() -> new NoSuchIdException(Code.SOLUTION_NOT_FOUND, problemId));
-
-
-        // 문제 정보를 DTO로 변환하여 반환
-        ProblemDetailResponseDTO problemData = new ProblemDetailResponseDTO();
-        problemData.setUserId(userId);
-        problemData.setProblemId(problem.getProblemId());
-        problemData.setProblemNumber(problem.getProblemNumber());
-        problemData.setProblemTitle(problem.getProblemTitle());
-        problemData.setProblemUrl(problem.getProblemUrl());
-        problemData.setProblemDescription(problem.getProblemDescription());
-        problemData.setProblemDifficulty(problem.getProblemDifficulty());
-        problemData.setProblemPlatform(problem.getProblemPlatform());
-        problemData.setProblemState(problem.getProblemState());
-        problemData.setProblemMemo(problem.getProblemMemo());
-        problemData.setCreatedAt(problem.getCreatedAt());
-        // updatedAt 필드 값 설정
-        if (problem.getUpdatedAt() != null) {
-            problemData.setUpdatedAt(problem.getUpdatedAt());
-        } else {
-            // 문제가 생성된 후 업데이트된 적이 없으면 현재 시간으로 설정
-            problemData.setUpdatedAt(new Date());
-        }
-        problemData.setAlgorithmId(problem.getAlgorithmId());
-        problemData.setAlgorithmName(algorithmNames);
-
-
-        // Solution 정보 추가
-        problemData.setSolutionId(solution.getSolutionId());
-        problemData.setContent(solution.getContent());
-        problemData.setCode(solution.getCode());
-        problemData.setCodeLanguage(solution.getCodeLanguage());
-        problemData.setCodeCorrect(solution.isCodeCorrect());
-        problemData.setCodeMemory(solution.getCodeMemory());
-        problemData.setCodeTime(solution.getCodeTime());
-
-
+        ProblemDetailResponseDTO problemData = ProblemDetailResponseDTO.builder()
+                .problemId(problem.getProblemId())
+                .userId(problem.getUser().getUserId())
+                .problemNumber(problem.getProblemNumber())
+                .problemTitle(problem.getProblemTitle())
+                .problemUrl(problem.getProblemUrl())
+                .problemDescription(problem.getProblemDescription())
+                .problemDifficulty(problem.getProblemDifficulty())
+                .problemPlatform(problem.getProblemPlatform())
+                .problemMemo(problem.getProblemMemo())
+                .problemState(problem.getProblemState())
+                .createdAt(problem.getCreatedAt())
+                .updatedAt(problem.getUpdatedAt())
+                .algorithmList(algorithmList)
+                .solutionList(solutionInfos)
+                .build();
         return problemData;
     }
 
-
-    // problemMemo 내용 수정
-    @Transactional
-    public void updateProblemMemo(Long userId, Long problemId, String memo) {
-        // 해당 사용자와 문제가 존재하는지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
-
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
-
-        // 문제의 소유자인지 확인
-        if (!problem.getUser().equals(user)) {
-            // throw new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId);
-            throw new NoSuchIdException("해당 사용자는 문제를 수정할 권한이 없습니다.", Code.UNAUTHORIZED_USER, userId);
-
+    // 알고리즘 배열 추가하기 - 아이디와 이름을 함께 반환
+    public List<Algorithm> addAlgorithmList(Problem problem) {
+        List<Algorithm> algorithmList = new ArrayList<>();
+        List<AlgorithmProblem> algorithmProblems = algorithmProblemRepository.findAllByProblemProblemId(problem.getProblemId());
+        for (AlgorithmProblem algorithmProblem : algorithmProblems) {
+            Algorithm algorithm = Algorithm.builder()
+                    .algorithmId(algorithmProblem.getAlgorithm().getAlgorithmId())
+                    .algorithmName(algorithmProblem.getAlgorithm().getAlgorithmName())
+                    .build();
+            algorithmList.add(algorithm);
         }
-
-        // 메모 업데이트
-//        problem.setProblemMemo(memo.replaceAll("\"", ""));
-        problemRepository.save(problem);
-
+        return algorithmList;
     }
 }

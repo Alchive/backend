@@ -23,8 +23,6 @@ public enum Code implements ErrorCode {
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "문제를 불러오는 데 실패했습니다. [problem: "),
     PROBLEM_CREATED(HttpStatus.CREATED.value(), "문제가 생성되었습니다. [problem: "),
     PLATFORM_INVALID(HttpStatus.NOT_FOUND.value(), "지원하지 않는 플랫폼입니다. [platform: "),
-    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED.value(), "사용자가 문제를 수정할 권한이 없습니다."),
-
 
     // SEARCH
     CATEGORY_INVALID(HttpStatus.NOT_FOUND.value(), "지원하지 않는 카테고리입니다. [category: "),
