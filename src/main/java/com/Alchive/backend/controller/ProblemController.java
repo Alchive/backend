@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,29 +28,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/problems") // 공통 api
 public class ProblemController {
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     private final ProblemService problemService;
 
     @Operation(summary = "미제출 문제 저장 메서드", description = "코드 없이 문제 설명 페이지에서 가져온 문제 정보만을 저장하는 메서드입니다.")
     @PostMapping
     public ResponseEntity<ApiResponse> createProblem(
-            @RequestParam Long userId,
-            @RequestBody @Valid ProblemCreateRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            log.error("valide error");
-            StringBuilder sb = new StringBuilder();
-            bindingResult.getAllErrors().forEach(objectError -> {
-                FieldError field = (FieldError) objectError;
-                String message = objectError.getDefaultMessage();
-                sb.append("field :" + field.getField());
-                sb.append("message :" + message);
-            });
-            log.error(sb.toString());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(HttpStatus.BAD_REQUEST.value(), sb.toString()));
-        }
-        problemService.createProblem(userId, request);
+            HttpServletRequest tokenRequest,
+            @RequestBody @Valid ProblemCreateRequest problemRequest, BindingResult bindingResult) {
+        problemService.createProblem(tokenRequest, problemRequest);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "미제출 문제 정보를 저장했습니다."));
     }
@@ -59,17 +43,17 @@ public class ProblemController {
     @Operation(summary = "제출 후(맞/틀) 문제 저장 메서드", description = "코드 제출 후 문제 정보와 정답 여부, 코드 정보를 저장하는 메서드입니다.")
     @PostMapping("/submit")
     public ResponseEntity<ApiResponse> createProblemSubmit(
-            @RequestParam Long userId,
-            @RequestBody @Valid SubmitProblemCreateRequest request) {
-        problemService.createProblemSubmit(userId, request);
+            HttpServletRequest tokenRequest,
+            @RequestBody @Valid SubmitProblemCreateRequest problemRequest) {
+        problemService.createProblemSubmit(tokenRequest, problemRequest);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "제출한 문제와 코드 정보를 저장했습니다."));
     }
 
     @Operation(summary = "문제 저장 여부 검사 메서드", description = "문제 번호를 이용해 저장된 문제인지를 검사하는 메서드입니다.")
     @GetMapping("/check/{problemNumber}")
-    public ResponseEntity<ApiResponse> checkProblem(@RequestParam Long userId, @PathVariable int problemNumber, @RequestParam String platform) {
-        if (problemService.checkProblem(userId, problemNumber, platform)) { // 존재하는 경우
+    public ResponseEntity<ApiResponse> checkProblem(HttpServletRequest tokenRequest, @PathVariable int problemNumber, @RequestParam String platform) {
+        if (problemService.checkProblem(tokenRequest, problemNumber, platform)) { // 존재하는 경우
             return ResponseEntity.ok()
                     .body(new ApiResponse(HttpStatus.OK.value(), "저장된 문제입니다."));
         } else {
@@ -80,11 +64,10 @@ public class ProblemController {
     @Operation(summary = "플랫폼 별 문제 목록 조회 메서드", description = "특정 플랫폼에 해당하는 문제 목록을 조회하는 메서드입니다.")
     @GetMapping("/platform")
     public ResponseEntity<ApiResponse> getProblemPlatform(
-            @RequestParam(required = true, name = "id") @Schema(description = "사용자 아이디")
-            Long userId,
+            HttpServletRequest tokenRequest,
             @RequestParam(required = true, name = "p") @Schema(description = "Algorithm Platform")
             String platform) {
-        List<ProblemListResponseDTO> problemData = problemService.getProblemsByPlatform(userId, platform);
+        List<ProblemListResponseDTO> problemData = problemService.getProblemsByPlatform(tokenRequest, platform);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "플랫폼 별 문제 목록을 불러왔습니다.", problemData));
     }
@@ -92,30 +75,29 @@ public class ProblemController {
     @Operation(summary = "문제 검색 메서드", description = "특정 키워드에 대한 문제를 검색하는 메서드입니다. ")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> getProblemSearch(
-            @RequestParam(required = true, name = "id") @Schema(description = "사용자 아이디")
-            Long userId,
+            HttpServletRequest tokenRequest,
             @RequestParam(required = true, name = "k") @Schema(description = "검색 내용")
             String keyword,
             @RequestParam(required = false, name = "c") @Schema(description = "카테고리")
             String category
-    ) {
-        List<ProblemListResponseDTO> problemData = problemService.getProblemsSearch(userId, keyword, category);
+            ) {
+        List<ProblemListResponseDTO> problemData = problemService.getProblemsSearch(tokenRequest, keyword, category);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "검색 결과를 불러왔습니다.", problemData));
     }
 
     @Operation(summary = "문제 목록 조회 메서드", description = "문제 목록을 조회하는 메서드입니다.")
     @GetMapping
-    public ResponseEntity<ApiResponse> getProblemsByUserId(@RequestParam Long userId) {
-        List<ProblemListResponseDTO> problemData = problemService.getProblemsByUserId(userId);
+    public ResponseEntity<ApiResponse> getProblemsByUserId(HttpServletRequest tokenRequest) {
+        List<ProblemListResponseDTO> problemData = problemService.getProblemsByUserId(tokenRequest);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "문제 목록을 불러왔습니다.", problemData));
     }
 
     @Operation(summary = "문제 삭제 메서드", description = "문제 정보를 삭제하는 메서드입니다. ")
     @DeleteMapping("/{problemId}")
-    public ResponseEntity<ApiResponse> deleteProblem(@PathVariable Long problemId) {
-        problemService.deleteProblem(problemId);
+    public ResponseEntity<ApiResponse> deleteProblem(HttpServletRequest tokenRequest, @PathVariable Long problemId) {
+        problemService.deleteProblem(tokenRequest, problemId);
         return ResponseEntity.ok()
                 .body(new ApiResponse((HttpStatus.OK.value()),"문제를 삭제했습니다. "));
     }

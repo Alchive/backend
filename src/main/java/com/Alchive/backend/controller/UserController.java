@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,17 +50,17 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 수정 메서드", description = "특정 사용자의 프로필 정보를 수정하는 메서드입니다. ")
-    @PutMapping("/{userId}")
-    public ResponseEntity<ApiResponse> updateUser(@PathVariable Long userId, @RequestBody UserUpdateRequest request) {
-        userService.updateUserDetail(userId, request);
+    @PutMapping("/")
+    public ResponseEntity<ApiResponse> updateUser(HttpServletRequest request, @RequestBody UserUpdateRequest updateRequest) {
+        userService.updateUserDetail(request, updateRequest);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(), "사용자 프로필 수정이 완료되었습니다."));
     }
 
     @Operation(summary = "사용자 정보 삭제 메서드", description = "특정 사용자 정보를 삭제하는 메서드입니다. ")
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long userId) {
-        userService.deleteUserDetail(userId);
+    @DeleteMapping("/")
+    public ResponseEntity<ApiResponse> deleteUser(HttpServletRequest request) {
+        userService.deleteUserDetail(request);
         return ResponseEntity.ok()
                 .body(new ApiResponse(HttpStatus.OK.value(),"유저 정보를 삭제했습니다. "));
     }

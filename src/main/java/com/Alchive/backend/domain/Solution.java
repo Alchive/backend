@@ -3,9 +3,11 @@ package com.Alchive.backend.domain;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@NoArgsConstructor
 @Getter
 @Entity
 @Table(name = "solution")
@@ -56,9 +58,6 @@ public class Solution {
         this.codeTime = codeTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-    }
-
-    public Solution() {
     }
 
     public Solution update(String content) {
