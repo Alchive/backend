@@ -1,8 +1,10 @@
 package com.Alchive.backend.config.jwt;
 
 import com.Alchive.backend.config.Code;
+import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.config.exception.TokenExpiredException;
 import com.Alchive.backend.config.exception.TokenNotFoundException;
+import com.Alchive.backend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -29,6 +31,12 @@ public class TokenService {
     private Long ACCESS_EXPIRE_LENGTH;
     @Value("${jwt.token.refresh-expire-length}")
     private Long REFRESH_EXPIRE_LENGTH;
+
+    private final UserRepository userRepository;
+
+    public TokenService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @PostConstruct
     protected void init() {
@@ -119,8 +127,11 @@ public class TokenService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        Long userId = Long.parseLong(claims.getSubject());
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
 
-        return Long.parseLong(claims.getSubject());
+        return userId;
     }
 
     public String getEmail(String token) {

@@ -22,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
 
+    @Transactional
     public UserResponseDTO createUser(UserCreateRequest request) {
         String email = request.getUserEmail();
         String username = request.getUserName();
@@ -34,7 +35,12 @@ public class UserService {
 
         User user = new User(email,username);
         user = userRepository.save(user); // db에 유저 저장 - 회원 가입
-        return new UserResponseDTO(user);
+
+        // 토큰 생성 후 전달
+        Long userId = user.getUserId();
+        String accessToken = tokenService.generateAccessToken(userId);
+        String refreshToken = tokenService.generateRefreshToken(userId);
+        return new UserResponseDTO(user,accessToken,refreshToken);
     }
 
     public void isDuplicateUsername(String userName) {
@@ -43,22 +49,26 @@ public class UserService {
         }
     }
 
-    public User getUserDetail(HttpServletRequest request) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(request));
-        Long userId = tokenService.getUserIdFromToken(request);
+    public User getUserDetail(HttpServletRequest tokenRequest) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
     }
 
     @Transactional
-    public void updateUserDetail(Long userId, UserUpdateRequest request) {
+    public void updateUserDetail(HttpServletRequest tokenRequest, UserUpdateRequest updateRequest) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
-        user.update(request.getUserDescription(), request.getAutoSave());
+        user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
     }
 
     @Transactional
-    public void deleteUserDetail(Long userId) {
+    public void deleteUserDetail(HttpServletRequest tokenRequest) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
         userRepository.delete(user);

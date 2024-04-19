@@ -25,8 +25,9 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
-    private final TokenService tokenService;
+
     private final SolutionService solutionService;
+    private final TokenService tokenService;
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
     private final SolutionRepository solutionRepository;
@@ -35,69 +36,67 @@ public class ProblemService {
 
     // 미제출 문제 저장
     @Transactional
-    public void createProblem(Long userId, ProblemCreateRequest request) {
-        // user 무결성 확인 - 임시
+    public void createProblem(HttpServletRequest tokenRequest, ProblemCreateRequest problemRequest) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
         // 문제 중복 검사 - userid, problemnumber, platform으로 검사
-        Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, request.getProblemNumber(), request.getProblemPlatform());
-        if (problem != null) {
-            log.info("이미 저장된 문제");
-            // 이미 저장된 문제인 경우: 메모만 업데이트
-            problem.update(request.getProblemMemo());
+        Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemRequest.getProblemNumber(), problemRequest.getProblemPlatform());
+        if (problem != null) { // 이미 저장된 문제인 경우: 메모만 업데이트
+            problem.update(problemRequest.getProblemMemo());
             problemRepository.save(problem);
-        } else {
-            log.info("신규 문제");
-            // 신규 문제인 경우: 문제 저장, 알고리즘 저장
+        } else { // 신규 문제인 경우: 문제 저장, 알고리즘 저장
             Problem newProblem = Problem.builder()
                     .user(user)
-                    .problemNumber(request.getProblemNumber())
-                    .problemTitle(request.getProblemTitle())
-                    .problemUrl(request.getProblemUrl())
-                    .problemDescription(request.getProblemDescription())
-                    .problemDifficulty(request.getProblemDifficulty())
-                    .problemPlatform(request.getProblemPlatform())
-                    .problemMemo(request.getProblemMemo())
-                    .problemState(request.getProblemState())
+                    .problemNumber(problemRequest.getProblemNumber())
+                    .problemTitle(problemRequest.getProblemTitle())
+                    .problemUrl(problemRequest.getProblemUrl())
+                    .problemDescription(problemRequest.getProblemDescription())
+                    .problemDifficulty(problemRequest.getProblemDifficulty())
+                    .problemPlatform(problemRequest.getProblemPlatform())
+                    .problemMemo(problemRequest.getProblemMemo())
+                    .problemState(problemRequest.getProblemState())
                     .build();
             problemRepository.save(newProblem);
-            saveAlgorihtmNames(newProblem, request.getAlgorithmNames());
+            saveAlgorihtmNames(newProblem, problemRequest.getAlgorithmNames());
         }
     }
 
     // 맞/틀 문제 저장
-    public void createProblemSubmit(Long userId, SubmitProblemCreateRequest request) {
-        // user 무결성 확인 - 임시
+    public void createProblemSubmit(HttpServletRequest tokenRequest, SubmitProblemCreateRequest problemRequest) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
         // 문제 중복 검사 - userid, problemnumber, platform으로 검사
-        Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, request.getProblemNumber(), request.getProblemPlatform());
+        Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemRequest.getProblemNumber(), problemRequest.getProblemPlatform());
         // 문제 저장 or 업데이트
         if (problem != null) {
             log.info("이미 저장된 문제");
             // 이미 저장된 문제인 경우: 메모와 정답 여부 업데이트
-            problem.update(request.getProblemMemo(), request.getProblemState());
+            problem.update(problemRequest.getProblemMemo(), problemRequest.getProblemState());
             problemRepository.save(problem);
         } else {
             log.info("신규 문제");
             // 신규 문제인 경우: 문제 저장, 알고리즘 저장
             Problem newProblem = Problem.builder()
                     .user(user)
-                    .problemNumber(request.getProblemNumber())
-                    .problemTitle(request.getProblemTitle())
-                    .problemUrl(request.getProblemUrl())
-                    .problemDescription(request.getProblemDescription())
-                    .problemDifficulty(request.getProblemDifficulty())
-                    .problemPlatform(request.getProblemPlatform())
-                    .problemMemo(request.getProblemMemo())
-                    .problemState(request.getProblemState())
+                    .problemNumber(problemRequest.getProblemNumber())
+                    .problemTitle(problemRequest.getProblemTitle())
+                    .problemUrl(problemRequest.getProblemUrl())
+                    .problemDescription(problemRequest.getProblemDescription())
+                    .problemDifficulty(problemRequest.getProblemDifficulty())
+                    .problemPlatform(problemRequest.getProblemPlatform())
+                    .problemMemo(problemRequest.getProblemMemo())
+                    .problemState(problemRequest.getProblemState())
                     .build();
             problem = problemRepository.save(newProblem);
-            saveAlgorihtmNames(newProblem, request.getAlgorithmNames());
+            saveAlgorihtmNames(newProblem, problemRequest.getAlgorithmNames());
         }
         log.warn("problem: " + problem);
         // 풀이 저장
-        solutionService.saveSolution(problem, request);
+        solutionService.saveSolution(problem, problemRequest);
     }
 
     public void saveAlgorihtmNames(Problem problem, List<String> algorithmNames) { // 알고리즘 저장
@@ -106,7 +105,7 @@ public class ProblemService {
             // 알고리즘 존재 여부 확인
             if (!algorithmRepository.existsByAlgorithmName(algorithmName)) {
                 // 존재하지 않는 알고리즘인 경우: 저장
-                Algorithm algorithm = com.Alchive.backend.domain.Algorithm.builder()
+                Algorithm algorithm = Algorithm.builder()
                         .algorithmName(algorithmName)
                         .build();
                 algorithmRepository.save(algorithm);
@@ -122,13 +121,17 @@ public class ProblemService {
     }
 
     // 문제 저장 여부 검사
-    public boolean checkProblem(Long userId, int problemNumber, String platform) {
+    public boolean checkProblem(HttpServletRequest tokenRequest, int problemNumber, String platform) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemNumber, platform);
         return (problem != null);
     }
 
     // 플랫폼 별 조회
-    public List<ProblemListResponseDTO> getProblemsByPlatform(Long userId, String platform) {
+    public List<ProblemListResponseDTO> getProblemsByPlatform(HttpServletRequest tokenRequest, String platform) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         // userId가 db에 존재하지 않을 경우
         if (!userRepository.existsByUserId(userId)) {
             throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
@@ -145,9 +148,10 @@ public class ProblemService {
     }
 
     // 문제 검색
-    public List<ProblemListResponseDTO> getProblemsSearch(Long userId, String keyword, String category) {
-        // userId가 db에 존재하지 않을 경우
-        if (!userRepository.existsByUserId(userId)) {
+    public List<ProblemListResponseDTO> getProblemsSearch(HttpServletRequest tokenRequest, String keyword, String category) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
+        if (!userRepository.existsByUserId(userId)) { // userId가 db에 존재하지 않을 경우
             throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
         }
         List<Problem> problems;
@@ -173,7 +177,9 @@ public class ProblemService {
     }
 
     // 사용자가 작성한 전체 목록 조회
-    public List<ProblemListResponseDTO> getProblemsByUserId(Long userId) {
+    public List<ProblemListResponseDTO> getProblemsByUserId(HttpServletRequest tokenRequest) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         List<Problem> userProblems = problemRepository.findByUserUserId(userId);
         if (!userRepository.existsByUserId(userId)) {
             throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
@@ -202,9 +208,14 @@ public class ProblemService {
 
     // 문제 삭제
     @Transactional
-    public void deleteProblem(Long problemId) {
+    public void deleteProblem(HttpServletRequest tokenRequest, Long problemId) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+                        .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+        if ((problem.getUser().getUserId() != userId)) { // 해당 문제의 작성자인지 확인
+            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problemId);
+        }
         problemRepository.delete(problem);
     }
 
