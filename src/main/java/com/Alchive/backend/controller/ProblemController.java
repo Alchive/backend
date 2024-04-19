@@ -11,6 +11,7 @@ import com.Alchive.backend.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -124,5 +125,14 @@ public class ProblemController {
     public ResponseEntity<ApiResponse> getProblemByProblemId(@PathVariable @Schema(description = "문제 아이디") Long problemId) {
         ProblemDetailResponseDTO problem = problemService.getProblemByProblemId(problemId);
         return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK.value(), "문제를 조회했습니다.", problem));
+    }
+
+    @Operation(summary = "문제 메모 수정 메서드", description = "특정 문제의 메모를 수정하는 메서드 입니다.\n\n메모는 큰따옴표를 해제하고 작성해서 테스트 해주세요.")
+    @PutMapping("/memo/{problemId}")
+    public ResponseEntity<ApiResponse> updateProblemMemo(HttpServletRequest tokenRequest,
+                                                         @PathVariable @Schema(description = "문제 아이디") Long problemId,
+                                                         @RequestBody @Schema(description = "메모 내용 - 큰따옴표를 해제하고 작성해주세요.") String problemMemo) {
+        problemService.updateProblemMemo(tokenRequest, problemId, problemMemo);
+        return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK.value(), "메모를 수정했습니다."));
     }
 }
