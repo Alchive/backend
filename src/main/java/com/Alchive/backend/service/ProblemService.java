@@ -10,6 +10,7 @@ import com.Alchive.backend.dto.request.SubmitProblemCreateRequest;
 import com.Alchive.backend.dto.response.ProblemDetailResponseDTO;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.repository.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -259,5 +260,17 @@ public class ProblemService {
             algorithmList.add(algorithm);
         }
         return algorithmList;
+    }
+
+    @Transactional
+    public void updateProblemMemo(HttpServletRequest tokenRequest, Long problemId, String problemMemo) {
+        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        Long userId = tokenService.getUserIdFromToken(tokenRequest);
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+        if (problem.getUser().getUserId() != userId) { // 작성자 검사
+            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problemId);
+        }
+        problem.update(problemMemo);
     }
 }
