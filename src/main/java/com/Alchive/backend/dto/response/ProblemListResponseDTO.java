@@ -1,14 +1,13 @@
 package com.Alchive.backend.dto.response;
 
+import com.Alchive.backend.domain.Algorithm;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.util.List;
 
-@ToString // json 형식으로 반환하기 위함
-@Setter // "
-@Getter // "
+@Builder
+@Getter
 public class ProblemListResponseDTO {
 
     private Long problemId;
@@ -17,6 +16,6 @@ public class ProblemListResponseDTO {
     private String problemDifficulty;
     private String problemPlatform;
     private String problemState;
-    private List<String> algorithmName;
+    private List<Algorithm> algorithmList;
 
 }
