@@ -5,6 +5,7 @@ import com.Alchive.backend.config.exception.NoSuchProblemException;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import com.Alchive.backend.dto.request.SubmitProblemCreateRequest;
 import com.Alchive.backend.dto.response.ApiResponse;
+import com.Alchive.backend.dto.response.ProblemDetailResponseDTO;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,9 +28,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/problems") // 공통 api
 public class ProblemController {
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     private final ProblemService problemService;
 
     @Operation(summary = "미제출 문제 저장 메서드", description = "코드 없이 문제 설명 페이지에서 가져온 문제 정보만을 저장하는 메서드입니다.")
@@ -104,4 +102,19 @@ public class ProblemController {
                 .body(new ApiResponse((HttpStatus.OK.value()),"문제를 삭제했습니다. "));
     }
 
+    @Operation(summary = "단일 문제 조회 메서드", description = "특정 문제를 조회하는 메서드입니다.")
+    @GetMapping("/{problemId}")
+    public ResponseEntity<ApiResponse> getProblemByProblemId(@PathVariable @Schema(description = "문제 아이디") Long problemId) {
+        ProblemDetailResponseDTO problem = problemService.getProblemByProblemId(problemId);
+        return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK.value(), "문제를 조회했습니다.", problem));
+    }
+
+    @Operation(summary = "문제 메모 수정 메서드", description = "특정 문제의 메모를 수정하는 메서드 입니다.\n\n메모는 큰따옴표를 해제하고 작성해서 테스트 해주세요.")
+    @PutMapping("/memo/{problemId}")
+    public ResponseEntity<ApiResponse> updateProblemMemo(HttpServletRequest tokenRequest,
+                                                         @PathVariable @Schema(description = "문제 아이디") Long problemId,
+                                                         @RequestBody @Schema(description = "메모 내용 - 큰따옴표를 해제하고 작성해주세요.") String problemMemo) {
+        problemService.updateProblemMemo(tokenRequest, problemId, problemMemo);
+        return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK.value(), "메모를 수정했습니다."));
+    }
 }
