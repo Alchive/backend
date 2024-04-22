@@ -1,5 +1,6 @@
 package com.Alchive.backend.domain;
 
+import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,7 +54,7 @@ public class Problem {
     private Date updatedAt;
 
     @Builder
-    public Problem(User user, int problemNumber, String problemTitle, String problemUrl, String problemDescription, String problemDifficulty, String problemPlatform, String problemMemo, String problemState, Date createdAt) {
+    public Problem(User user, int problemNumber, String problemTitle, String problemUrl, String problemDescription, String problemDifficulty, String problemPlatform, String problemMemo, String problemState) {
         this.user = user;
         this.problemNumber = problemNumber;
         this.problemTitle = problemTitle;
@@ -64,6 +65,20 @@ public class Problem {
         this.problemMemo = problemMemo;
         this.problemState = problemState;
         this.createdAt = new Date();
+    }
+
+    public static Problem of(User user, ProblemCreateRequest problemRequest) {
+        return Problem.builder()
+                .user(user)
+                .problemNumber(problemRequest.getProblemNumber())
+                .problemTitle(problemRequest.getProblemTitle())
+                .problemUrl(problemRequest.getProblemUrl())
+                .problemDescription(problemRequest.getProblemDescription())
+                .problemDifficulty(problemRequest.getProblemDifficulty())
+                .problemPlatform(problemRequest.getProblemPlatform())
+                .problemMemo(problemRequest.getProblemMemo())
+                .problemState(problemRequest.getProblemState())
+                .build();
     }
 
     public Problem update(String problemMemo) { // 메모 update 시 사용

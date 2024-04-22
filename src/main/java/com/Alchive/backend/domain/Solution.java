@@ -56,8 +56,7 @@ public class Solution {
         this.codeCorrect = codeCorrect;
         this.codeMemory = codeMemory;
         this.codeTime = codeTime;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = new Date();
     }
 
     public Solution update(String content) {

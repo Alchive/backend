@@ -4,7 +4,7 @@ import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchIdException;
 import com.Alchive.backend.domain.Problem;
 import com.Alchive.backend.domain.Solution;
-import com.Alchive.backend.dto.request.SubmitProblemCreateRequest;
+import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import com.Alchive.backend.dto.request.SolutionUpdateRequest;
 import com.Alchive.backend.repository.SolutionRepository;
 import jakarta.transaction.Transactional;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class SolutionService {
     private final SolutionRepository solutionRepository;
 
-    public void saveSolution(Problem problem, SubmitProblemCreateRequest request) {
+    public void saveSolution(Problem problem, ProblemCreateRequest.SolutionInfo request) {
         Solution solution = Solution.builder()
                 .problem(problem)
                 .content(request.getContent())
