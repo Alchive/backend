@@ -21,4 +21,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     @Query("SELECT p FROM Problem p WHERE p.user.userId = :userId AND p.problemTitle LIKE %:keyword%")
     List<Problem> findByUserIdAndProblemTitleContaining(@Param("userId") Long userId, @Param("keyword") String keyword);
+
+    @Query("SELECT p FROM Problem p WHERE p.user.userId = :userId AND (CAST(p.problemNumber AS string) LIKE %:keyword% OR p.problemTitle LIKE %:keyword%)")
+    List<Problem> findByUserIdAndProblemNumberOrTitleContaining(@Param("userId") Long userId, @Param("keyword") String keyword);
 }
