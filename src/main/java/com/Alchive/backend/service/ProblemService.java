@@ -9,6 +9,7 @@ import com.Alchive.backend.domain.Problem;
 import com.Alchive.backend.domain.Solution;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.request.ProblemMemoUpdateRequest;
 import com.Alchive.backend.dto.response.ProblemDetailResponseDTO;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
 import com.Alchive.backend.repository.ProblemRepository;
@@ -172,14 +173,14 @@ public class ProblemService {
     }
 
     @Transactional
-    public void updateProblemMemo(HttpServletRequest tokenRequest, Long problemId, String problemMemo) {
+    public void updateProblemMemo(HttpServletRequest tokenRequest, ProblemMemoUpdateRequest memoRequest) {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+        Problem problem = problemRepository.findById(memoRequest.getProblemId())
+                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, memoRequest.getProblemId()));
         if (!Objects.equals(problem.getUser().getUserId(), userId)) { // 작성자 검사
-            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problemId);
+            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problem.getProblemId());
         }
-        problem.update(problemMemo);
+        problem.update(memoRequest.getProblemMemo());
     }
 }
