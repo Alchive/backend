@@ -3,6 +3,7 @@ package com.Alchive.backend.controller;
 import com.Alchive.backend.config.Code;
 import com.Alchive.backend.config.exception.NoSuchProblemException;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.request.ProblemMemoUpdateRequest;
 import com.Alchive.backend.dto.response.ApiResponse;
 import com.Alchive.backend.dto.response.ProblemDetailResponseDTO;
 import com.Alchive.backend.dto.response.ProblemListResponseDTO;
@@ -107,11 +108,9 @@ public class ProblemController {
     }
 
     @Operation(summary = "문제 메모 수정 메서드", description = "특정 문제의 메모를 수정하는 메서드 입니다.\n\n메모는 큰따옴표를 해제하고 작성해서 테스트 해주세요.")
-    @PutMapping("/memo/{problemId}")
-    public ResponseEntity<ApiResponse> updateProblemMemo(HttpServletRequest tokenRequest,
-                                                         @PathVariable @Schema(description = "문제 아이디") Long problemId,
-                                                         @RequestBody @Schema(description = "메모 내용 - 큰따옴표를 해제하고 작성해주세요.") String problemMemo) {
-        problemService.updateProblemMemo(tokenRequest, problemId, problemMemo);
+    @PutMapping("/memo")
+    public ResponseEntity<ApiResponse> updateProblemMemo(HttpServletRequest tokenRequest, @RequestBody ProblemMemoUpdateRequest memoRequest) {
+        problemService.updateProblemMemo(tokenRequest, memoRequest);
         return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK.value(), "메모를 수정했습니다."));
     }
 }
