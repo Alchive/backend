@@ -108,7 +108,7 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         List<Problem> problems;
-        if (category.isEmpty()) {
+        if (category == null) {
             problems = problemRepository.findByUserIdAndProblemNumberOrTitleContaining(userId, keyword);
         } else if ("number".equals(category)) {
             problems = problemRepository.findByUserIdAndProblemNumberContaining(userId, keyword);
