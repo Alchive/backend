@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "풀이", description = "풀이 관련 api입니다. ")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/users") // 공통 url
+@RequestMapping("/api/v1/solution") // 공통 url
 public class SolutionController {
 
     private final SolutionService solutionService;
 
     @Operation(summary = "풀이 수정", description = "풀이의 solution을 수정하는 메서드입니다. ")
-    @PutMapping("/solution")
+    @PutMapping
     public ResponseEntity<ApiResponse> updateSolution(@RequestBody SolutionUpdateRequest request) {
         solutionService.updateSolution(request);
         return ResponseEntity.ok()
