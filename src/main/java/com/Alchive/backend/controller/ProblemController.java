@@ -107,7 +107,7 @@ public class ProblemController {
         return ResponseEntity.ok().body(new ApiResponse(HttpStatus.OK.value(), "문제를 조회했습니다.", problem));
     }
 
-    @Operation(summary = "문제 메모 수정 메서드", description = "특정 문제의 메모를 수정하는 메서드 입니다.\n\n메모는 큰따옴표를 해제하고 작성해서 테스트 해주세요.")
+    @Operation(summary = "문제 메모 수정 메서드", description = "특정 문제의 메모를 수정하는 메서드 입니다.")
     @PutMapping("/memo")
     public ResponseEntity<ApiResponse> updateProblemMemo(HttpServletRequest tokenRequest, @RequestBody ProblemMemoUpdateRequest memoRequest) {
         problemService.updateProblemMemo(tokenRequest, memoRequest);
