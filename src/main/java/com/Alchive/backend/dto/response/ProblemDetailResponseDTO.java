@@ -1,6 +1,8 @@
 package com.Alchive.backend.dto.response;
 
 import com.Alchive.backend.domain.Algorithm;
+import com.Alchive.backend.domain.Problem;
+import com.Alchive.backend.domain.Solution;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -39,5 +41,36 @@ public class ProblemDetailResponseDTO {
         private int codeTime;
         private Date createdAt;
         private Date updatedAt;
+
+        public static SolutionInfo of(Solution solution) {
+            return SolutionInfo.builder()
+                    .solutionId(solution.getSolutionId())
+                    .content(solution.getContent())
+                    .code(solution.getCode())
+                    .codeLanguage(solution.getCodeLanguage())
+                    .codeCorrect(solution.isCodeCorrect())
+                    .codeMemory(solution.getCodeMemory())
+                    .codeTime(solution.getCodeTime())
+                    .build();
+        }
+    }
+
+    public static ProblemDetailResponseDTO of(Problem problem, List<Algorithm> algorithmList, List<SolutionInfo> solutionInfos) {
+        return ProblemDetailResponseDTO.builder()
+                .problemId(problem.getProblemId())
+                .userId(problem.getUser().getUserId())
+                .problemNumber(problem.getProblemNumber())
+                .problemTitle(problem.getProblemTitle())
+                .problemUrl(problem.getProblemUrl())
+                .problemDescription(problem.getProblemDescription())
+                .problemDifficulty(problem.getProblemDifficulty())
+                .problemPlatform(problem.getProblemPlatform())
+                .problemMemo(problem.getProblemMemo())
+                .problemState(problem.getProblemState())
+                .createdAt(problem.getCreatedAt())
+                .updatedAt(problem.getUpdatedAt())
+                .algorithmList(algorithmList)
+                .solutionList(solutionInfos)
+                .build();
     }
 }

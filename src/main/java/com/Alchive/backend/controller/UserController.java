@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class UserController {
     private final TokenService tokenService;
 
     @Operation(summary = "user 생성", description = "user를 생성하는 메서드입니다.")
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<ApiResponse> createUser(@RequestBody UserCreateRequest createRequest) {
         UserResponseDTO newUser = userService.createUser(createRequest);
         return ResponseEntity.ok()
@@ -42,7 +41,7 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 조회 메서드", description = "특정 사용자의 프로필 정보를 조회하는 메서드입니다. ")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<ApiResponse> findUser(HttpServletRequest request) {
         User user = userService.getUserDetail(request);
         return ResponseEntity.ok()
@@ -50,7 +49,7 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 수정 메서드", description = "특정 사용자의 프로필 정보를 수정하는 메서드입니다. ")
-    @PutMapping("/")
+    @PutMapping
     public ResponseEntity<ApiResponse> updateUser(HttpServletRequest request, @RequestBody UserUpdateRequest updateRequest) {
         userService.updateUserDetail(request, updateRequest);
         return ResponseEntity.ok()
@@ -58,7 +57,7 @@ public class UserController {
     }
 
     @Operation(summary = "사용자 정보 삭제 메서드", description = "특정 사용자 정보를 삭제하는 메서드입니다. ")
-    @DeleteMapping("/")
+    @DeleteMapping
     public ResponseEntity<ApiResponse> deleteUser(HttpServletRequest request) {
         userService.deleteUserDetail(request);
         return ResponseEntity.ok()
