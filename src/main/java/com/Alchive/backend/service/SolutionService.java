@@ -1,7 +1,7 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchIdException;
+import com.Alchive.backend.config.error.Code;
+import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.domain.Problem;
 import com.Alchive.backend.domain.Solution;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
@@ -34,7 +34,7 @@ public class SolutionService {
         Long solutionId = request.getSolutionId();
         String content = request.getContent();
         Solution code = solutionRepository.findBySolutionId(solutionId)
-                .orElseThrow(() -> new NoSuchIdException(Code.SOLUTION_NOT_FOUND, solutionId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.SOLUTION_NOT_FOUND, solutionId));
         code.update(content);
     }
 }

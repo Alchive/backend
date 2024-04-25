@@ -1,8 +1,8 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchIdException;
-import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.error.Code;
+import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
+import com.Alchive.backend.config.error.exception.problem.NoSuchPlatformException;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
@@ -13,8 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @RequiredArgsConstructor
 @Service
@@ -53,7 +51,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.USER_NOT_FOUND, userId));
     }
 
     @Transactional
@@ -61,7 +59,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.USER_NOT_FOUND, userId));
         user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
     }
 
@@ -70,7 +68,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.USER_NOT_FOUND, userId));
         userRepository.delete(user);
     }
 }
