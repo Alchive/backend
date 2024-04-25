@@ -2,6 +2,7 @@ package com.Alchive.backend.controller;
 
 import com.Alchive.backend.config.error.ErrorCode;
 import com.Alchive.backend.config.error.exception.problem.NoSuchProblemIdException;
+import com.Alchive.backend.config.error.exception.problem.ProblemNumberNotSavedException;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import com.Alchive.backend.dto.request.ProblemMemoUpdateRequest;
 import com.Alchive.backend.dto.response.ApiResponse;
@@ -55,7 +56,7 @@ public class ProblemController {
             return ResponseEntity.ok()
                     .body(new ApiResponse(HttpStatus.OK.value(), "저장된 문제입니다."));
         } else {
-            throw new NoSuchProblemIdException(ErrorCode.PROBLEM_NOT_FOUND, problemNumber);
+            throw new ProblemNumberNotSavedException(ErrorCode.PROBLEM_NOT_SAVED, problemNumber, platform);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.error.ErrorCode;
+import com.Alchive.backend.config.error.exception.problem.NoSuchProblemIdException;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.problem.NoSuchPlatformException;
 import com.Alchive.backend.config.jwt.TokenService;
@@ -149,9 +150,9 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(problemId)
-                        .orElseThrow(() -> new NoSuchUserIdException(ErrorCode.PROBLEM_NOT_FOUND, problemId));
+                        .orElseThrow(() -> new NoSuchProblemIdException(ErrorCode.PROBLEM_NOT_FOUND, problemId));
         if ((problem.getUser().getUserId() != userId)) { // 해당 문제의 작성자인지 확인
-            throw new NoSuchUserIdException(ErrorCode.PROBLEM_USER_UNAUTHORIZED, problemId);
+            throw new NoSuchProblemIdException(ErrorCode.PROBLEM_USER_UNAUTHORIZED, problemId);
         }
         problemRepository.delete(problem);
     }
@@ -177,9 +178,9 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(memoRequest.getProblemId())
-                .orElseThrow(() -> new NoSuchUserIdException(ErrorCode.PROBLEM_NOT_FOUND, memoRequest.getProblemId()));
+                .orElseThrow(() -> new NoSuchProblemIdException(ErrorCode.PROBLEM_NOT_FOUND, memoRequest.getProblemId()));
         if (!Objects.equals(problem.getUser().getUserId(), userId)) { // 작성자 검사
-            throw new NoSuchUserIdException(ErrorCode.PROBLEM_USER_UNAUTHORIZED, problem.getProblemId());
+            throw new NoSuchProblemIdException(ErrorCode.PROBLEM_USER_UNAUTHORIZED, problem.getProblemId());
         }
         problem.update(memoRequest.getProblemMemo());
     }
