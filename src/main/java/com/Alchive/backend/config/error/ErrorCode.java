@@ -1,4 +1,4 @@
-package com.Alchive.backend.config;
+package com.Alchive.backend.config.error;
 
 public interface ErrorCode {
     int getHttpStatusCode();

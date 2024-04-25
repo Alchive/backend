@@ -1,9 +1,8 @@
-package com.Alchive.backend.config.exception;
+package com.Alchive.backend.config.error.exception.token;
 
-import com.Alchive.backend.config.ErrorCode;
+import com.Alchive.backend.config.error.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Getter
 @RequiredArgsConstructor

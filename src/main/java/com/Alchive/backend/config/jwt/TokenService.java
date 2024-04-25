@@ -1,9 +1,9 @@
 package com.Alchive.backend.config.jwt;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchIdException;
-import com.Alchive.backend.config.exception.TokenExpiredException;
-import com.Alchive.backend.config.exception.TokenNotFoundException;
+import com.Alchive.backend.config.error.Code;
+import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
+import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
+import com.Alchive.backend.config.error.exception.token.TokenNotFoundException;
 import com.Alchive.backend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -129,7 +129,7 @@ public class TokenService {
                 .getBody();
         Long userId = Long.parseLong(claims.getSubject());
         userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.USER_NOT_FOUND, userId));
 
         return userId;
     }

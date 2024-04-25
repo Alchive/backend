@@ -1,8 +1,8 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchIdException;
-import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.error.Code;
+import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
+import com.Alchive.backend.config.error.exception.problem.NoSuchPlatformException;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.Problem;
@@ -43,7 +43,7 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.USER_NOT_FOUND, userId));
         // 문제 중복 검사 - userid, problemnumber, platform으로 검사
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemRequest.getProblemNumber(), problemRequest.getProblemPlatform());
         if (problem != null) { // 이미 저장된 문제인 경우: 메모만 업데이트
@@ -61,7 +61,7 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.USER_NOT_FOUND, userId));
         // 문제 중복 검사 - userid, problemnumber, platform으로 검사
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemRequest.getProblemNumber(), problemRequest.getProblemPlatform());
         // 문제 저장 or 업데이트
@@ -127,7 +127,7 @@ public class ProblemService {
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         List<Problem> userProblems = problemRepository.findByUserUserId(userId);
         if (!userRepository.existsByUserId(userId)) {
-            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
+            throw new NoSuchUserIdException(Code.USER_NOT_FOUND, userId);
         }
         return addProblemList(userProblems);
     }
@@ -149,9 +149,9 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(problemId)
-                        .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+                        .orElseThrow(() -> new NoSuchUserIdException(Code.PROBLEM_NOT_FOUND, problemId));
         if ((problem.getUser().getUserId() != userId)) { // 해당 문제의 작성자인지 확인
-            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problemId);
+            throw new NoSuchUserIdException(Code.PROBLEM_USER_UNAUTHORIZED, problemId);
         }
         problemRepository.delete(problem);
     }
@@ -159,7 +159,7 @@ public class ProblemService {
     // 단일 문제 조회
     public ProblemDetailResponseDTO getProblemByProblemId(Long problemId) {
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.PROBLEM_NOT_FOUND, problemId));
         // Algorithm 정보
         List<Algorithm> algorithmList = algorithmSerivce.addAlgorithmList(problem);
         // Solution 정보
@@ -177,9 +177,9 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(memoRequest.getProblemId())
-                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, memoRequest.getProblemId()));
+                .orElseThrow(() -> new NoSuchUserIdException(Code.PROBLEM_NOT_FOUND, memoRequest.getProblemId()));
         if (!Objects.equals(problem.getUser().getUserId(), userId)) { // 작성자 검사
-            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problem.getProblemId());
+            throw new NoSuchUserIdException(Code.PROBLEM_USER_UNAUTHORIZED, problem.getProblemId());
         }
         problem.update(memoRequest.getProblemMemo());
     }

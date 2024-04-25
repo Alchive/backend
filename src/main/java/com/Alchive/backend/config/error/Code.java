@@ -1,4 +1,4 @@
-package com.Alchive.backend.config;
+package com.Alchive.backend.config.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
