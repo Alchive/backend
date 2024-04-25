@@ -1,11 +1,9 @@
 package com.Alchive.backend.config.error;
 
-import com.Alchive.backend.config.error.exception.problem.NoSuchPlatformException;
-import com.Alchive.backend.config.error.exception.problem.NoSuchProblemIdException;
-import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
-import com.Alchive.backend.config.error.exception.token.TokenNotFoundException;
-import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
-import com.Alchive.backend.config.error.exception.user.NoSuchUserException;
+import com.Alchive.backend.config.error.exception.problem.*;
+import com.Alchive.backend.config.error.exception.solution.*;
+import com.Alchive.backend.config.error.exception.token.*;
+import com.Alchive.backend.config.error.exception.user.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,12 +24,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoSuchProblemIdException.class) // 찾으려는 problemId가 존재하지 않는 경우
     public ResponseEntity<Object> handleNoSuchProblemException(NoSuchProblemIdException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        int problemId = exception.getProblemId();
+        Long problemId = exception.getProblemId();
         return handleExceptionInternal(errorCode, problemId);
+    }
+    @ExceptionHandler(ProblemNumberNotSavedException.class) // 찾으려는 platform이 존재하지 않는 경우
+    public ResponseEntity<Object> handleProblemNumberNotSavedExceptionException(ProblemNumberNotSavedException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
+        int problemNumber = exception.getProblemNumber();
+        String platform = exception.getPlatform();
+        return handleExceptionInternal(errorCode, problemNumber,platform);
     }
 
     // solution
-
+    @ExceptionHandler(NoSuchSolutionIdException.class) // 찾으려는 solutionId가 존재하지 않는 경우
+    public ResponseEntity<Object> handleNoSuchSolutionException(NoSuchSolutionIdException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
+        Long solutionId = exception.getSolutionId();
+        return handleExceptionInternal(errorCode, solutionId);
+    }
 
     // token
     @ExceptionHandler(TokenExpiredException.class) // token이 만료된 경우
@@ -72,6 +82,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(makeErrorResponse(errorCode, params));
     }
 
+    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, Object params1, Object params2) {
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(makeErrorResponse(errorCode, params1, params2));
+    }
+
     // 매개변수를 받지 않는 경우
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
         return ResponseEntity.status(errorCode.getHttpStatus())
@@ -82,7 +97,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorResponse makeErrorResponse(ErrorCode errorCode, Object params) {
         return ErrorResponse.builder()
                 .code(String.valueOf(errorCode.getHttpStatus()))
-                .message(errorCode.getMessage() + params + "]")
+                .message(errorCode.getMessage() + params)
+                .build();
+    }
+
+    private ErrorResponse makeErrorResponse(ErrorCode errorCode, Object params1, Object params2) {
+        return ErrorResponse.builder()
+                .code(String.valueOf(errorCode.getHttpStatus()))
+                .message(errorCode.getMessage() + params1 + ", " + params2)
                 .build();
     }
 

@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class NoSuchProblemIdException extends RuntimeException {
+public class ProblemNumberNotSavedException extends RuntimeException{
     private final ErrorCode errorCode;
-    private final Long problemId;
+    private final int problemNumber;
+    private final String platform;
 }
