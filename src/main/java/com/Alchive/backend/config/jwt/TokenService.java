@@ -1,6 +1,6 @@
 package com.Alchive.backend.config.jwt;
 
-import com.Alchive.backend.config.error.Code;
+import com.Alchive.backend.config.error.ErrorCode;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
 import com.Alchive.backend.config.error.exception.token.TokenNotFoundException;
@@ -71,7 +71,7 @@ public class TokenService {
                     .after(new Date(System.currentTimeMillis()));
 
         } catch (Exception e) {
-            throw new TokenExpiredException(Code.ACCESS_TOKEN_EXPIRED, token);
+            throw new TokenExpiredException(ErrorCode.ACCESS_TOKEN_EXPIRED, token);
         }
     }
 
@@ -84,7 +84,7 @@ public class TokenService {
                     .after(new Date(System.currentTimeMillis()));
 
         } catch (Exception e) {
-            throw new TokenExpiredException(Code.REFRESH_TOKEN_EXPIRED, token);
+            throw new TokenExpiredException(ErrorCode.REFRESH_TOKEN_EXPIRED, token);
         }
     }
 
@@ -94,7 +94,7 @@ public class TokenService {
             String token = header.substring("Bearer ".length());
             return token;
         } catch (Exception e ){
-            throw new TokenNotFoundException(Code.TOKEN_NOT_FOUND, "ACCESS");
+            throw new TokenNotFoundException(ErrorCode.TOKEN_NOT_FOUND, "ACCESS");
         }
     }
 
@@ -103,7 +103,7 @@ public class TokenService {
             String token = request.getHeader("REFRESH-TOKEN");
             return token;
         } catch (Exception e) {
-            throw new TokenNotFoundException(Code.TOKEN_NOT_FOUND, "REFRESH");
+            throw new TokenNotFoundException(ErrorCode.TOKEN_NOT_FOUND, "REFRESH");
         }
     }
 
@@ -112,7 +112,7 @@ public class TokenService {
         String accessToken;
         String refreshToken = resolveRefreshToken(request);
         if (refreshToken == null ) { // 리프레시 토큰이 만료된 경우
-            throw new TokenExpiredException(Code.REFRESH_TOKEN_EXPIRED,refreshToken+"(refresh)");
+            throw new TokenExpiredException(ErrorCode.REFRESH_TOKEN_EXPIRED,refreshToken+"(refresh)");
         }
         validateRefreshToken(refreshToken); // 리프레시 토큰 검증
         Long userId = getUserIdFromToken(request);
@@ -129,7 +129,7 @@ public class TokenService {
                 .getBody();
         Long userId = Long.parseLong(claims.getSubject());
         userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(ErrorCode.USER_NOT_FOUND, userId));
 
         return userId;
     }

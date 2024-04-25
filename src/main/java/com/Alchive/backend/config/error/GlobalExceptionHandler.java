@@ -68,27 +68,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // 에러 코드를 전달받아 에러 메시지 작성
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, Object params) {
-        return ResponseEntity.status(errorCode.getHttpStatusCode())
+        return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponse(errorCode, params));
     }
 
     // 매개변수를 받지 않는 경우
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatusCode())
+        return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponse(errorCode));
     }
 
     // 반환할 에러 메시지 정의
     private ErrorResponse makeErrorResponse(ErrorCode errorCode, Object params) {
         return ErrorResponse.builder()
-                .code(String.valueOf(errorCode.getHttpStatusCode()))
+                .code(String.valueOf(errorCode.getHttpStatus()))
                 .message(errorCode.getMessage() + params + "]")
                 .build();
     }
 
     private ErrorResponse makeErrorResponse(ErrorCode errorCode) {
         return ErrorResponse.builder()
-                .code(String.valueOf(errorCode.getHttpStatusCode()))
+                .code(String.valueOf(errorCode.getHttpStatus()))
                 .message(errorCode.getMessage())
                 .build();
     }
