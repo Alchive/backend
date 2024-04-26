@@ -34,7 +34,7 @@ public class SolutionService {
         Long solutionId = request.getSolutionId();
         String content = request.getContent();
         Solution code = solutionRepository.findBySolutionId(solutionId)
-                .orElseThrow(() -> new NoSuchSolutionIdException(ErrorCode.SOLUTION_NOT_FOUND, solutionId));
+                .orElseThrow(() -> new NoSuchSolutionIdException(solutionId));
         code.update(content);
     }
 }

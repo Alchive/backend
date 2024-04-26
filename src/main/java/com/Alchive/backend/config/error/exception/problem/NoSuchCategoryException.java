@@ -5,8 +5,8 @@ import com.Alchive.backend.config.error.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class NoSuchProblemIdException extends BusinessException {
-    public NoSuchProblemIdException(Long problemId) {
-        super(ErrorCode.PROBLEM_NOT_FOUND, "problemId", problemId);
+public class NoSuchCategoryException extends BusinessException {
+    public NoSuchCategoryException(String category) {
+        super(ErrorCode.CATEGORY_INVALID, "category", category);
     }
 }

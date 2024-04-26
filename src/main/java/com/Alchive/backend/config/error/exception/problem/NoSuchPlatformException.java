@@ -1,12 +1,13 @@
 package com.Alchive.backend.config.error.exception.problem;
 
 import com.Alchive.backend.config.error.ErrorCode;
+import com.Alchive.backend.config.error.exception.BusinessException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class NoSuchPlatformException extends RuntimeException {
-    private final ErrorCode errorCode;
-    private final String platform;
+public class NoSuchPlatformException extends BusinessException {
+
+    public NoSuchPlatformException(String platform) {
+        super(ErrorCode.PLATFORM_INVALID, "platform", platform);
+    }
 }

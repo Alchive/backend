@@ -5,9 +5,8 @@ import com.Alchive.backend.config.error.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class NoSuchUserIdException extends BusinessException {
-
-    public NoSuchUserIdException(Long userId) {
-        super(ErrorCode.USER_NOT_FOUND, "userId", userId);
+public class UserNameExistException extends BusinessException {
+    public UserNameExistException(String userName) {
+        super(ErrorCode.USER_NAME_EXISTS, "userName", userName);
     }
 }
