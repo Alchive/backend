@@ -14,8 +14,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -43,10 +41,8 @@ public class UserService {
         return new UserResponseDTO(user,accessToken,refreshToken);
     }
 
-    public void isDuplicateUsername(String userName) {
-        if (userRepository.existsByUserName(userName)) {
-            throw new NoSuchPlatformException(Code.USER_NAME_EXISTS, userName);
-        }
+    public boolean isDuplicateUsername(String userName) {
+        return userRepository.existsByUserName(userName);
     }
 
     public User getUserDetail(HttpServletRequest tokenRequest) {
