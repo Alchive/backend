@@ -1,12 +1,12 @@
 package com.Alchive.backend.config.error.exception.token;
 
 import com.Alchive.backend.config.error.ErrorCode;
+import com.Alchive.backend.config.error.exception.BusinessException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class TokenNotFoundException extends RuntimeException{
-    private final ErrorCode errorCode;
-    private final String tokenType;
+public class TokenNotFoundException extends BusinessException {
+    public TokenNotFoundException(String tokenType) {
+        super(ErrorCode.TOKEN_NOT_FOUND, "tokenType", tokenType);
+    }
 }

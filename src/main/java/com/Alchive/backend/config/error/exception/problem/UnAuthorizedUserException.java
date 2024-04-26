@@ -5,8 +5,8 @@ import com.Alchive.backend.config.error.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class NoSuchProblemIdException extends BusinessException {
-    public NoSuchProblemIdException(Long problemId) {
-        super(ErrorCode.PROBLEM_NOT_FOUND, "problemId", problemId);
+public class UnAuthorizedUserException extends BusinessException {
+    public UnAuthorizedUserException(Long userId) {
+        super(ErrorCode.PROBLEM_USER_UNAUTHORIZED, "userId", userId);
     }
 }
