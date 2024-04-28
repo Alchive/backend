@@ -1,8 +1,8 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchIdException;
-import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
+import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
+import com.Alchive.backend.config.error.exception.user.UserNameExistException;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
@@ -25,10 +25,10 @@ public class UserService {
         String email = request.getUserEmail();
         String username = request.getUserName();
         if (userRepository.existsByUserEmail(email)) { // 중복 이메일 검사
-            throw new NoSuchPlatformException(Code.USER_EMAIL_EXISTS, email);
+            throw new UserEmailExistException(email);
         }
         if (userRepository.existsByUserName(username)) { // 중복 유저 이름 검사
-            throw new NoSuchPlatformException(Code.USER_NAME_EXISTS, username);
+            throw new UserNameExistException(username);
         }
 
         User user = new User(email,username);
@@ -49,7 +49,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(userId));
     }
 
     @Transactional
@@ -57,7 +57,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(userId));
         user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
     }
 
@@ -66,7 +66,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(userId));
         userRepository.delete(user);
     }
 }

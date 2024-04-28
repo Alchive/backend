@@ -1,8 +1,7 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchIdException;
-import com.Alchive.backend.config.exception.NoSuchPlatformException;
+import com.Alchive.backend.config.error.exception.problem.*;
+import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.Algorithm;
 import com.Alchive.backend.domain.Problem;
@@ -43,7 +42,7 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(userId));
         // 문제 중복 검사 - userid, problemnumber, platform으로 검사
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemRequest.getProblemNumber(), problemRequest.getProblemPlatform());
         if (problem != null) { // 이미 저장된 문제인 경우: 메모만 업데이트
@@ -61,7 +60,7 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchIdException(Code.USER_NOT_FOUND, userId));
+                .orElseThrow(() -> new NoSuchUserIdException(userId));
         // 문제 중복 검사 - userid, problemnumber, platform으로 검사
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemRequest.getProblemNumber(), problemRequest.getProblemPlatform());
         // 문제 저장 or 업데이트
@@ -87,7 +86,8 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemNumber, platform);
-        return (problem != null);
+        return problem != null;
+
     }
 
     // 플랫폼 별 조회
@@ -96,7 +96,7 @@ public class ProblemService {
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         // Baekjoon, Programmers, Leetcode가 아닌 경우
         if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
-            throw new NoSuchPlatformException(Code.PLATFORM_INVALID, platform);
+            throw new NoSuchPlatformException(platform);
         }
         // problem 테이블에서 플랫폼으로 문제 조회
         List<Problem> problems = problemRepository.findByUserUserIdAndProblemPlatform(userId, platform);
@@ -116,7 +116,7 @@ public class ProblemService {
         } else if ("title".equals(category)) {
             problems = problemRepository.findByUserIdAndProblemTitleContaining(userId, keyword);
         } else {
-            throw new NoSuchPlatformException(Code.CATEGORY_INVALID, category);
+            throw new NoSuchCategoryException(category);
         }
         return addProblemList(problems);
     }
@@ -127,7 +127,7 @@ public class ProblemService {
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         List<Problem> userProblems = problemRepository.findByUserUserId(userId);
         if (!userRepository.existsByUserId(userId)) {
-            throw new NoSuchIdException(Code.USER_NOT_FOUND, userId);
+            throw new NoSuchUserIdException(userId);
         }
         return addProblemList(userProblems);
     }
@@ -149,9 +149,9 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(problemId)
-                        .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+                        .orElseThrow(() -> new NoSuchProblemIdException(problemId));
         if ((problem.getUser().getUserId() != userId)) { // 해당 문제의 작성자인지 확인
-            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problemId);
+            throw new UnAuthorizedUserException(userId);
         }
         problemRepository.delete(problem);
     }
@@ -159,7 +159,7 @@ public class ProblemService {
     // 단일 문제 조회
     public ProblemDetailResponseDTO getProblemByProblemId(Long problemId) {
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, problemId));
+                .orElseThrow(() -> new NoSuchProblemIdException(problemId));
         // Algorithm 정보
         List<Algorithm> algorithmList = algorithmSerivce.addAlgorithmList(problem);
         // Solution 정보
@@ -172,14 +172,15 @@ public class ProblemService {
         return ProblemDetailResponseDTO.of(problem, algorithmList, solutionInfos);
     }
 
+    // 문제 메모 수정
     @Transactional
     public void updateProblemMemo(HttpServletRequest tokenRequest, ProblemMemoUpdateRequest memoRequest) {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(memoRequest.getProblemId())
-                .orElseThrow(() -> new NoSuchIdException(Code.PROBLEM_NOT_FOUND, memoRequest.getProblemId()));
+                .orElseThrow(() -> new NoSuchProblemIdException(memoRequest.getProblemId()));
         if (!Objects.equals(problem.getUser().getUserId(), userId)) { // 작성자 검사
-            throw new NoSuchIdException(Code.PROBLEM_USER_UNAUTHORIZED, problem.getProblemId());
+            throw new UnAuthorizedUserException(userId);
         }
         problem.update(memoRequest.getProblemMemo());
     }
