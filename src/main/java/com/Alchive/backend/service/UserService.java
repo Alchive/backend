@@ -1,8 +1,6 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.error.ErrorCode;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
-import com.Alchive.backend.config.error.exception.problem.NoSuchPlatformException;
 import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
 import com.Alchive.backend.config.error.exception.user.UserNameExistException;
 import com.Alchive.backend.config.jwt.TokenService;
@@ -43,10 +41,8 @@ public class UserService {
         return new UserResponseDTO(user,accessToken,refreshToken);
     }
 
-    public void isDuplicateUsername(String userName) {
-        if (userRepository.existsByUserName(userName)) {
-            throw new UserNameExistException(userName);
-        }
+    public boolean isDuplicateUsername(String userName) {
+        return userRepository.existsByUserName(userName);
     }
 
     public User getUserDetail(HttpServletRequest tokenRequest) {
