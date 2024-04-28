@@ -5,8 +5,8 @@ import com.Alchive.backend.config.error.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class TokenNotFoundException extends BusinessException {
-    public TokenNotFoundException(String tokenType) {
-        super(ErrorCode.TOKEN_NOT_FOUND, "tokenType", tokenType);
+public class TokenNotExistsException extends BusinessException {
+    public TokenNotExistsException(String tokenType) {
+        super(ErrorCode.TOKEN_NOT_EXISTS, " - tokenType: " + tokenType);
     }
 }

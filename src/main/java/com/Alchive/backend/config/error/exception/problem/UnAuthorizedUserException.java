@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class UnAuthorizedUserException extends BusinessException {
     public UnAuthorizedUserException(Long userId) {
-        super(ErrorCode.PROBLEM_USER_UNAUTHORIZED, "userId", userId);
+        super(ErrorCode.PROBLEM_USER_UNAUTHORIZED, " - userId: " + userId);
     }
 }

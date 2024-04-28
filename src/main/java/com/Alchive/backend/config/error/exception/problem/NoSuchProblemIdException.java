@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class NoSuchProblemIdException extends BusinessException {
     public NoSuchProblemIdException(Long problemId) {
-        super(ErrorCode.PROBLEM_NOT_FOUND, "problemId", problemId);
+        super(ErrorCode.PROBLEM_NOT_FOUND, " - problemId: " + problemId);
     }
 }

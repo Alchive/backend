@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class ProblemNumberNotSavedException extends BusinessException {
     public ProblemNumberNotSavedException(int problemNumber, String platform) {
-        super(ErrorCode.PROBLEM_NOT_SAVED, "problemNumber", problemNumber, "platform", platform);
+        super(ErrorCode.PROBLEM_NOT_SAVED, " - problem: " + platform + " " + problemNumber + "번");
     }
 }

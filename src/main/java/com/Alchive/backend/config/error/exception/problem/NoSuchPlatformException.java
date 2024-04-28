@@ -8,6 +8,6 @@ import lombok.Getter;
 public class NoSuchPlatformException extends BusinessException {
 
     public NoSuchPlatformException(String platform) {
-        super(ErrorCode.PLATFORM_INVALID, "platform", platform);
+        super(ErrorCode.PLATFORM_INVALID, " - platform: " + platform);
     }
 }
