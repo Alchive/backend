@@ -1,6 +1,5 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.error.ErrorCode;
 import com.Alchive.backend.config.error.exception.problem.*;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.jwt.TokenService;
@@ -83,13 +82,12 @@ public class ProblemService {
     }
 
     // 문제 저장 여부 검사
-    public void checkProblem(HttpServletRequest tokenRequest, int problemNumber, String platform) {
+    public boolean checkProblem(HttpServletRequest tokenRequest, int problemNumber, String platform) {
         tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemNumber, platform);
-        if (problem == null) {
-            throw new ProblemNumberNotSavedException(problemNumber, platform);
-        }
+        return problem != null;
+
     }
 
     // 플랫폼 별 조회
