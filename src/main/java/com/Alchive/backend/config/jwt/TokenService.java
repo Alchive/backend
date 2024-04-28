@@ -1,9 +1,8 @@
 package com.Alchive.backend.config.jwt;
 
-import com.Alchive.backend.config.error.ErrorCode;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
-import com.Alchive.backend.config.error.exception.token.TokenNotFoundException;
+import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
 import com.Alchive.backend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -94,7 +93,7 @@ public class TokenService {
             String token = header.substring("Bearer ".length());
             return token;
         } catch (Exception e ){
-            throw new TokenNotFoundException("access token");
+            throw new TokenNotExistsException("access token");
         }
     }
 
@@ -103,7 +102,7 @@ public class TokenService {
             String token = request.getHeader("REFRESH-TOKEN");
             return token;
         } catch (Exception e) {
-            throw new TokenNotFoundException("refresh token");
+            throw new TokenNotExistsException("refresh token");
         }
     }
 

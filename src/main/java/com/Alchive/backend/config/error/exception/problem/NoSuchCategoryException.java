@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class NoSuchCategoryException extends BusinessException {
     public NoSuchCategoryException(String category) {
-        super(ErrorCode.CATEGORY_INVALID, "category", category);
+        super(ErrorCode.CATEGORY_INVALID, " - category: " + category);
     }
 }
