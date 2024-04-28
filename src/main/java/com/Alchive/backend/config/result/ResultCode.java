@@ -14,9 +14,9 @@ public enum ResultCode {
     USER_DETAIL_INFO_SUCCESS("U005", "회원 상세정보 조회 성공"),
     USER_UPDATE_SUCCESS("U008", "회원 상세정보 수정 성공"),
 
-    // TOKEN
-    TOKEN_ACCESS_SUCCESS("T001", "액세스 토큰 생성 성공"),
-    TOKEN_REFRESH_SUCCESS("T002", "리프레쉬 토큰 생성 성공"),
+    // AUTH
+    TOKEN_ACCESS_SUCCESS("A001", "액세스 토큰 생성 성공"),
+    TOKEN_REFRESH_SUCCESS("A002", "리프레쉬 토큰 생성 성공"),
 
     // PROBLEM
     PROBLEM_UNSUBMIT_SAVE_SUCCESS("P001", "미제출 문제 정보 저장 성공"),
