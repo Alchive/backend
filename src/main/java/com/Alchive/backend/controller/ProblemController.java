@@ -1,7 +1,8 @@
 package com.Alchive.backend.controller;
 
-import com.Alchive.backend.config.Code;
-import com.Alchive.backend.config.exception.NoSuchProblemException;
+import com.Alchive.backend.config.error.ErrorCode;
+import com.Alchive.backend.config.error.exception.problem.NoSuchProblemIdException;
+import com.Alchive.backend.config.error.exception.problem.ProblemNumberNotSavedException;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import com.Alchive.backend.dto.request.ProblemMemoUpdateRequest;
 import com.Alchive.backend.dto.response.ApiResponse;
@@ -51,12 +52,9 @@ public class ProblemController {
     @Operation(summary = "문제 저장 여부 검사 메서드", description = "문제 번호를 이용해 저장된 문제인지를 검사하는 메서드입니다.")
     @GetMapping("/check/{problemNumber}")
     public ResponseEntity<ApiResponse> checkProblem(HttpServletRequest tokenRequest, @PathVariable int problemNumber, @RequestParam String platform) {
-        if (problemService.checkProblem(tokenRequest, problemNumber, platform)) { // 존재하는 경우
-            return ResponseEntity.ok()
-                    .body(new ApiResponse(HttpStatus.OK.value(), "저장된 문제입니다."));
-        } else {
-            throw new NoSuchProblemException(Code.PROBLEM_NOT_FOUND, problemNumber);
-        }
+        problemService.checkProblem(tokenRequest, problemNumber, platform);
+        return ResponseEntity.ok()
+                .body(new ApiResponse(HttpStatus.OK.value(), "저장된 문제입니다."));
     }
 
     @Operation(summary = "플랫폼 별 문제 목록 조회 메서드", description = "특정 플랫폼에 해당하는 문제 목록을 조회하는 메서드입니다.")
