@@ -37,7 +37,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if ( user.isPresent() ) { // 로그인인 경우
             userId = user.get().getUserId();
             String accessToken = tokenService.generateAccessToken(userId);
-            String refreshToken = tokenService.generateRefreshToken(userId);
+            String refreshToken = tokenService.generateRefreshToken();
             targetUrl = UriComponentsBuilder.fromUriString("/")
                     .queryParam("access", accessToken)
                     .queryParam("refresh", refreshToken)
