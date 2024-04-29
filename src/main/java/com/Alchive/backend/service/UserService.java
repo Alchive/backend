@@ -37,7 +37,7 @@ public class UserService {
         // 토큰 생성 후 전달
         Long userId = user.getUserId();
         String accessToken = tokenService.generateAccessToken(userId);
-        String refreshToken = tokenService.generateRefreshToken(userId);
+        String refreshToken = tokenService.generateRefreshToken();
         return new UserResponseDTO(user,accessToken,refreshToken);
     }
 

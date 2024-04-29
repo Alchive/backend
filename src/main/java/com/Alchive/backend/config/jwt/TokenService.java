@@ -9,14 +9,12 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 
-@Slf4j
 @Service
 public class TokenService {
     // JWT 토큰 생성
@@ -51,7 +49,7 @@ public class TokenService {
                 .compact();
     }
 
-    public String generateRefreshToken(Long userId) {
+    public String generateRefreshToken() {
         return Jwts.builder()
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRE_LENGTH))
@@ -59,30 +57,22 @@ public class TokenService {
                 .compact();
     }
 
-    public boolean validateAccessToken(HttpServletRequest request) {
+    public void validateAccessToken(HttpServletRequest request) {
         try {
             String token = resolveAccessToken(request);
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey)
                     .build().parseClaimsJws(token);
-
-            return claims.getBody().getExpiration()
-                    .after(new Date(System.currentTimeMillis()));
-
         } catch (Exception e) {
             throw new TokenExpiredException("access token");
         }
     }
 
-    public boolean validateRefreshToken(HttpServletRequest request) {
+    public void validateRefreshToken(HttpServletRequest request) {
         try {
             String token = resolveRefreshToken(request);
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey)
                     .build().parseClaimsJws(token);
-
-            return claims.getBody().getExpiration()
-                    .after(new Date(System.currentTimeMillis()));
-
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             throw new TokenExpiredException("refresh token");
         }
     }
@@ -101,17 +91,14 @@ public class TokenService {
         try {
             String token = request.getHeader("REFRESH-TOKEN");
             return token;
-        } catch (Exception e) {
+        } catch (Exception e) { // 리프레시 토큰이 없는 경우
             throw new TokenNotExistsException("refresh token");
         }
     }
 
     // 리프레시 토큰으로 새로운 액세스 토큰 발급
     public String refreshAccessToken(HttpServletRequest request) {
-        String refreshToken = resolveRefreshToken(request);
-        if (refreshToken == null ) { // 리프레시 토큰이 없는 경우
-            throw new TokenNotExistsException("refresh token");
-        }
+        resolveRefreshToken(request); // 리프레시 토큰 추출
         validateRefreshToken(request); // 리프레시 토큰 검증
         Long userId = getUserIdFromToken(request);
         String accessToken = generateAccessToken(userId);
