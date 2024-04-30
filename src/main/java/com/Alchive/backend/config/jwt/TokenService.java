@@ -9,12 +9,14 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Service
 public class TokenService {
     // JWT 토큰 생성
@@ -58,12 +60,15 @@ public class TokenService {
     }
 
     public void validateAccessToken(HttpServletRequest request) {
+        String token = resolveAccessToken(request);
         try {
-            String token = resolveAccessToken(request);
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey)
                     .build().parseClaimsJws(token);
-        } catch (Exception e) {
+        } catch (ExpiredJwtException exception) {
+            log.info("validate access: expired");
             throw new TokenExpiredException("access token");
+        } catch (IllegalArgumentException e) {
+            throw new TokenNotExistsException("access token");
         }
     }
 
@@ -73,16 +78,20 @@ public class TokenService {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey)
                     .build().parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
+            log.info("validate refresh: expired");
             throw new TokenExpiredException("refresh token");
+        } catch (IllegalArgumentException e) {
+            throw new TokenNotExistsException("refresh token");
         }
     }
 
     public String resolveAccessToken(HttpServletRequest request) {
-        String header = request.getHeader("AUTHORIZATION");
         try {
+            String header = request.getHeader("AUTHORIZATION");
             String token = header.substring("Bearer ".length());
             return token;
-        } catch (Exception e ){
+        } catch (NullPointerException e){
+            log.info("resolve access: NullPointer");
             throw new TokenNotExistsException("access token");
         }
     }
@@ -91,14 +100,14 @@ public class TokenService {
         try {
             String token = request.getHeader("REFRESH-TOKEN");
             return token;
-        } catch (Exception e) { // 리프레시 토큰이 없는 경우
+        } catch (IllegalArgumentException e) { // 리프레시 토큰이 없는 경우
+            log.info("resolve refresh: IllegalArgument");
             throw new TokenNotExistsException("refresh token");
         }
     }
 
     // 리프레시 토큰으로 새로운 액세스 토큰 발급
     public String refreshAccessToken(HttpServletRequest request) {
-        resolveRefreshToken(request); // 리프레시 토큰 추출
         validateRefreshToken(request); // 리프레시 토큰 검증
         Long userId = getUserIdFromToken(request);
         String accessToken = generateAccessToken(userId);
