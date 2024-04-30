@@ -37,7 +37,7 @@ public class UserService {
         // 토큰 생성 후 전달
         Long userId = user.getUserId();
         String accessToken = tokenService.generateAccessToken(userId);
-        String refreshToken = tokenService.generateRefreshToken(userId);
+        String refreshToken = tokenService.generateRefreshToken();
         return new UserResponseDTO(user,accessToken,refreshToken);
     }
 
@@ -46,7 +46,7 @@ public class UserService {
     }
 
     public User getUserDetail(HttpServletRequest tokenRequest) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
+        tokenService.validateAccessToken(tokenRequest);
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException(userId));
@@ -54,7 +54,7 @@ public class UserService {
 
     @Transactional
     public void updateUserDetail(HttpServletRequest tokenRequest, UserUpdateRequest updateRequest) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
+        tokenService.validateAccessToken(tokenRequest);
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException(userId));
@@ -63,7 +63,7 @@ public class UserService {
 
     @Transactional
     public void deleteUserDetail(HttpServletRequest tokenRequest) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest));
+        tokenService.validateAccessToken(tokenRequest);
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException(userId));

@@ -39,7 +39,7 @@ public class ProblemService {
     // 미제출 문제 저장
     @Transactional
     public void createProblem(HttpServletRequest tokenRequest, ProblemCreateRequest problemRequest) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException(userId));
@@ -57,7 +57,7 @@ public class ProblemService {
 
     // 맞/틀 문제 저장
     public void createProblemSubmit(HttpServletRequest tokenRequest, ProblemCreateRequest problemRequest) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException(userId));
@@ -83,7 +83,7 @@ public class ProblemService {
 
     // 문제 저장 여부 검사
     public boolean checkProblem(HttpServletRequest tokenRequest, int problemNumber, String platform) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findByUserUserIdAndProblemNumberAndProblemPlatform(userId, problemNumber, platform);
         return problem != null;
@@ -92,7 +92,7 @@ public class ProblemService {
 
     // 플랫폼 별 조회
     public List<ProblemListResponseDTO> getProblemsByPlatform(HttpServletRequest tokenRequest, String platform) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         // Baekjoon, Programmers, Leetcode가 아닌 경우
         if (!platform.equals("Baekjoon") && !platform.equals("Programmers") && !platform.equals("Leetcode")) {
@@ -106,7 +106,7 @@ public class ProblemService {
 
     // 문제 검색
     public List<ProblemListResponseDTO> getProblemsSearch(HttpServletRequest tokenRequest, String keyword, String category) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         List<Problem> problems;
         if (category == null) {
@@ -123,7 +123,7 @@ public class ProblemService {
 
     // 사용자가 작성한 전체 목록 조회
     public List<ProblemListResponseDTO> getProblemsByUserId(HttpServletRequest tokenRequest) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         List<Problem> userProblems = problemRepository.findByUserUserId(userId);
         if (!userRepository.existsByUserId(userId)) {
@@ -146,7 +146,7 @@ public class ProblemService {
     // 문제 삭제
     @Transactional
     public void deleteProblem(HttpServletRequest tokenRequest, Long problemId) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(problemId)
                         .orElseThrow(() -> new NoSuchProblemIdException(problemId));
@@ -175,7 +175,7 @@ public class ProblemService {
     // 문제 메모 수정
     @Transactional
     public void updateProblemMemo(HttpServletRequest tokenRequest, ProblemMemoUpdateRequest memoRequest) {
-        tokenService.validateAccessToken(tokenService.resolveAccessToken(tokenRequest)); // 만료 검사
+        tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         Problem problem = problemRepository.findById(memoRequest.getProblemId())
                 .orElseThrow(() -> new NoSuchProblemIdException(memoRequest.getProblemId()));
