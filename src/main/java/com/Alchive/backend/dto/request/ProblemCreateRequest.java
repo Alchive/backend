@@ -39,7 +39,7 @@ public class ProblemCreateRequest {
         private String codeLanguage;
         @NotNull(message = "정답 여부는 필수입니다.")
         boolean codeCorrect;
-        int codeMemory;
-        int codeTime;
+        String codeMemory;
+        String codeTime;
     }
 }

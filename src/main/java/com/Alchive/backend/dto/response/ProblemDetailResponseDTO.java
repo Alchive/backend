@@ -37,8 +37,8 @@ public class ProblemDetailResponseDTO {
         private String code;
         private String codeLanguage;
         private boolean codeCorrect;
-        private int codeMemory;
-        private int codeTime;
+        private String codeMemory;
+        private String codeTime;
         private Date createdAt;
         private Date updatedAt;
 

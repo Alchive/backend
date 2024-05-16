@@ -1,6 +1,5 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.error.ErrorCode;
 import com.Alchive.backend.config.error.exception.solution.NoSuchSolutionIdException;
 import com.Alchive.backend.domain.Problem;
 import com.Alchive.backend.domain.Solution;

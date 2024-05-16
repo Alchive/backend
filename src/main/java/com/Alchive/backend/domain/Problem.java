@@ -87,7 +87,7 @@ public class Problem {
         return this;
     }
 
-    public Problem update(String problemMemo,String problemState) {
+    public Problem update(String problemMemo,String problemState) { // 동일한 문제 재제출(저장) 시 사용
         this.problemMemo = problemMemo;
         this.problemState = problemState;
         this.updatedAt = new Date();
