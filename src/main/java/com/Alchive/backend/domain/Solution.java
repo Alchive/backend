@@ -35,10 +35,10 @@ public class Solution {
     private boolean codeCorrect;
 
     @Column(name = "codeMemory")
-    private int codeMemory;
+    private String codeMemory;
 
     @Column(name = "codeTime")
-    private int codeTime;
+    private String codeTime;
 
     @Column(name = "createdAt", nullable = false)
     private Date createdAt;
@@ -47,8 +47,7 @@ public class Solution {
     private Date updatedAt;
 
     @Builder
-    public Solution(Long solutionId, Problem problem, String content, String code, String codeLanguage, boolean codeCorrect, int codeMemory, int codeTime, Date createdAt, Date updatedAt) {
-        this.solutionId = solutionId;
+    public Solution(Problem problem, String content, String code, String codeLanguage, boolean codeCorrect, String codeMemory, String codeTime) {
         this.problem = problem;
         this.content = content;
         this.code = code;
