@@ -7,7 +7,6 @@ import java.util.Date;
 
 @RequiredArgsConstructor
 @Getter
-@Setter
 @Entity
 @Table(name = "user")
 public class User {
@@ -34,6 +33,10 @@ public class User {
 
     @Column(name = "updatedAt")
     private Date updatedAt;
+
+    public User(Long userId) {
+        this.userId = userId;
+    }
 
     @Builder // 빌더 패턴 구현
     public User(String userEmail, String userNickName) {

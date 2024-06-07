@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AlgorithmSerivce {
+public class AlgorithmService {
 
     private final AlgorithmRepository algorithmRepository;
     private final AlgorithmProblemRepository algorithmProblemRepository;
@@ -40,7 +40,7 @@ public class AlgorithmSerivce {
         for (String algorithmName : algorithmNames) {
             // 알고리즘 존재 여부 확인
             if (!algorithmRepository.existsByAlgorithmName(algorithmName)) {
-                // 존재하지 않는 알고리즘인 경우: 저장
+                // 존재하지 않는(신규) 알고리즘인 경우: 저장
                 Algorithm algorithm = Algorithm.builder()
                         .algorithmName(algorithmName)
                         .build();
@@ -55,7 +55,5 @@ public class AlgorithmSerivce {
             algorithmProblemRepository.save(algorithmProblem);
         }
     }
-
-
 
 }

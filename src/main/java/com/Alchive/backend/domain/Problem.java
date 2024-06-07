@@ -2,12 +2,14 @@ package com.Alchive.backend.domain;
 
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@AllArgsConstructor
 @NoArgsConstructor // 기본 생성자
 @Getter
 @Entity
@@ -93,4 +95,5 @@ public class Problem {
         this.updatedAt = new Date();
         return this;
     }
+
 }

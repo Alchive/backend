@@ -1,6 +1,9 @@
 package com.Alchive.backend.service;
 
-import com.Alchive.backend.config.error.exception.problem.*;
+import com.Alchive.backend.config.error.exception.problem.NoSuchCategoryException;
+import com.Alchive.backend.config.error.exception.problem.NoSuchPlatformException;
+import com.Alchive.backend.config.error.exception.problem.NoSuchProblemIdException;
+import com.Alchive.backend.config.error.exception.problem.UnAuthorizedUserException;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.Algorithm;
@@ -31,7 +34,7 @@ public class ProblemService {
 
     private final TokenService tokenService;
     private final SolutionService solutionService;
-    private final AlgorithmSerivce algorithmSerivce;
+    private final AlgorithmService algorithmService;
     private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
     private final SolutionRepository solutionRepository;
@@ -51,7 +54,7 @@ public class ProblemService {
         } else { // 신규 문제인 경우: 문제 저장, 알고리즘 저장
             Problem newProblem = Problem.of(user, problemRequest);
             problemRepository.save(newProblem);
-            algorithmSerivce.saveAlgorihtmNames(newProblem, problemRequest.getAlgorithmNames());
+            algorithmService.saveAlgorihtmNames(newProblem, problemRequest.getAlgorithmNames());
         }
     }
 
@@ -74,7 +77,7 @@ public class ProblemService {
             // 신규 문제인 경우: 문제 저장, 알고리즘 저장
             Problem newProblem = Problem.of(user, problemRequest);
             problem = problemRepository.save(newProblem);
-            algorithmSerivce.saveAlgorihtmNames(newProblem, problemRequest.getAlgorithmNames());
+            algorithmService.saveAlgorihtmNames(newProblem, problemRequest.getAlgorithmNames());
         }
         log.warn("problem: " + problem);
         // 풀이 저장
@@ -101,7 +104,7 @@ public class ProblemService {
         // problem 테이블에서 플랫폼으로 문제 조회
         List<Problem> problems = problemRepository.findByUserUserIdAndProblemPlatform(userId, platform);
         // 문제 리스트를 보내서 알고리즘 이름 추가하기
-        return addProblemList(problems);
+        return getProblemListWithAlgorithm(problems);
     }
 
     // 문제 검색
@@ -118,7 +121,7 @@ public class ProblemService {
         } else {
             throw new NoSuchCategoryException(category);
         }
-        return addProblemList(problems);
+        return getProblemListWithAlgorithm(problems);
     }
 
     // 사용자가 작성한 전체 목록 조회
@@ -126,17 +129,14 @@ public class ProblemService {
         tokenService.validateAccessToken(tokenRequest); // 만료 검사
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         List<Problem> userProblems = problemRepository.findByUserUserId(userId);
-        if (!userRepository.existsByUserId(userId)) {
-            throw new NoSuchUserIdException(userId);
-        }
-        return addProblemList(userProblems);
+        return getProblemListWithAlgorithm(userProblems);
     }
 
-    // 문제 목록 반환하기 - 전체 목록 조회 & 플랫폼 별 조회 & 문제 검색
-    public List<ProblemListResponseDTO> addProblemList(List<Problem> problems) {
+    // 알고리즘 정보를 추가한 문제 목록 반환하기 - 전체 목록 조회 & 플랫폼 별 조회 & 문제 검색
+    public List<ProblemListResponseDTO> getProblemListWithAlgorithm(List<Problem> problems) {
         List<ProblemListResponseDTO> problemDataList = new ArrayList<>();
         for (Problem problem : problems) {
-            List<Algorithm> algorithmList = algorithmSerivce.addAlgorithmList(problem); // 알고리즘 배열 추가
+            List<Algorithm> algorithmList = algorithmService.addAlgorithmList(problem); // 알고리즘 배열 추가
             ProblemListResponseDTO problemData = ProblemListResponseDTO.of(problem, algorithmList);
             problemDataList.add(problemData);
         }
@@ -161,7 +161,7 @@ public class ProblemService {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new NoSuchProblemIdException(problemId));
         // Algorithm 정보
-        List<Algorithm> algorithmList = algorithmSerivce.addAlgorithmList(problem);
+        List<Algorithm> algorithmList = algorithmService.addAlgorithmList(problem);
         // Solution 정보
         List<ProblemDetailResponseDTO.SolutionInfo> solutionInfos = new ArrayList<>();
         List<Solution> solutions = solutionRepository.findAllByProblemProblemId(problemId);
