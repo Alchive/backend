@@ -45,6 +45,15 @@ public class User {
         this.createdAt = new Date(); // 현재 시간
     }
 
+    // 단위 테스트용 빌더 패턴 구현
+    @Builder(builderMethodName = "userTestBuilder")
+    public User(Long userId, String userEmail, String userNickName) {
+        this.userId = userId;
+        this.userEmail = userEmail;
+        this.userName = userNickName;
+        this.createdAt = new Date(); // 현재 시간
+    }
+
     public User update(String userDescription, Boolean autoSave) { // 프로필 수정 시 사용
         this.userDescription = userDescription;
         this.autoSave = autoSave;
