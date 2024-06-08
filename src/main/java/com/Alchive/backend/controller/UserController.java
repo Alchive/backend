@@ -26,14 +26,14 @@ public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
 
-    @Operation(summary = "user 생성", description = "user를 생성하는 메서드입니다.")
+    @Operation(summary = "사용자 생성 메서드", description = "user를 생성하는 메서드입니다.")
     @PostMapping
     public ResponseEntity<ResultResponse> createUser(@RequestBody UserCreateRequest createRequest) {
         UserResponseDTO newUser = userService.createUser(createRequest);
         return ResponseEntity.ok(ResultResponse.of(USER_CREATE_SUCCESS, newUser));
     }
 
-    @Operation(summary = "username 중복 확인", description = "username 중복을 검사하는 메서드입니다.")
+    @Operation(summary = "username 중복 확인 메서드", description = "username 중복을 검사하는 메서드입니다.")
     @GetMapping("/username/{userName}")
     public ResponseEntity<ResultResponse> isDuplicateUsername(@PathVariable String userName) {
         if(userService.isDuplicateUsername(userName)) {
@@ -63,7 +63,7 @@ public class UserController {
         return ResponseEntity.ok(ResultResponse.of(USER_DELETE_SUCCESS));
     }
 
-    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰으로 액세스 토큰을 재발급하는 메서드입니다.")
+    @Operation(summary = "액세스 토큰 재발급 메서드", description = "리프레시 토큰으로 액세스 토큰을 재발급하는 메서드입니다.")
     @GetMapping("/auth/token")
     public ResponseEntity<ResultResponse> refreshAccessToken(HttpServletRequest request) {
         String accessToken = tokenService.refreshAccessToken(request);
