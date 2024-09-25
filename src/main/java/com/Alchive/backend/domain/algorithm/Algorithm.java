@@ -1,4 +1,4 @@
-package com.Alchive.backend.domain;
+package com.Alchive.backend.domain.algorithm;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -13,15 +13,15 @@ public class Algorithm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "algorithmId", columnDefinition = "INT")
-    private Long algorithmId;
+    @Column(name = "id", columnDefinition = "INT")
+    private Long id;
 
-    @Column(name = "algorithmName", nullable = false)
-    private String algorithmName;
+    @Column(name = "name", nullable = false, length = 30)
+    private String name;
 
     @Builder
     public Algorithm(Long algorithmId, String algorithmName) {
-        this.algorithmId = algorithmId;
-        this.algorithmName = algorithmName;
+        this.id = algorithmId;
+        this.name = algorithmName;
     }
 }

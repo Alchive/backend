@@ -1,5 +1,7 @@
-package com.Alchive.backend.domain;
+package com.Alchive.backend.domain.algorithmProblem;
 
+import com.Alchive.backend.domain.algorithm.Algorithm;
+import com.Alchive.backend.domain.problem.Problem;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +15,8 @@ public class AlgorithmProblem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "algo_proId", columnDefinition = "INT")
-    private Long algoProId;
+    @Column(name = "id", columnDefinition = "INT")
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "algorithmId", nullable = false)
@@ -26,7 +28,7 @@ public class AlgorithmProblem {
 
     @Builder
     public AlgorithmProblem(Long algoProId, Algorithm algorithm, Problem problem) {
-        this.algoProId = algoProId;
+        this.id = algoProId;
         this.algorithm = algorithm;
         this.problem = problem;
     }

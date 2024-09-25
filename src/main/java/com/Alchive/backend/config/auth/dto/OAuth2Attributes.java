@@ -1,6 +1,6 @@
 package com.Alchive.backend.config.auth.dto;
 
-import com.Alchive.backend.domain.User;
+import com.Alchive.backend.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 

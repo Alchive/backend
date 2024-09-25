@@ -1,7 +1,10 @@
-package com.Alchive.backend.domain;
+package com.Alchive.backend.domain.user;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
 
@@ -13,20 +16,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userId", columnDefinition = "INT")
-    private Long userId;
-
-    @Column(name = "userEmail", nullable = false, unique = true)
-    private String userEmail;
-
-    @Column(name = "userName", nullable = false, unique = true)
-    private String userName;
-
-    @Column(name = "userDescription")
-    private String userDescription;
-
-    @Column(name = "autoSave", nullable = false)
-    private Boolean autoSave = true;
+    @Column(name = "id", columnDefinition = "INT")
+    private Long id;
 
     @Column(name = "createdAt", nullable = false)
     private Date createdAt;
@@ -34,28 +25,45 @@ public class User {
     @Column(name = "updatedAt")
     private Date updatedAt;
 
+    @Column(name = "isDeleted", nullable = false)
+    @ColumnDefault("false")
+    private Boolean isDeleted;
+
+    @Column(name = "email", length = 300, nullable = false)
+    private String email;
+
+    @Column(name = "name", length = 20, nullable = false)
+    private String name;
+
+    @Column(name = "description", length = 2048)
+    private String description;
+
+    @Column(name = "autoSave", nullable = false)
+    @ColumnDefault("true")
+    private Boolean autoSave;
+
     public User(Long userId) {
-        this.userId = userId;
+        this.id = userId;
     }
 
     @Builder // 빌더 패턴 구현
     public User(String userEmail, String userNickName) {
-        this.userEmail = userEmail;
-        this.userName = userNickName;
+        this.email = userEmail;
+        this.name = userNickName;
         this.createdAt = new Date(); // 현재 시간
     }
 
     // 단위 테스트용 빌더 패턴 구현
     @Builder(builderMethodName = "userTestBuilder")
     public User(Long userId, String userEmail, String userNickName) {
-        this.userId = userId;
-        this.userEmail = userEmail;
-        this.userName = userNickName;
+        this.id = userId;
+        this.email = userEmail;
+        this.name = userNickName;
         this.createdAt = new Date(); // 현재 시간
     }
 
     public User update(String userDescription, Boolean autoSave) { // 프로필 수정 시 사용
-        this.userDescription = userDescription;
+        this.description = userDescription;
         this.autoSave = autoSave;
         this.updatedAt = new Date();
 

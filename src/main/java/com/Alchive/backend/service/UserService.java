@@ -4,7 +4,7 @@ import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
 import com.Alchive.backend.config.error.exception.user.UserNameExistException;
 import com.Alchive.backend.config.jwt.TokenService;
-import com.Alchive.backend.domain.User;
+import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
 import com.Alchive.backend.dto.response.UserResponseDTO;

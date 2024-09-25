@@ -2,7 +2,7 @@ package com.Alchive.backend.controller;
 
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.config.result.ResultResponse;
-import com.Alchive.backend.domain.User;
+import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
 import com.Alchive.backend.dto.response.UserDetailResponseDTO;

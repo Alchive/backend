@@ -1,8 +1,8 @@
 package com.Alchive.backend.dto.response;
 
-import com.Alchive.backend.domain.Algorithm;
-import com.Alchive.backend.domain.Problem;
-import com.Alchive.backend.domain.Solution;
+import com.Alchive.backend.domain.algorithm.Algorithm;
+import com.Alchive.backend.domain.problem.Problem;
+import com.Alchive.backend.domain.solution.Solution;
 import lombok.Builder;
 import lombok.Getter;
 

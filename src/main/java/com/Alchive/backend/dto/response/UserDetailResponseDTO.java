@@ -1,6 +1,6 @@
 package com.Alchive.backend.dto.response;
 
-import com.Alchive.backend.domain.User;
+import com.Alchive.backend.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
