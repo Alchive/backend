@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class TokenNotExistsException extends BusinessException {
-    public TokenNotExistsException(String tokenType) {
-        super(ErrorCode.TOKEN_NOT_EXISTS, " - tokenType: " + tokenType);
+    public TokenNotExistsException() {
+        super(ErrorCode.TOKEN_NOT_EXISTS);
     }
 }

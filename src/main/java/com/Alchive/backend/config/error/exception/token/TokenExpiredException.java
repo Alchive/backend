@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class TokenExpiredException extends BusinessException {
-    public TokenExpiredException(String tokenType) {
-        super(ErrorCode.TOKEN_EXPIRED, " - " + tokenType);
+    public TokenExpiredException() {
+        super(ErrorCode.TOKEN_EXPIRED);
     }
 }

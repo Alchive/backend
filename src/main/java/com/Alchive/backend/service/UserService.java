@@ -28,14 +28,14 @@ public class UserService {
             throw new UserEmailExistException(email);
         }
         if (userRepository.existsByUserName(username)) { // 중복 유저 이름 검사
-            throw new UserNameExistException(username);
+            throw new UserNameExistException();
         }
 
         User user = new User(email,username);
         user = userRepository.save(user); // db에 유저 저장 - 회원 가입
 
         // 토큰 생성 후 전달
-        Long userId = user.getUserId();
+        Long userId = user.getId();
         String accessToken = tokenService.generateAccessToken(userId);
         String refreshToken = tokenService.generateRefreshToken();
         return new UserResponseDTO(user,accessToken,refreshToken);
