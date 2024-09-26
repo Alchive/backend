@@ -1,5 +1,6 @@
 package com.Alchive.backend.domain.solution;
 
+import com.Alchive.backend.domain.board.Board;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,8 +33,9 @@ public class Solution {
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted;
 
-    @Column(name = "boardId", nullable = false)
-    private int boardId;
+    @ManyToOne
+    @JoinColumn(name = "boardId", nullable = false)
+    private Board board;
 
     @Column(name = "content")
     private String content;
