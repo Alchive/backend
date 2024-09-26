@@ -2,10 +2,8 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
-import com.Alchive.backend.config.error.exception.user.UserNameExistException;
 import com.Alchive.backend.config.jwt.TokenService;
-import com.Alchive.backend.domain.User;
-import com.Alchive.backend.dto.request.SolutionUpdateRequest;
+import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
 import com.Alchive.backend.dto.response.UserResponseDTO;
@@ -59,24 +57,24 @@ public class UserServiceTest {
     void createUser_success() {
         // given
         UserCreateRequest createRequest = UserCreateRequest.builder()
-                .userEmail(user.getUserEmail())
-                .userName(user.getUserName())
+                .userEmail(user.getEmail())
+                .userName(user.getName())
                 .build();
 
-        when(userRepository.existsByUserEmail(createRequest.getUserEmail())).thenReturn(false);
+        when(userRepository.existsByEmail(createRequest.getUserEmail())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getUserId());
+        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
 
         // when
         UserResponseDTO returnedUser = userService.createUser(createRequest);
 
         // then
         assertNotNull(returnedUser);
-        assertEquals(user.getUserId(),returnedUser.getUserId());
-        assertEquals(user.getUserName(),returnedUser.getUserName());
-        assertEquals(user.getUserEmail(),returnedUser.getUserEmail());
+        assertEquals(user.getId(),returnedUser.getUserId());
+        assertEquals(user.getName(),returnedUser.getUserName());
+        assertEquals(user.getEmail(),returnedUser.getUserEmail());
     }
 
     @DisplayName("사용자 생성 - 유저 닉네임 중복")
@@ -104,7 +102,7 @@ public class UserServiceTest {
                 .userEmail("duplicatedEmail@test.com")
                 .userName("user1")
                 .build();
-        when(userRepository.existsByUserEmail(createRequest.getUserEmail())).thenReturn(true);
+        when(userRepository.existsByEmail(createRequest.getUserEmail())).thenReturn(true);
 
         // when, then
         assertThrows(UserEmailExistException.class, () -> userService.createUser(createRequest));
@@ -115,17 +113,17 @@ public class UserServiceTest {
     void getUser_success() {
         // given
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getUserId());
-        when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         // when
         User returnedUser = userService.getUserDetail(request);
 
         // then
         assertNotNull(returnedUser);
-        assertEquals(user.getUserId(),returnedUser.getUserId());
-        assertEquals(user.getUserEmail(),returnedUser.getUserEmail());
-        assertEquals(user.getUserName(),returnedUser.getUserName());
+        assertEquals(user.getId(),returnedUser.getId());
+        assertEquals(user.getEmail(),returnedUser.getEmail());
+        assertEquals(user.getName(),returnedUser.getName());
     }
 
     @DisplayName("프로필 조회 - 존재하지 않는 유저 아이디")
@@ -133,8 +131,8 @@ public class UserServiceTest {
     void getUser_userNotFound() {
         // given
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getUserId());
-        when(userRepository.findById(user.getUserId())).thenReturn(Optional.empty());
+        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 
         // when, then
         assertThrows(NoSuchUserIdException.class, () -> userService.getUserDetail(request));
@@ -148,8 +146,8 @@ public class UserServiceTest {
                 .userDescription("updatedUserDescription")
                 .build();
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getUserId());
-        when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -157,7 +155,7 @@ public class UserServiceTest {
 
         // then
         assertNotNull(user);
-        assertEquals(user.getUserDescription(),"updatedUserDescription");
+        assertEquals(user.getDescription(),"updatedUserDescription");
     }
 
     @DisplayName("사용자 삭제 - 성공")
@@ -165,12 +163,12 @@ public class UserServiceTest {
     void deleteUser_success() {
         // given
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getUserId());
-        when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         // when
         userService.deleteUserDetail(request);
-        when(userRepository.findById(user.getUserId())).thenReturn(Optional.empty());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 
         // then
         assertThrows(NoSuchUserIdException.class, () -> userService.getUserDetail(request));

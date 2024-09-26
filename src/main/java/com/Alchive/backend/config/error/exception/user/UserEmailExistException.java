@@ -6,7 +6,5 @@ import lombok.Getter;
 
 @Getter
 public class UserEmailExistException extends BusinessException {
-    public UserEmailExistException(String userEmail) {
-        super(ErrorCode.USER_EMAIL_EXISTS, " - userEmail: " + userEmail);
-    }
+    public UserEmailExistException() { super(ErrorCode.USER_EMAIL_EXISTS); }
 }
