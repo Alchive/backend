@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
@@ -20,14 +22,16 @@ public class Problem {
     @Column(name = "id", columnDefinition = "INT")
     private Long id;
 
-    @Column(name = "createdAt", nullable = false)
+    @CreationTimestamp
+    @Column(name = "createdAt", nullable = false, updatable = false)
     private Date createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updatedAt")
     private Date updatedAt;
 
-    @Column(name = "isDeleted", nullable = false)
     @ColumnDefault("false")
+    @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted;
 
     @Column(name = "number", nullable = false)
