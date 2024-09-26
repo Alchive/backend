@@ -2,15 +2,17 @@ package com.Alchive.backend.domain.solution;
 
 import com.Alchive.backend.domain.board.Board;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name = "solution")
@@ -23,11 +25,11 @@ public class Solution {
 
     @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updatedAt")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)

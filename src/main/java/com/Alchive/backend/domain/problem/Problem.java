@@ -1,17 +1,16 @@
 package com.Alchive.backend.domain.problem;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor // 기본 생성자
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name = "problem")
@@ -24,11 +23,11 @@ public class Problem {
 
     @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updatedAt")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)

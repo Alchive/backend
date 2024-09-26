@@ -30,12 +30,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
-        Optional<User> user = userRepository.findByUserEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
         String targetUrl;
         Long userId;
 
         if ( user.isPresent() ) { // 로그인인 경우
-            userId = user.get().getUserId();
+            userId = user.get().getId();
             String accessToken = tokenService.generateAccessToken(userId);
             String refreshToken = tokenService.generateRefreshToken();
             targetUrl = UriComponentsBuilder.fromUriString("/")

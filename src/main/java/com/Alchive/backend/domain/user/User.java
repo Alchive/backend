@@ -1,16 +1,17 @@
 package com.Alchive.backend.domain.user;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name = "user")
@@ -23,11 +24,11 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updatedAt")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
@@ -54,7 +55,7 @@ public class User {
     public User(String userEmail, String userNickName) {
         this.email = userEmail;
         this.name = userNickName;
-        this.createdAt = new Date(); // 현재 시간
+        this.createdAt = LocalDateTime.now(); // 현재 시간
     }
 
     // 단위 테스트용 빌더 패턴 구현
@@ -63,13 +64,13 @@ public class User {
         this.id = userId;
         this.email = userEmail;
         this.name = userNickName;
-        this.createdAt = new Date(); // 현재 시간
+        this.createdAt = LocalDateTime.now(); // 현재 시간
     }
 
     public User update(String userDescription, Boolean autoSave) { // 프로필 수정 시 사용
         this.description = userDescription;
         this.autoSave = autoSave;
-        this.updatedAt = new Date();
+        this.updatedAt = LocalDateTime.now();
 
         return this;
     }

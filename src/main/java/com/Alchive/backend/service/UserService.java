@@ -24,10 +24,10 @@ public class UserService {
     public UserResponseDTO createUser(UserCreateRequest request) {
         String email = request.getUserEmail();
         String username = request.getUserName();
-        if (userRepository.existsByUserEmail(email)) { // 중복 이메일 검사
+        if (userRepository.existsByEmail(email)) { // 중복 이메일 검사
             throw new UserEmailExistException();
         }
-        if (userRepository.existsByUserName(username)) { // 중복 유저 이름 검사
+        if (userRepository.existsByName(username)) { // 중복 유저 이름 검사
             throw new UserNameExistException();
         }
 
@@ -42,7 +42,7 @@ public class UserService {
     }
 
     public boolean isDuplicateUsername(String userName) {
-        return userRepository.existsByUserName(userName);
+        return userRepository.existsByName(userName);
     }
 
     public User getUserDetail(HttpServletRequest tokenRequest) {

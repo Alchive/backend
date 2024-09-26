@@ -14,9 +14,9 @@ public class UserResponseDTO {
     private String refreshToken;
 
     public UserResponseDTO(User user, String accessToken, String refreshToken) {
-        this.userId=user.getUserId();
-        this.userEmail=user.getUserEmail();
-        this.userName=user.getUserName();
+        this.userId=user.getId();
+        this.userEmail=user.getEmail();
+        this.userName=user.getName();
         this.accessToken=accessToken;
         this.refreshToken=refreshToken;
     }

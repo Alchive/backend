@@ -3,15 +3,16 @@ package com.Alchive.backend.domain.algorithmProblem;
 import com.Alchive.backend.domain.algorithm.Algorithm;
 import com.Alchive.backend.domain.problem.Problem;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name = "algorithm_problem")
@@ -24,11 +25,11 @@ public class AlgorithmProblem {
 
     @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updatedAt")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
