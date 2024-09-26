@@ -121,13 +121,13 @@ public class TokenService {
                     .getBody();
             Long userId = Long.parseLong(claims.getSubject());
             userRepository.findById(userId)
-                    .orElseThrow(() -> new NoSuchUserIdException(userId)); // user 검증
+                    .orElseThrow(() -> new NoSuchUserIdException()); // user 검증
             return userId;
         } catch ( ExpiredJwtException exception ) {
             Claims expiredClaims = exception.getClaims();
             Long userId = Long.parseLong(expiredClaims.getSubject());
             userRepository.findById(userId)
-                    .orElseThrow(() -> new NoSuchUserIdException(userId)); // user 검증
+                    .orElseThrow(() -> new NoSuchUserIdException()); // user 검증
             return userId;
         }
     }

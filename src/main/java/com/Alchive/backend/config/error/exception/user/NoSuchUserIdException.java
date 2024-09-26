@@ -7,7 +7,5 @@ import lombok.Getter;
 @Getter
 public class NoSuchUserIdException extends BusinessException {
 
-    public NoSuchUserIdException(Long userId) {
-        super(ErrorCode.USER_NOT_FOUND);
-    }
+    public NoSuchUserIdException() { super(ErrorCode.USER_NOT_FOUND); }
 }

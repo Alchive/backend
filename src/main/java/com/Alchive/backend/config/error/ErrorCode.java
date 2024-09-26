@@ -13,6 +13,10 @@ public enum ErrorCode {
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED.value(),"B003","인증 필요"),
     _FORBIDDEN(HttpStatus.FORBIDDEN.value(),"B004","금지된 요청"),
 
+    // AUTH
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), "A001","토큰 만료"),
+    TOKEN_NOT_EXISTS(HttpStatus.UNAUTHORIZED.value(), "A002","토큰을 찾을 수 없음"),
+
     // USER
     USER_EMAIL_EXISTS(HttpStatus.CONFLICT.value(), "U001","유저 이메일 중복"),
     USER_NAME_EXISTS(HttpStatus.CONFLICT.value(), "U002","유저 이름 중복"),

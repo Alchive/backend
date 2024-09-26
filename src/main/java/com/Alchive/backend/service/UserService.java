@@ -25,7 +25,7 @@ public class UserService {
         String email = request.getUserEmail();
         String username = request.getUserName();
         if (userRepository.existsByUserEmail(email)) { // 중복 이메일 검사
-            throw new UserEmailExistException(email);
+            throw new UserEmailExistException();
         }
         if (userRepository.existsByUserName(username)) { // 중복 유저 이름 검사
             throw new UserNameExistException();
@@ -49,7 +49,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenRequest);
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException(userId));
+                .orElseThrow(() -> new NoSuchUserIdException());
     }
 
     @Transactional
@@ -57,7 +57,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenRequest);
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException(userId));
+                .orElseThrow(() -> new NoSuchUserIdException());
         user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
     }
 
@@ -66,7 +66,7 @@ public class UserService {
         tokenService.validateAccessToken(tokenRequest);
         Long userId = tokenService.getUserIdFromToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException(userId));
+                .orElseThrow(() -> new NoSuchUserIdException());
         userRepository.delete(user);
     }
 }
