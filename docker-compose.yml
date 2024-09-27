@@ -15,8 +15,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     volumes:
-      - ./alchive-db/mysql/data:/var/lib/mysql
-      - ./alchive-db/mysql/etc:/etc/mysql/conf.d
+      - alchive-db:/alchive-db/mysql
     restart: always
     networks:
       - alchive
@@ -42,3 +41,6 @@ services:
 networks:
   alchive:
     driver: bridge
+
+volumes:
+  alchive-db:
