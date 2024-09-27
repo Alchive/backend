@@ -17,6 +17,9 @@ public enum ResultCode {
     // AUTH
     TOKEN_ACCESS_SUCCESS("A001", "액세스 토큰 생성 성공"),
     TOKEN_REFRESH_SUCCESS("A002", "리프레쉬 토큰 생성 성공"),
+
+    // SOLUTION
+    SOLUTION_UPDATE_SUCCESS("S001", "풀이 수정 성공"),
     ;
 
     private final String code;

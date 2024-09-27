@@ -32,7 +32,7 @@ public class User {
 
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Column(name = "email", length = 300, nullable = false)
     private String email;
@@ -45,7 +45,8 @@ public class User {
 
     @Column(name = "autoSave", nullable = false)
     @ColumnDefault("true")
-    private Boolean autoSave;
+    private Boolean autoSave = false;
+    ;
 
     public User(Long userId) {
         this.id = userId;

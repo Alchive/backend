@@ -21,6 +21,9 @@ public enum ErrorCode {
     USER_EMAIL_EXISTS(HttpStatus.CONFLICT.value(), "U001","유저 이메일 중복"),
     USER_NAME_EXISTS(HttpStatus.CONFLICT.value(), "U002","유저 이름 중복"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "U003","존재하지 않는 유저 아이디"),
+
+    // SOLUTION
+    SOLUTION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "S001","풀이가 존재하지 않음")
     ;
 
     private final int httpStatus;

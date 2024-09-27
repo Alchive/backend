@@ -1,6 +1,7 @@
 package com.Alchive.backend.domain.solution;
 
 import com.Alchive.backend.domain.board.Board;
+import com.Alchive.backend.dto.request.SolutionUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -61,5 +62,16 @@ public class Solution {
 
     @Column(name = "submitAt")
     private Date submitAt;
+
+    public Solution update(SolutionUpdateRequest solutionUpdateRequest) {
+        this.content = solutionUpdateRequest.getContent();
+        this.language = solutionUpdateRequest.getLanguage();
+        this.description = solutionUpdateRequest.getDescription();
+        this.status = solutionUpdateRequest.getStatus();
+        this.memory = solutionUpdateRequest.getMemory();
+        this.time = solutionUpdateRequest.getTime();
+        this.submitAt = solutionUpdateRequest.getSubmitAt();
+        return this;
+    }
 
 }
