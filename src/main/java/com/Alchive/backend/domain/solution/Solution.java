@@ -1,9 +1,10 @@
 package com.Alchive.backend.domain.solution;
 
 import com.Alchive.backend.domain.board.Board;
-import com.Alchive.backend.dto.request.SolutionUpdateRequest;
+import com.Alchive.backend.dto.request.SolutionRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -34,7 +35,7 @@ public class Solution {
 
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "boardId", nullable = false)
@@ -63,14 +64,44 @@ public class Solution {
     @Column(name = "submitAt")
     private Date submitAt;
 
-    public Solution update(SolutionUpdateRequest solutionUpdateRequest) {
-        this.content = solutionUpdateRequest.getContent();
-        this.language = solutionUpdateRequest.getLanguage();
-        this.description = solutionUpdateRequest.getDescription();
-        this.status = solutionUpdateRequest.getStatus();
-        this.memory = solutionUpdateRequest.getMemory();
-        this.time = solutionUpdateRequest.getTime();
-        this.submitAt = solutionUpdateRequest.getSubmitAt();
+    @Builder
+    public Solution(Board board, String content, SolutionLanguage language, String description, SolutionStatus status, Integer memory, Integer time, Date submitAt) {
+        this.board = board;
+        this.content = content;
+        this.language = language;
+        this.description = description;
+        this.status = status;
+        this.memory = memory;
+        this.time = time;
+        this.submitAt = submitAt;
+    }
+
+    public static Solution of(Board board, SolutionRequest solutionRequest) {
+        return Solution.builder()
+                .board(board)
+                .content(solutionRequest.getContent())
+                .language(solutionRequest.getLanguage())
+                .description(solutionRequest.getDescription())
+                .status(solutionRequest.getStatus())
+                .memory(solutionRequest.getMemory())
+                .time(solutionRequest.getTime())
+                .submitAt(solutionRequest.getSubmitAt())
+                .build();
+    }
+
+    public Solution update(SolutionRequest solutionRequest) {
+        this.content = solutionRequest.getContent();
+        this.language = solutionRequest.getLanguage();
+        this.description = solutionRequest.getDescription();
+        this.status = solutionRequest.getStatus();
+        this.memory = solutionRequest.getMemory();
+        this.time = solutionRequest.getTime();
+        this.submitAt = solutionRequest.getSubmitAt();
+        return this;
+    }
+
+    public Solution softDelete() {
+        this.isDeleted = true;
         return this;
     }
 
