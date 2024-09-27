@@ -23,7 +23,7 @@ public class SolutionResponseDTO {
     private SolutionStatus status;
     private Integer memory;
     private Integer time;
-    private Date submitAt;
+    private LocalDateTime submitAt;
 
     public SolutionResponseDTO(Solution solution) {
         this.id = solution.getId();

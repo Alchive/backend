@@ -3,17 +3,15 @@ package com.Alchive.backend.domain.solution;
 import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.dto.request.SolutionRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -33,6 +31,7 @@ public class Solution {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted = false;
@@ -62,19 +61,7 @@ public class Solution {
     private Integer time;
 
     @Column(name = "submitAt")
-    private Date submitAt;
-
-    @Builder
-    public Solution(Board board, String content, SolutionLanguage language, String description, SolutionStatus status, Integer memory, Integer time, Date submitAt) {
-        this.board = board;
-        this.content = content;
-        this.language = language;
-        this.description = description;
-        this.status = status;
-        this.memory = memory;
-        this.time = time;
-        this.submitAt = submitAt;
-    }
+    private LocalDateTime submitAt;
 
     public static Solution of(Board board, SolutionRequest solutionRequest) {
         return Solution.builder()

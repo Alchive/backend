@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -26,5 +26,5 @@ public class SolutionRequest {
     @NotNull(message = "실행 시간 정보는 필수입니다.")
     private Integer time;
     @NotNull(message = "제출일 정보는 필수입니다.")
-    private Date submitAt;
+    private LocalDateTime submitAt;
 }
