@@ -21,8 +21,11 @@ public enum ResultCode {
     // SOLUTION
     SOLUTION_CREATE_SUCCESS("S001", "풀이 생성 성공"),
     SOLUTION_UPDATE_SUCCESS("S002", "풀이 수정 성공"),
-    SOLUTION_DELETE_SUCCESS("S003", "풀이 삭제 성공");
+    SOLUTION_DELETE_SUCCESS("S003", "풀이 삭제 성공"),
 
+    // BOARD
+    BOARD_CREATE_SUCCESS("B001", "게시물 생성 성공"),
+    BOARD_DETAIL_INFO_SUCCESS("B002", "게시물 조회 성공");
     private final String code;
     private final String message;
 }
