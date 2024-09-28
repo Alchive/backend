@@ -31,14 +31,14 @@ public class UserService {
             throw new UserNameExistException();
         }
 
-        User user = new User(email,username);
+        User user = new User(email, username);
         user = userRepository.save(user); // db에 유저 저장 - 회원 가입
 
         // 토큰 생성 후 전달
         Long userId = user.getId();
         String accessToken = tokenService.generateAccessToken(userId);
         String refreshToken = tokenService.generateRefreshToken();
-        return new UserResponseDTO(user,accessToken,refreshToken);
+        return new UserResponseDTO(user, accessToken, refreshToken);
     }
 
     public boolean isDuplicateUsername(String userName) {
@@ -46,16 +46,14 @@ public class UserService {
     }
 
     public User getUserDetail(HttpServletRequest tokenRequest) {
-        tokenService.validateAccessToken(tokenRequest);
-        Long userId = tokenService.getUserIdFromToken(tokenRequest);
+        Long userId = tokenService.validateAccessToken(tokenRequest);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException());
     }
 
     @Transactional
     public void updateUserDetail(HttpServletRequest tokenRequest, UserUpdateRequest updateRequest) {
-        tokenService.validateAccessToken(tokenRequest);
-        Long userId = tokenService.getUserIdFromToken(tokenRequest);
+        Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException());
         user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
@@ -63,8 +61,7 @@ public class UserService {
 
     @Transactional
     public void deleteUserDetail(HttpServletRequest tokenRequest) {
-        tokenService.validateAccessToken(tokenRequest);
-        Long userId = tokenService.getUserIdFromToken(tokenRequest);
+        Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchUserIdException());
         userRepository.delete(user);
