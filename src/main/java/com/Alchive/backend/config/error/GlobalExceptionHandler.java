@@ -20,14 +20,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .message(errorCode.getMessage() + ": " + exception.getClass())
                         .build());
     }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Object> handleRuntimeException(BusinessException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        String message = exception.getMessage();
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(ErrorResponse.builder()
                         .code(String.valueOf(errorCode.getCode()))
-                        .message(errorCode.getMessage() + message)
+                        .message(errorCode.getMessage())
                         .build());
     }
 }

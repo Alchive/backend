@@ -1,17 +1,17 @@
 package com.Alchive.backend.domain.solution;
 
 import com.Alchive.backend.domain.board.Board;
+import com.Alchive.backend.dto.request.SolutionRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -31,9 +31,10 @@ public class Solution {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "boardId", nullable = false)
@@ -60,6 +61,35 @@ public class Solution {
     private Integer time;
 
     @Column(name = "submitAt")
-    private Date submitAt;
+    private LocalDateTime submitAt;
+
+    public static Solution of(Board board, SolutionRequest solutionRequest) {
+        return Solution.builder()
+                .board(board)
+                .content(solutionRequest.getContent())
+                .language(solutionRequest.getLanguage())
+                .description(solutionRequest.getDescription())
+                .status(solutionRequest.getStatus())
+                .memory(solutionRequest.getMemory())
+                .time(solutionRequest.getTime())
+                .submitAt(solutionRequest.getSubmitAt())
+                .build();
+    }
+
+    public Solution update(SolutionRequest solutionRequest) {
+        this.content = solutionRequest.getContent();
+        this.language = solutionRequest.getLanguage();
+        this.description = solutionRequest.getDescription();
+        this.status = solutionRequest.getStatus();
+        this.memory = solutionRequest.getMemory();
+        this.time = solutionRequest.getTime();
+        this.submitAt = solutionRequest.getSubmitAt();
+        return this;
+    }
+
+    public Solution softDelete() {
+        this.isDeleted = true;
+        return this;
+    }
 
 }
