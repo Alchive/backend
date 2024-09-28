@@ -1,10 +1,11 @@
 package com.Alchive.backend.config.jwt;
 
-import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
 import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
-import com.Alchive.backend.repository.UserRepository;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -30,105 +31,80 @@ public class TokenService {
     @Value("${jwt.token.refresh-expire-length}")
     private Long REFRESH_EXPIRE_LENGTH;
 
-    private final UserRepository userRepository;
-
-    public TokenService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     @PostConstruct
     protected void init() {
         secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
-    public String generateAccessToken(Long userId) {
-        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
-
+    private String generateToken(Long expireLength, Claims claims) {
         return Jwts.builder().setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRE_LENGTH))
+                .setExpiration(new Date(System.currentTimeMillis() + expireLength))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateAccessToken(Long userId) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
+        return generateToken(ACCESS_EXPIRE_LENGTH, claims);
     }
 
     public String generateRefreshToken() {
-        return Jwts.builder()
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRE_LENGTH))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
+        return generateToken(REFRESH_EXPIRE_LENGTH, Jwts.claims());
     }
 
-    public void validateAccessToken(HttpServletRequest request) {
-        String token = resolveAccessToken(request);
+    private String resolveToken(HttpServletRequest request, String headerName, String prefix) {
         try {
-            Jwts.parserBuilder().setSigningKey(secretKey)
-                    .build().parseClaimsJws(token);
+            String header = request.getHeader(headerName);
+            return prefix.isEmpty() ? header : header.substring(prefix.length());
+        } catch (NullPointerException | IllegalArgumentException e) {
+            log.info("Token resolve failed for header: " + headerName);
+            throw new TokenNotExistsException();
+        }
+    }
+
+    // JWT 검증 로직에서 userId 반환
+    private Claims validateToken(String token) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(secretKey)
+                    .build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException exception) {
-            log.info("validate access: expired");
+            log.info("Token validation: expired");
             throw new TokenExpiredException();
         } catch (IllegalArgumentException e) {
             throw new TokenNotExistsException();
         }
+    }
+
+    // 액세스 토큰 검증 후 userId 반환
+    public Long validateAccessToken(HttpServletRequest request) {
+        String token = resolveToken(request, "AUTHORIZATION", "Bearer ");
+        Claims claims = validateToken(token); // JWT 검증 및 claims 반환
+        return Long.parseLong(claims.getSubject()); // userId 반환
     }
 
     public void validateRefreshToken(HttpServletRequest request) {
-        try {
-            String token = resolveRefreshToken(request);
-            Jwts.parserBuilder().setSigningKey(secretKey)
-                    .build().parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            log.info("validate refresh: expired");
-            throw new TokenExpiredException();
-        } catch (IllegalArgumentException e) {
-            throw new TokenNotExistsException();
-        }
+        String token = resolveToken(request, "REFRESH-TOKEN", "");
+        validateToken(token); // 검증만 진행
     }
 
-    public String resolveAccessToken(HttpServletRequest request) {
+    private Claims getClaimsWithoutExpirationCheck(String token) {
         try {
-            String header = request.getHeader("AUTHORIZATION");
-            return header.substring("Bearer ".length());
-        } catch (NullPointerException e){
-            log.info("resolve access: NullPointer");
-            throw new TokenNotExistsException();
-        }
-    }
-
-    public String resolveRefreshToken(HttpServletRequest request) {
-        try {
-            return request.getHeader("REFRESH-TOKEN");
-        } catch (IllegalArgumentException e) { // 리프레시 토큰이 없는 경우
-            log.info("resolve refresh: IllegalArgument");
-            throw new TokenNotExistsException();
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) { // 만료된 토큰이라도 Claims를 반환
+            return e.getClaims();
         }
     }
 
     // 리프레시 토큰으로 새로운 액세스 토큰 발급
     public String refreshAccessToken(HttpServletRequest request) {
         validateRefreshToken(request); // 리프레시 토큰 검증
-        Long userId = getUserIdFromToken(request);
-        return generateAccessToken(userId);
-    }
-
-    public Long getUserIdFromToken(HttpServletRequest request) { // 토큰에서 userId 정보 꺼내기
-        String token = resolveAccessToken(request);
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            Long userId = Long.parseLong(claims.getSubject());
-            userRepository.findById(userId)
-                    .orElseThrow(() -> new NoSuchUserIdException()); // user 검증
-            return userId;
-        } catch ( ExpiredJwtException exception ) {
-            Claims expiredClaims = exception.getClaims();
-            Long userId = Long.parseLong(expiredClaims.getSubject());
-            userRepository.findById(userId)
-                    .orElseThrow(() -> new NoSuchUserIdException()); // user 검증
-            return userId;
-        }
+        String token = resolveToken(request, "AUTHORIZATION", "Bearer ");
+        Claims claims = getClaimsWithoutExpirationCheck(token);
+        return generateAccessToken(Long.parseLong(claims.getSubject()));
     }
 }
