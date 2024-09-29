@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -20,8 +21,9 @@ public class ProblemResponseDTO {
     private String url;
     private ProblemDifficulty difficulty;
     private ProblemPlatform platform;
+    private List<String> algorithms;
 
-    public ProblemResponseDTO(Problem problem) {
+    public ProblemResponseDTO(Problem problem, List<String> algorithms) {
         this.id = problem.getId();
         this.createdAt = problem.getCreatedAt();
         this.updatedAt = problem.getUpdatedAt();
@@ -31,5 +33,6 @@ public class ProblemResponseDTO {
         this.url = problem.getUrl();
         this.difficulty = problem.getDifficulty();
         this.platform = problem.getPlatform();
+        this.algorithms = algorithms;
     }
 }

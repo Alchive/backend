@@ -3,7 +3,7 @@ package com.Alchive.backend.controller;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.SolutionRequest;
-import com.Alchive.backend.dto.response.SolutionResponseDTO;
+import com.Alchive.backend.dto.response.SolutionDetailResponseDTO;
 import com.Alchive.backend.service.SolutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +27,7 @@ public class SolutionController {
     @PostMapping("/{boardId}")
     public ResponseEntity<ResultResponse> createSolution(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody @Valid SolutionRequest solutionRequest) {
         tokenService.validateAccessToken(tokenRequest);
-        SolutionResponseDTO solution = solutionService.createSolution(boardId, solutionRequest);
+        SolutionDetailResponseDTO solution = solutionService.createSolution(boardId, solutionRequest);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_CREATE_SUCCESS, solution));
     }
 
@@ -35,7 +35,7 @@ public class SolutionController {
     @PatchMapping("/{solutionId}")
     public ResponseEntity<ResultResponse> updateSolution(HttpServletRequest tokenRequest, @PathVariable Long solutionId, @RequestBody @Valid SolutionRequest solutionRequest) {
         tokenService.validateAccessToken(tokenRequest);
-        SolutionResponseDTO solution = solutionService.updateSolution(solutionId, solutionRequest);
+        SolutionDetailResponseDTO solution = solutionService.updateSolution(solutionId, solutionRequest);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_UPDATE_SUCCESS, solution));
     }
 
@@ -43,7 +43,7 @@ public class SolutionController {
     @DeleteMapping("/{solutionId}")
     public ResponseEntity<ResultResponse> deleteSolution(HttpServletRequest tokenRequest, @PathVariable Long solutionId) {
         tokenService.validateAccessToken(tokenRequest);
-        SolutionResponseDTO solution = solutionService.deleteSolution(solutionId);
+        SolutionDetailResponseDTO solution = solutionService.deleteSolution(solutionId);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_DELETE_SUCCESS, solution));
     }
 }

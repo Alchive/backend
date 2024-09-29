@@ -5,6 +5,7 @@ import com.Alchive.backend.config.result.ResultCode;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,11 +36,11 @@ public class BoardController {
         return ResponseEntity.ok(ResultResponse.of(BOARD_CREATE_SUCCESS, board));
     }
 
-//    @Operation(summary = "게시물 조회", description = "게시물 정보를 조회하는 메서드입니다. ")
-//    @GetMapping("/{boardId}")
-//    public  ResponseEntity<ResultResponse> getBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
-//        tokenService.validateAccessToken(tokenRequest); // todo: 이후에 validateAccessToken에서 userId 추출하도록 변경
-//        BoardResponseDTO board = boardService.getBoardDetail(boardId);
-//        return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
-//    }
+    @Operation(summary = "게시물 조회", description = "게시물 정보를 조회하는 메서드입니다. ")
+    @GetMapping("/{boardId}")
+    public  ResponseEntity<ResultResponse> getBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
+        tokenService.validateAccessToken(tokenRequest); // todo: 이후에 validateAccessToken에서 userId 추출하도록 변경
+        BoardDetailResponseDTO board = boardService.getBoardDetail(boardId);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
+    }
 }

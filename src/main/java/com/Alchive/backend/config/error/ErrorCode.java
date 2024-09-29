@@ -26,7 +26,10 @@ public enum ErrorCode {
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "B001", "게시물이 존재하지 않음"),
 
     // SOLUTION
-    SOLUTION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "S001", "풀이가 존재하지 않음");
+    SOLUTION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "S001", "풀이가 존재하지 않음"),
+
+    // PROBLEM
+    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "P001", "문제가 존재하지 않음");
 
     private final int httpStatus;
     private final String code;
