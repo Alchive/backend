@@ -29,6 +29,13 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 public class BoardController {
     private final BoardService boardService;
 
+    @Operation(summary = "게시물 저장 여부 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
+    @GetMapping("/saved/{problemNumber}")
+    public ResponseEntity<ResultResponse> isBoardSaved(HttpServletRequest tokenRequest, @PathVariable int problemNumber) {
+        BoardDetailResponseDTO board = boardService.isBoardSaved(tokenRequest, problemNumber);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
+    }
+
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
     @GetMapping("")
     public ResponseEntity<ResultResponse> getBoardList(@ModelAttribute PaginationRequest paginationRequest) {
@@ -47,7 +54,7 @@ public class BoardController {
     @GetMapping("/{boardId}")
     public ResponseEntity<ResultResponse> getBoard(@PathVariable Long boardId) {
         BoardDetailResponseDTO board = boardService.getBoardDetail(boardId);
-        return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
+        return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
     }
 
     @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")

@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -60,10 +61,14 @@ public class BoardService {
         return new BoardDetailResponseDTO(boardResponseDTO, problemResponseDTO, solutions);
     }
 
+    public BoardDetailResponseDTO isBoardSaved(HttpServletRequest tokenRequest, int problemNumber) {
+        Long userId = tokenService.validateAccessToken(tokenRequest);
+        Optional<Board> board = boardRepository.findByProblem_NumberAndUser_Id(problemNumber, userId);
+        return board.map(this::toBoardDetailResponseDTO).orElse(null);
+    }
+
     public Page<List<BoardDetailResponseDTO>> getBoardList(PaginationRequest paginationRequest) {
-        int offset = paginationRequest.getOffset();
-        int limit = paginationRequest.getLimit();
-        Pageable pageable = PageRequest.of(offset, limit);
+        Pageable pageable = PageRequest.of(paginationRequest.getOffset(), paginationRequest.getLimit());
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
         // Board를 BoardDetailResponseDTO로 변환
