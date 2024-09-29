@@ -74,4 +74,9 @@ public class User {
 
         return this;
     }
+
+    public User softDelete() {
+        this.isDeleted = true;
+        return this;
+    }
 }
