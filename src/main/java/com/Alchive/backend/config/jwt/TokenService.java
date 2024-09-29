@@ -2,6 +2,7 @@ package com.Alchive.backend.config.jwt;
 
 import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
 import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
+import com.Alchive.backend.config.error.exception.token.UnmatchedUserIdException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -58,7 +59,6 @@ public class TokenService {
             String header = request.getHeader(headerName);
             return prefix.isEmpty() ? header : header.substring(prefix.length());
         } catch (NullPointerException | IllegalArgumentException e) {
-            log.info("Token resolve failed for header: " + headerName);
             throw new TokenNotExistsException();
         }
     }
@@ -69,7 +69,6 @@ public class TokenService {
             return Jwts.parserBuilder().setSigningKey(secretKey)
                     .build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException exception) {
-            log.info("Token validation: expired");
             throw new TokenExpiredException();
         } catch (IllegalArgumentException e) {
             throw new TokenNotExistsException();
@@ -106,5 +105,11 @@ public class TokenService {
         String token = resolveToken(request, "AUTHORIZATION", "Bearer ");
         Claims claims = getClaimsWithoutExpirationCheck(token);
         return generateAccessToken(Long.parseLong(claims.getSubject()));
+    }
+
+    public void validateUser(Long userId, Long requestedId) {
+        if (requestedId != userId) {
+            throw new UnmatchedUserIdException();
+        }
     }
 }

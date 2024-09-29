@@ -48,14 +48,14 @@ public class UserService {
     public User getUserDetail(HttpServletRequest tokenRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException());
+                .orElseThrow(NoSuchUserIdException::new);
     }
 
     @Transactional
     public void updateUserDetail(HttpServletRequest tokenRequest, UserUpdateRequest updateRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException());
+                .orElseThrow(NoSuchUserIdException::new);
         user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
     }
 
@@ -63,7 +63,7 @@ public class UserService {
     public void deleteUserDetail(HttpServletRequest tokenRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException());
+                .orElseThrow(NoSuchUserIdException::new);
         userRepository.delete(user);
     }
 }

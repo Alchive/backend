@@ -29,32 +29,28 @@ public class BoardController {
     @Operation(summary = "게시물 생성", description = "새로운 게시물을 생성하는 메서드입니다. ")
     @PostMapping("")
     public ResponseEntity<ResultResponse> createBoard(HttpServletRequest tokenRequest, @RequestBody @Valid BoardCreateRequest boardCreateRequest) {
-        Long userId = tokenService.validateAccessToken(tokenRequest);
-        BoardResponseDTO board = boardService.createBoard(userId, boardCreateRequest);
+        BoardResponseDTO board = boardService.createBoard(tokenRequest, boardCreateRequest);
         return ResponseEntity.ok(ResultResponse.of(BOARD_CREATE_SUCCESS, board));
     }
 
     @Operation(summary = "게시물 조회", description = "게시물 정보를 조회하는 메서드입니다. ")
     @GetMapping("/{boardId}")
     public  ResponseEntity<ResultResponse> getBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
-        tokenService.validateAccessToken(tokenRequest);
-        BoardDetailResponseDTO board = boardService.getBoardDetail(boardId);
+        BoardDetailResponseDTO board = boardService.getBoardDetail(tokenRequest, boardId);
         return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
     }
 
     @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")
     @PatchMapping("/{boardId}")
     public ResponseEntity<ResultResponse> updateBoardMemo(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody BoardMemoUpdateRequest updateRequest) {
-        tokenService.validateAccessToken(tokenRequest);
-        BoardResponseDTO board = boardService.updateBoardMemo(boardId, updateRequest);
+        BoardResponseDTO board = boardService.updateBoardMemo(tokenRequest, boardId, updateRequest);
         return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
     }
 
     @Operation(summary = "게시물 삭제", description = "게시물을 삭제하는 메서드입니다. ")
     @DeleteMapping ("/{boardId}")
     public ResponseEntity<ResultResponse> deleteBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
-        tokenService.validateAccessToken(tokenRequest);
-        boardService.deleteBoard(boardId);
+        boardService.deleteBoard(tokenRequest, boardId);
         return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));
     }
 }

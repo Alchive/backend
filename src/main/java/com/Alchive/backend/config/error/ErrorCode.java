@@ -16,6 +16,7 @@ public enum ErrorCode {
     // AUTH
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), "A001", "토큰 만료"),
     TOKEN_NOT_EXISTS(HttpStatus.UNAUTHORIZED.value(), "A002", "토큰을 찾을 수 없음"),
+    USERID_NOT_MATCHED(HttpStatus.UNAUTHORIZED.value(), "A003", "작성자 ID와 요청자 ID가 일치하지 않음"),
 
     // USER
     USER_EMAIL_EXISTS(HttpStatus.CONFLICT.value(), "U001", "유저 이메일 중복"),
