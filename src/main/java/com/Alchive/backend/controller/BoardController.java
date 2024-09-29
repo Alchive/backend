@@ -29,8 +29,7 @@ public class BoardController {
     @Operation(summary = "게시물 생성", description = "새로운 게시물을 생성하는 메서드입니다. ")
     @PostMapping("")
     public ResponseEntity<ResultResponse> createBoard(HttpServletRequest tokenRequest, @RequestBody @Valid BoardCreateRequest boardCreateRequest) {
-        tokenService.validateAccessToken(tokenRequest);
-        Long userId = tokenService.getUserIdFromToken(tokenRequest);
+        Long userId = tokenService.validateAccessToken(tokenRequest);
         BoardResponseDTO board = boardService.createBoard(userId, boardCreateRequest);
         return ResponseEntity.ok(ResultResponse.of(BOARD_CREATE_SUCCESS, board));
     }
@@ -38,7 +37,7 @@ public class BoardController {
     @Operation(summary = "게시물 조회", description = "게시물 정보를 조회하는 메서드입니다. ")
     @GetMapping("/{boardId}")
     public  ResponseEntity<ResultResponse> getBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
-        tokenService.validateAccessToken(tokenRequest); // todo: 이후에 validateAccessToken에서 userId 추출하도록 변경
+        tokenService.validateAccessToken(tokenRequest);
         BoardDetailResponseDTO board = boardService.getBoardDetail(boardId);
         return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
     }
@@ -47,7 +46,6 @@ public class BoardController {
     @PatchMapping("/{boardId}")
     public ResponseEntity<ResultResponse> updateBoardMemo(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody BoardMemoUpdateRequest updateRequest) {
         tokenService.validateAccessToken(tokenRequest);
-        log.info(updateRequest.getMemo());
         BoardResponseDTO board = boardService.updateBoardMemo(boardId, updateRequest);
         return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
     }
