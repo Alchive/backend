@@ -46,7 +46,6 @@ public class User {
     @Column(name = "autoSave", nullable = false)
     @ColumnDefault("true")
     private Boolean autoSave = false;
-    ;
 
     public User(Long userId) {
         this.id = userId;

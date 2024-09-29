@@ -25,7 +25,9 @@ public enum ResultCode {
 
     // BOARD
     BOARD_CREATE_SUCCESS("B001", "게시물 생성 성공"),
-    BOARD_DETAIL_INFO_SUCCESS("B002", "게시물 조회 성공");
+    BOARD_DETAIL_INFO_SUCCESS("B002", "게시물 조회 성공"),
+    BOARD_MEMO_UPDATE_SUCCESS("B003", "게시물 메모 수정 성공"),
+    BOARD_DELETE_SUCCESS("B004", "게시물 삭제 성공");
     private final String code;
     private final String message;
 }

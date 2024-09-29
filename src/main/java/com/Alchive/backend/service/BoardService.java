@@ -10,6 +10,7 @@ import com.Alchive.backend.domain.problem.Problem;
 import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
+import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import com.Alchive.backend.dto.response.*;
 import com.Alchive.backend.repository.*;
@@ -65,6 +66,22 @@ public class BoardService {
 
         // DTO로 묶어서 반환
         return new BoardDetailResponseDTO(boardResponseDTO, problemResponseDTO, solutions);
+    }
+
+    @Transactional
+    public BoardResponseDTO updateBoardMemo(Long boardId, BoardMemoUpdateRequest updateRequest) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(NotFoundBoardException::new);
+        board.update(updateRequest.getMemo());
+        return new BoardResponseDTO(boardRepository.save(board));
+    }
+
+    @Transactional
+    public void deleteBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(NotFoundBoardException::new);
+        board.softDelete();
+        boardRepository.save(board);
     }
 
     // 문제 메서드

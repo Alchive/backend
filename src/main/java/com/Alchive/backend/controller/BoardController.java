@@ -1,10 +1,9 @@
 package com.Alchive.backend.controller;
 
 import com.Alchive.backend.config.jwt.TokenService;
-import com.Alchive.backend.config.result.ResultCode;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
-import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.service.BoardService;
@@ -42,5 +41,22 @@ public class BoardController {
         tokenService.validateAccessToken(tokenRequest); // todo: 이후에 validateAccessToken에서 userId 추출하도록 변경
         BoardDetailResponseDTO board = boardService.getBoardDetail(boardId);
         return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
+    }
+
+    @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<ResultResponse> updateBoardMemo(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody BoardMemoUpdateRequest updateRequest) {
+        tokenService.validateAccessToken(tokenRequest);
+        log.info(updateRequest.getMemo());
+        BoardResponseDTO board = boardService.updateBoardMemo(boardId, updateRequest);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
+    }
+
+    @Operation(summary = "게시물 삭제", description = "게시물을 삭제하는 메서드입니다. ")
+    @DeleteMapping ("/{boardId}")
+    public ResponseEntity<ResultResponse> deleteBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
+        tokenService.validateAccessToken(tokenRequest);
+        boardService.deleteBoard(boardId);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));
     }
 }

@@ -63,5 +63,14 @@ public class Board {
                 .description(boardCreateRequest.getDescription())
                 .build();
     }
-}
 
+    public Board update(String memo) {
+        this.memo = memo;
+        return this;
+    }
+
+    public Board softDelete() {
+        this.isDeleted = true;
+        return this;
+    }
+}
