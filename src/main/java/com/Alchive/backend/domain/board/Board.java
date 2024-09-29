@@ -2,6 +2,7 @@ package com.Alchive.backend.domain.board;
 
 import com.Alchive.backend.domain.problem.Problem;
 import com.Alchive.backend.domain.user.User;
+import com.Alchive.backend.dto.request.BoardCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -30,9 +31,10 @@ public class Board {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "problemId", nullable = false)
@@ -52,5 +54,23 @@ public class Board {
     @Column(name = "description")
     private String description;
 
-}
+    public static Board of(Problem problem, User user, BoardCreateRequest boardCreateRequest) {
+        return Board.builder()
+                .problem(problem)
+                .user(user)
+                .memo(boardCreateRequest.getMemo())
+                .status(boardCreateRequest.getStatus())
+                .description(boardCreateRequest.getDescription())
+                .build();
+    }
 
+    public Board update(String memo) {
+        this.memo = memo;
+        return this;
+    }
+
+    public Board softDelete() {
+        this.isDeleted = true;
+        return this;
+    }
+}

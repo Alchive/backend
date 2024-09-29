@@ -65,7 +65,7 @@ public class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(tokenService.validateAccessToken(request)).thenReturn(user.getId());
 
         // when
         UserResponseDTO returnedUser = userService.createUser(createRequest);
@@ -113,7 +113,7 @@ public class UserServiceTest {
     void getUser_success() {
         // given
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(tokenService.validateAccessToken(request)).thenReturn(user.getId());
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         // when
@@ -131,7 +131,7 @@ public class UserServiceTest {
     void getUser_userNotFound() {
         // given
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(tokenService.validateAccessToken(request)).thenReturn(user.getId());
         when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 
         // when, then
@@ -146,7 +146,7 @@ public class UserServiceTest {
                 .userDescription("updatedUserDescription")
                 .build();
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(tokenService.validateAccessToken(request)).thenReturn(user.getId());
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -163,7 +163,7 @@ public class UserServiceTest {
     void deleteUser_success() {
         // given
         doNothing().when(tokenService).validateAccessToken(request);
-        when(tokenService.getUserIdFromToken(request)).thenReturn(user.getId());
+        when(tokenService.validateAccessToken(request)).thenReturn(user.getId());
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         // when

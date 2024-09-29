@@ -7,9 +7,10 @@ import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.solution.SolutionLanguage;
 import com.Alchive.backend.domain.solution.SolutionStatus;
 import com.Alchive.backend.dto.request.SolutionRequest;
-import com.Alchive.backend.dto.response.SolutionResponseDTO;
+import com.Alchive.backend.dto.response.SolutionDetailResponseDTO;
 import com.Alchive.backend.repository.BoardRepository;
 import com.Alchive.backend.repository.SolutionRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ public class SolutionServiceTest {
 
     @Mock
     private BoardRepository boardRepository;
+
+    @Mock
+    private HttpServletRequest request;
 
     private Board mockBoard;
     private Solution mockSolution;
@@ -70,7 +74,7 @@ public class SolutionServiceTest {
         when(boardRepository.findById(1L)).thenReturn(Optional.of(mockBoard)); // 게시물이 존재하는 경우
         when(solutionRepository.save(any(Solution.class))).thenReturn(mockSolution); // Solution 객체 저장 시 Mock 객체 반환
 
-        SolutionResponseDTO response = solutionService.createSolution(1L, mockRequest);
+        SolutionDetailResponseDTO response = solutionService.createSolution(request, 1L, mockRequest);
 
         assertNotNull(response); // 응답이 null이 아님을 확인
         assertEquals(mockSolution.getId(), response.getId()); // ID가 일치하는지 확인
@@ -84,7 +88,7 @@ public class SolutionServiceTest {
         when(boardRepository.findById(1L)).thenReturn(Optional.empty()); // 게시물이 존재하지 않는 경우
 
         assertThrows(NotFoundBoardException.class, () -> { // NotFoundBoardException이 발생하는지 검증
-            solutionService.createSolution(1L, mockRequest);
+            solutionService.createSolution(request, 1L, mockRequest);
         });
     }
 
@@ -94,7 +98,7 @@ public class SolutionServiceTest {
         when(solutionRepository.findById(1L)).thenReturn(Optional.of(mockSolution));
         when(solutionRepository.save(any(Solution.class))).thenReturn(mockSolution);
 
-        SolutionResponseDTO response = solutionService.updateSolution(1L, mockRequest);
+        SolutionDetailResponseDTO response = solutionService.updateSolution(request, 1L, mockRequest);
 
         assertNotNull(response);
         assertEquals(mockSolution.getId(), response.getId());
@@ -108,7 +112,7 @@ public class SolutionServiceTest {
         when(solutionRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundSolutionException.class, () -> {
-            solutionService.updateSolution(1L, mockRequest);
+            solutionService.updateSolution(request, 1L, mockRequest);
         });
     }
 
@@ -118,7 +122,7 @@ public class SolutionServiceTest {
         when(solutionRepository.findById(1L)).thenReturn(Optional.of(mockSolution));
         when(solutionRepository.save(any(Solution.class))).thenReturn(mockSolution);
 
-        SolutionResponseDTO response = solutionService.deleteSolution(1L);
+        SolutionDetailResponseDTO response = solutionService.deleteSolution(request, 1L);
 
         assertNotNull(response);
         assertEquals(mockSolution.getId(), response.getId());
@@ -133,7 +137,7 @@ public class SolutionServiceTest {
         when(solutionRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundSolutionException.class, () -> {
-            solutionService.deleteSolution(1L);
+            solutionService.deleteSolution(request, 1L);
         });
     }
 }

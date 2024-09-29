@@ -3,7 +3,7 @@ package com.Alchive.backend.controller;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.SolutionRequest;
-import com.Alchive.backend.dto.response.SolutionResponseDTO;
+import com.Alchive.backend.dto.response.SolutionDetailResponseDTO;
 import com.Alchive.backend.service.SolutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,29 +21,25 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @RequestMapping("/api/v1/solutions")
 public class SolutionController {
     private final SolutionService solutionService;
-    private final TokenService tokenService;
 
     @Operation(summary = "풀이 생성", description = "새로운 풀이를 생성하는 메서드입니다.")
     @PostMapping("/{boardId}")
     public ResponseEntity<ResultResponse> createSolution(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody @Valid SolutionRequest solutionRequest) {
-        tokenService.validateAccessToken(tokenRequest);
-        SolutionResponseDTO solution = solutionService.createSolution(boardId, solutionRequest);
+        SolutionDetailResponseDTO solution = solutionService.createSolution(tokenRequest, boardId, solutionRequest);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_CREATE_SUCCESS, solution));
     }
 
     @Operation(summary = "풀이 수정", description = "풀이 내용을 수정하는 메서드입니다. ")
     @PatchMapping("/{solutionId}")
     public ResponseEntity<ResultResponse> updateSolution(HttpServletRequest tokenRequest, @PathVariable Long solutionId, @RequestBody @Valid SolutionRequest solutionRequest) {
-        tokenService.validateAccessToken(tokenRequest);
-        SolutionResponseDTO solution = solutionService.updateSolution(solutionId, solutionRequest);
+        SolutionDetailResponseDTO solution = solutionService.updateSolution(tokenRequest, solutionId, solutionRequest);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_UPDATE_SUCCESS, solution));
     }
 
     @Operation(summary = "풀이 삭제", description = "풀이를 삭제하는 메서드입니다.")
     @DeleteMapping("/{solutionId}")
     public ResponseEntity<ResultResponse> deleteSolution(HttpServletRequest tokenRequest, @PathVariable Long solutionId) {
-        tokenService.validateAccessToken(tokenRequest);
-        SolutionResponseDTO solution = solutionService.deleteSolution(solutionId);
+        SolutionDetailResponseDTO solution = solutionService.deleteSolution(tokenRequest, solutionId);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_DELETE_SUCCESS, solution));
     }
 }

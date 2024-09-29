@@ -1,15 +1,15 @@
 package com.Alchive.backend.domain.algorithm;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -31,9 +31,16 @@ public class Algorithm {
 
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Column(name = "name", nullable = false, length = 30)
     private String name;
+
+    public static Algorithm of(String name) {
+        return Algorithm.builder()
+                .name(name)
+                .isDeleted(false)
+                .build();
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.Alchive.backend.service;
 
+import com.Alchive.backend.config.error.exception.token.UnmatchedUserIdException;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
 import com.Alchive.backend.config.error.exception.user.UserNameExistException;
@@ -48,14 +49,14 @@ public class UserService {
     public User getUserDetail(HttpServletRequest tokenRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException());
+                .orElseThrow(NoSuchUserIdException::new);
     }
 
     @Transactional
     public void updateUserDetail(HttpServletRequest tokenRequest, UserUpdateRequest updateRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException());
+                .orElseThrow(NoSuchUserIdException::new);
         user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
     }
 
@@ -63,7 +64,13 @@ public class UserService {
     public void deleteUserDetail(HttpServletRequest tokenRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchUserIdException());
+                .orElseThrow(NoSuchUserIdException::new);
         userRepository.delete(user);
+    }
+
+    public void validateUser(Long userId, Long requestedId) {
+        if (requestedId != userId) {
+            throw new UnmatchedUserIdException();
+        }
     }
 }

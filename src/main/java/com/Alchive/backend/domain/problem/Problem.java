@@ -1,15 +1,16 @@
 package com.Alchive.backend.domain.problem;
 
+import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -29,9 +30,10 @@ public class Problem {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @ColumnDefault("false")
     @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Column(name = "number", nullable = false)
     private int number;
@@ -53,4 +55,14 @@ public class Problem {
     @Column(name = "platform", nullable = false, length = 20)
     private ProblemPlatform platform;
 
+    public static Problem of(ProblemCreateRequest problemCreateRequest) {
+        return Problem.builder()
+                .number(problemCreateRequest.getNumber())
+                .title(problemCreateRequest.getTitle())
+                .content(problemCreateRequest.getContent())
+                .url(problemCreateRequest.getUrl())
+                .difficulty(problemCreateRequest.getDifficulty())
+                .platform(problemCreateRequest.getPlatform())
+                .build();
+    }
 }

@@ -11,10 +11,11 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
-public class SolutionResponseDTO {
+public class SolutionDetailResponseDTO {
     private Long id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Board board;
     private String content;
     private SolutionLanguage language;
     private String description;
@@ -23,10 +24,11 @@ public class SolutionResponseDTO {
     private Integer time;
     private LocalDateTime submitAt;
 
-    public SolutionResponseDTO(Solution solution) {
+    public SolutionDetailResponseDTO(Solution solution) {
         this.id = solution.getId();
         this.createdAt = solution.getCreatedAt();
         this.updatedAt = solution.getUpdatedAt();
+        this.board = solution.getBoard();
         this.content = solution.getContent();
         this.language = solution.getLanguage();
         this.description = solution.getDescription();
