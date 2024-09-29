@@ -65,7 +65,8 @@ public class UserService {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(NoSuchUserIdException::new);
-        userRepository.delete(user);
+        user.softDelete();
+        userRepository.save(user);
     }
 
     public void validateUser(Long userId, Long requestedId) {
