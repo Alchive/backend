@@ -34,7 +34,7 @@ public class BoardController {
 
     @Operation(summary = "게시물 조회", description = "게시물 정보를 조회하는 메서드입니다. ")
     @GetMapping("/{boardId}")
-    public  ResponseEntity<ResultResponse> getBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
+    public  ResponseEntity<ResultResponse> getBoardDetail(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
         BoardDetailResponseDTO board = boardService.getBoardDetail(tokenRequest, boardId);
         return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
     }
