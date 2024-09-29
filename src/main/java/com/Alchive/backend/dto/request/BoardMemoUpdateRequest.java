@@ -1,12 +1,17 @@
 package com.Alchive.backend.dto.request;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Value;
 
-@AllArgsConstructor
 @Builder
 @Getter
 public class BoardMemoUpdateRequest {
-    private String memo;
+    private final String memo;
+    @JsonCreator
+    public BoardMemoUpdateRequest(@JsonProperty("memo") String memo) {
+        this.memo = memo;
+    }
 }
