@@ -106,10 +106,4 @@ public class TokenService {
         Claims claims = getClaimsWithoutExpirationCheck(token);
         return generateAccessToken(Long.parseLong(claims.getSubject()));
     }
-
-    public void validateUser(Long userId, Long requestedId) {
-        if (requestedId != userId) {
-            throw new UnmatchedUserIdException();
-        }
-    }
 }

@@ -35,6 +35,7 @@ public class BoardService {
     private final AlgorithmProblemRepository algorithmProblemRepository;
     private final SolutionRepository solutionRepository;
     private final TokenService tokenService;
+    private final UserService userService;
 
     // 게시물 메서드
     @Transactional
@@ -78,7 +79,7 @@ public class BoardService {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
-        tokenService.validateUser(userId, board.getUser().getId());
+        userService.validateUser(userId, board.getUser().getId());
         board.update(updateRequest.getMemo());
         return new BoardResponseDTO(boardRepository.save(board));
     }
@@ -88,7 +89,7 @@ public class BoardService {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
-        tokenService.validateUser(userId, board.getUser().getId());
+        userService.validateUser(userId, board.getUser().getId());
         board.softDelete();
         boardRepository.save(board);
     }

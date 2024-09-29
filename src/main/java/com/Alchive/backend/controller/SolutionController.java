@@ -21,7 +21,6 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @RequestMapping("/api/v1/solutions")
 public class SolutionController {
     private final SolutionService solutionService;
-    private final TokenService tokenService;
 
     @Operation(summary = "풀이 생성", description = "새로운 풀이를 생성하는 메서드입니다.")
     @PostMapping("/{boardId}")
@@ -33,7 +32,6 @@ public class SolutionController {
     @Operation(summary = "풀이 수정", description = "풀이 내용을 수정하는 메서드입니다. ")
     @PatchMapping("/{solutionId}")
     public ResponseEntity<ResultResponse> updateSolution(HttpServletRequest tokenRequest, @PathVariable Long solutionId, @RequestBody @Valid SolutionRequest solutionRequest) {
-        Long userId = tokenService.validateAccessToken(tokenRequest);
         SolutionDetailResponseDTO solution = solutionService.updateSolution(tokenRequest, solutionId, solutionRequest);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_UPDATE_SUCCESS, solution));
     }

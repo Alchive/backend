@@ -20,6 +20,7 @@ public class SolutionService {
     private final SolutionRepository solutionRepository;
     private final BoardRepository boardRepository;
     private final TokenService tokenService;
+    private final UserService userService;
 
     public SolutionDetailResponseDTO createSolution(HttpServletRequest tokenRequest, Long boardId, SolutionRequest solutionRequest) {
         tokenService.validateAccessToken(tokenRequest);
@@ -32,7 +33,7 @@ public class SolutionService {
     public SolutionDetailResponseDTO updateSolution(HttpServletRequest tokenRequest, Long solutionId, SolutionRequest solutionRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Solution solution = solutionRepository.findById(solutionId).orElseThrow(NotFoundSolutionException::new);
-        tokenService.validateUser(userId, solution.getBoard().getUser().getId());
+        userService.validateUser(userId, solution.getBoard().getUser().getId());
         solution.update(solutionRequest);
         return new SolutionDetailResponseDTO(solutionRepository.save(solution));
     }
@@ -41,7 +42,7 @@ public class SolutionService {
     public SolutionDetailResponseDTO deleteSolution(HttpServletRequest tokenRequest, Long solutionId) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Solution solution = solutionRepository.findById(solutionId).orElseThrow(NotFoundSolutionException::new);
-        tokenService.validateUser(userId, solution.getBoard().getUser().getId());
+        userService.validateUser(userId, solution.getBoard().getUser().getId());
         solution.softDelete();
         return new SolutionDetailResponseDTO(solutionRepository.save(solution));
     }

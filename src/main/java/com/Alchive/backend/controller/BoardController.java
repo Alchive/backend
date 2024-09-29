@@ -23,7 +23,6 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @RestController
 @RequestMapping("/api/v1/boards")
 public class BoardController {
-    private final TokenService tokenService;
     private final BoardService boardService;
 
     @Operation(summary = "게시물 생성", description = "새로운 게시물을 생성하는 메서드입니다. ")

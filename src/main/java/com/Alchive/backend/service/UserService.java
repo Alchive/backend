@@ -1,5 +1,6 @@
 package com.Alchive.backend.service;
 
+import com.Alchive.backend.config.error.exception.token.UnmatchedUserIdException;
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
 import com.Alchive.backend.config.error.exception.user.UserNameExistException;
@@ -65,5 +66,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(NoSuchUserIdException::new);
         userRepository.delete(user);
+    }
+
+    public void validateUser(Long userId, Long requestedId) {
+        if (requestedId != userId) {
+            throw new UnmatchedUserIdException();
+        }
     }
 }
