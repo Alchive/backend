@@ -10,10 +10,7 @@ import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.problem.Problem;
 import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.user.User;
-import com.Alchive.backend.dto.request.BoardCreateRequest;
-import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
-import com.Alchive.backend.dto.request.PaginationRequest;
-import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.request.*;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.dto.response.ProblemResponseDTO;
@@ -61,9 +58,10 @@ public class BoardService {
         return new BoardDetailResponseDTO(boardResponseDTO, problemResponseDTO, solutions);
     }
 
-    public BoardDetailResponseDTO isBoardSaved(HttpServletRequest tokenRequest, int problemNumber) {
+    // Board 저장 여부 구현
+    public BoardDetailResponseDTO isBoardSaved(HttpServletRequest tokenRequest, ProblemNumberRequest problemNumberRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
-        Optional<Board> board = boardRepository.findByProblem_NumberAndUser_Id(problemNumber, userId);
+        Optional<Board> board = boardRepository.findByProblem_PlatformAndProblem_NumberAndUser_Id(problemNumberRequest.getPlatform(), problemNumberRequest.getProblemNumber(), userId);
         return board.map(this::toBoardDetailResponseDTO).orElse(null);
     }
 

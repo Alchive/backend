@@ -4,6 +4,7 @@ import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
 import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
 import com.Alchive.backend.dto.request.PaginationRequest;
+import com.Alchive.backend.dto.request.ProblemNumberRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.service.BoardService;
@@ -30,10 +31,15 @@ public class BoardController {
     private final BoardService boardService;
 
     @Operation(summary = "게시물 저장 여부 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
-    @GetMapping("/saved/{problemNumber}")
-    public ResponseEntity<ResultResponse> isBoardSaved(HttpServletRequest tokenRequest, @PathVariable int problemNumber) {
-        BoardDetailResponseDTO board = boardService.isBoardSaved(tokenRequest, problemNumber);
-        return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
+    @PostMapping("/saved")
+    public ResponseEntity<ResultResponse> isBoardSaved(HttpServletRequest tokenRequest, @RequestBody @Valid ProblemNumberRequest problemNumberRequest) {
+        BoardDetailResponseDTO board = boardService.isBoardSaved(tokenRequest, problemNumberRequest);
+        if (board != null) {
+            log.info(board.toString());
+            return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
+        } else {
+            return ResponseEntity.ok(ResultResponse.of(BOARD_NOT_EXIST, null));
+        }
     }
 
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
