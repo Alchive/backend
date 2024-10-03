@@ -30,7 +30,7 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 public class BoardController {
     private final BoardService boardService;
 
-    @Operation(summary = "게시물 저장 여부 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
+    @Operation(summary = "게시물 저장 여부 조회", description = "게시물의 저장 여부를 조회하는 메서드입니다. ")
     @PostMapping("/saved")
     public ResponseEntity<ResultResponse> isBoardSaved(HttpServletRequest tokenRequest, @RequestBody @Valid ProblemNumberRequest problemNumberRequest) {
         BoardDetailResponseDTO board = boardService.isBoardSaved(tokenRequest, problemNumberRequest);
