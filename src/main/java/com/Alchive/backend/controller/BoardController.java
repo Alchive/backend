@@ -1,9 +1,10 @@
 package com.Alchive.backend.controller;
 
-import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
 import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
+import com.Alchive.backend.dto.request.PaginationRequest;
+import com.Alchive.backend.dto.request.ProblemNumberRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.service.BoardService;
@@ -13,8 +14,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 import static com.Alchive.backend.config.result.ResultCode.*;
 
 @Slf4j
@@ -25,6 +30,25 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 public class BoardController {
     private final BoardService boardService;
 
+    @Operation(summary = "게시물 저장 여부 조회", description = "게시물의 저장 여부를 조회하는 메서드입니다. ")
+    @PostMapping("/saved")
+    public ResponseEntity<ResultResponse> isBoardSaved(HttpServletRequest tokenRequest, @RequestBody @Valid ProblemNumberRequest problemNumberRequest) {
+        BoardDetailResponseDTO board = boardService.isBoardSaved(tokenRequest, problemNumberRequest);
+        if (board != null) {
+            log.info(board.toString());
+            return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
+        } else {
+            return ResponseEntity.ok(ResultResponse.of(BOARD_NOT_EXIST, null));
+        }
+    }
+
+    @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
+    @GetMapping("")
+    public ResponseEntity<ResultResponse> getBoardList(@ModelAttribute PaginationRequest paginationRequest) {
+        Page<List<BoardDetailResponseDTO>> boardList = boardService.getBoardList(paginationRequest);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_LIST_INFO_SUCCESS, boardList));
+    }
+
     @Operation(summary = "게시물 생성", description = "새로운 게시물을 생성하는 메서드입니다. ")
     @PostMapping("")
     public ResponseEntity<ResultResponse> createBoard(HttpServletRequest tokenRequest, @RequestBody @Valid BoardCreateRequest boardCreateRequest) {
@@ -34,9 +58,9 @@ public class BoardController {
 
     @Operation(summary = "게시물 조회", description = "게시물 정보를 조회하는 메서드입니다. ")
     @GetMapping("/{boardId}")
-    public  ResponseEntity<ResultResponse> getBoardDetail(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
-        BoardDetailResponseDTO board = boardService.getBoardDetail(tokenRequest, boardId);
-        return ResponseEntity.ok(ResultResponse.of(BOARD_DETAIL_INFO_SUCCESS, board));
+    public ResponseEntity<ResultResponse> getBoard(@PathVariable Long boardId) {
+        BoardDetailResponseDTO board = boardService.getBoardDetail(boardId);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
     }
 
     @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")
@@ -47,7 +71,7 @@ public class BoardController {
     }
 
     @Operation(summary = "게시물 삭제", description = "게시물을 삭제하는 메서드입니다. ")
-    @DeleteMapping ("/{boardId}")
+    @DeleteMapping("/{boardId}")
     public ResponseEntity<ResultResponse> deleteBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
         boardService.deleteBoard(tokenRequest, boardId);
         return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));

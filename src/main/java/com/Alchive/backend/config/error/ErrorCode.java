@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     // 일반적인 응답
-    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "B001", "서버 에러"),
-    _BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "B002", "잘못된 요청"),
-    _UNAUTHORIZED(HttpStatus.UNAUTHORIZED.value(), "B003", "인증 필요"),
-    _FORBIDDEN(HttpStatus.FORBIDDEN.value(), "B004", "금지된 요청"),
+    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "G001", "서버 에러"),
+    _BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "G002", "잘못된 요청"),
+    _UNAUTHORIZED(HttpStatus.UNAUTHORIZED.value(), "G003", "인증 필요"),
+    _FORBIDDEN(HttpStatus.FORBIDDEN.value(), "G004", "금지된 요청"),
 
     // AUTH
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), "A001", "토큰 만료"),
