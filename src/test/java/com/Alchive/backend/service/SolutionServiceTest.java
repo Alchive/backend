@@ -6,7 +6,7 @@ import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.solution.SolutionLanguage;
 import com.Alchive.backend.domain.solution.SolutionStatus;
-import com.Alchive.backend.dto.request.SolutionRequest;
+import com.Alchive.backend.dto.request.SolutionCreateRequest;
 import com.Alchive.backend.dto.response.SolutionDetailResponseDTO;
 import com.Alchive.backend.repository.BoardRepository;
 import com.Alchive.backend.repository.SolutionRepository;
@@ -40,7 +40,7 @@ public class SolutionServiceTest {
 
     private Board mockBoard;
     private Solution mockSolution;
-    private SolutionRequest mockRequest;
+    private SolutionCreateRequest mockRequest;
 
     @BeforeEach
     void setUp() {
@@ -57,7 +57,7 @@ public class SolutionServiceTest {
                 .board(mockBoard)
                 .build();
 
-        mockRequest = SolutionRequest.builder()
+        mockRequest = SolutionCreateRequest.builder()
                 .content("Sample content")
                 .language(SolutionLanguage.JAVA)
                 .description("Sample description")
