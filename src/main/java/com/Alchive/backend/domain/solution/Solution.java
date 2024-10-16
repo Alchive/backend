@@ -1,7 +1,8 @@
 package com.Alchive.backend.domain.solution;
 
 import com.Alchive.backend.domain.board.Board;
-import com.Alchive.backend.dto.request.SolutionRequest;
+import com.Alchive.backend.dto.request.SolutionCreateRequest;
+import com.Alchive.backend.dto.request.SolutionUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -63,7 +64,7 @@ public class Solution {
     @Column(name = "submitAt")
     private LocalDateTime submitAt;
 
-    public static Solution of(Board board, SolutionRequest solutionRequest) {
+    public static Solution of(Board board, SolutionCreateRequest solutionRequest) {
         return Solution.builder()
                 .board(board)
                 .content(solutionRequest.getContent())
@@ -76,14 +77,8 @@ public class Solution {
                 .build();
     }
 
-    public Solution update(SolutionRequest solutionRequest) {
-        this.content = solutionRequest.getContent();
-        this.language = solutionRequest.getLanguage();
+    public Solution update(SolutionUpdateRequest solutionRequest) {
         this.description = solutionRequest.getDescription();
-        this.status = solutionRequest.getStatus();
-        this.memory = solutionRequest.getMemory();
-        this.time = solutionRequest.getTime();
-        this.submitAt = solutionRequest.getSubmitAt();
         return this;
     }
 

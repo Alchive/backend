@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @AllArgsConstructor
-public class SolutionRequest {
+public class SolutionCreateRequest {
     @NotBlank(message = "코드 내용은 필수입니다.")
     private String content;
     @NotNull(message = "언어 정보는 필수입니다.")
