@@ -1,6 +1,7 @@
 package com.Alchive.backend.domain.problem;
 
 public enum ProblemDifficulty {
+    LEVEL0("레벨 0"),
 
     LEVEL1("레벨 1"),
     LEVEL2("레벨 2"),

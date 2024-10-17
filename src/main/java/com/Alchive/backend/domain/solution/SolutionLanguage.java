@@ -4,7 +4,7 @@ public enum SolutionLanguage {
     PYTHON("python"),
     CPP("c++"),
     C("c"),
-    JS("js"),
+    JAVASCRIPT("javascript"),
     JAVA("java");
 
     private final String description;
