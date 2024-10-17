@@ -44,7 +44,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     .build().toUriString();
         }
         else { // 회원가입인 경우
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signin")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/sign")
                     .queryParam("email",email)
                     .build().toUriString();
         }
