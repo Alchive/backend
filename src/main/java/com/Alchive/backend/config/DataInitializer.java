@@ -46,6 +46,12 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        // 데이터가 이미 존재하는지 확인
+        if (userRepository.count() > 0) {
+            log.info("데이터가 이미 존재하므로 초기화 작업을 건너뜁니다.");
+            return;
+        }
+        
         // User 목업 데이터 생성
         User user1 = User.builder()
                 .userEmail("chohana@alchive.com")
