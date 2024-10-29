@@ -51,7 +51,8 @@ public class Board {
     @Column(name = "status", length = 10, nullable = false)
     private BoardStatus status;
 
-    @Column(name = "description")
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     public static Board of(Problem problem, User user, BoardCreateRequest boardCreateRequest) {

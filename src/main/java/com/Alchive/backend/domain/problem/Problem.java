@@ -41,7 +41,8 @@ public class Problem {
     @Column(name = "title", nullable = false, length = 60)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Lob
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "url", nullable = false, length = 300)

@@ -41,14 +41,16 @@ public class Solution {
     @JoinColumn(name = "boardId", nullable = false)
     private Board board;
 
-    @Column(name = "content")
+    @Lob
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "language", length = 20, nullable = false)
     private SolutionLanguage language;
 
-    @Column(name = "description")
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
