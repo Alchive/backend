@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PaginationRequest {
     private int offset = 0;
-    private int limit = 10;
+    private int limit = 20;
 }
