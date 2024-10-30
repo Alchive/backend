@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 
 @Slf4j
@@ -50,30 +51,33 @@ public class SlackService {
 
     public void sendMessageCreateBoard(BoardCreateRequest boardCreateRequest, BoardResponseDTO board) {
         String message = "";
-        if (boardCreateRequest.getStatus() != BoardStatus.NOT_SUBMITTED) {
+        if (boardCreateRequest.getStatus() == BoardStatus.CORRECT) {
             message = String.format(":partying_face: %d. %s 문제를 해결했습니다! \n \n<http://localhost:5173/detail/%s|:link: alchive.com/detail/%s>",
                     boardCreateRequest.getProblemCreateRequest().getNumber(),
                     boardCreateRequest.getProblemCreateRequest().getTitle(),
                     board.getId(), board.getId());
-        } else {
-            message = String.format(":round_pushpin: %d. %s 문제를 저장했습니다. \n \n3일 뒤 리마인드 알림을 보내드릴게요! :saluting_face: \n \n<%s|:link: 문제 보러가기>",
+        } else if (boardCreateRequest.getStatus() == BoardStatus.NOT_SUBMITTED) {
+            message = String.format(":round_pushpin: %d. %s 문제를 저장했습니다. \n \n리마인드 알림을 보내드릴게요! :saluting_face: \n \n<%s|:link: 문제 보러가기>",
                     boardCreateRequest.getProblemCreateRequest().getNumber(),
                     boardCreateRequest.getProblemCreateRequest().getTitle(),
                     boardCreateRequest.getProblemCreateRequest().getUrl());
+        } else {
+            return;
         }
         sendMessage(message);
     }
 
-    @Scheduled(cron = "0 0 18 * * *")
+    @Scheduled(cron = "0 0 18 * * *") // 매일 오후 6시마다
     public void sendMessageReminderBoard() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
 
         Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo);
 
         if (unSolvedBoard != null) {
-            String message = String.format(":star-struck: %d. %s 문제를 아직 풀지 못했어요. \n \n다시 도전해보세요! :facepunch: \n \n<%s|:link: 문제 풀러가기>",
+            String message = String.format(":star-struck: %d. %s 문제를 아직 풀지 못했어요. (%d일 전)\n \n다시 도전해보세요! :facepunch: \n \n<%s|:link: 문제 풀러가기>",
                     unSolvedBoard.getProblem().getNumber(),
                     unSolvedBoard.getProblem().getTitle(),
+                    ChronoUnit.DAYS.between(unSolvedBoard.getCreatedAt(), LocalDateTime.now()),
                     unSolvedBoard.getProblem().getUrl());
             sendMessage(message);
         } else {
