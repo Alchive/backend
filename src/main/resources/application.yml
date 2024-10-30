@@ -33,3 +33,9 @@ springdoc:
   writer-with-default-pretty-printer: true # 예쁘게
   paths-to-match:
     - /api/v1/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
