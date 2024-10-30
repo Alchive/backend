@@ -8,6 +8,7 @@ import com.Alchive.backend.dto.request.ProblemNumberRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.service.BoardService;
+import com.Alchive.backend.slack.SlackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @RequestMapping("/api/v1/boards")
 public class BoardController {
     private final BoardService boardService;
+    private final SlackService slackService;
 
     @Operation(summary = "게시물 저장 여부 조회", description = "게시물의 저장 여부를 조회하는 메서드입니다. ")
     @PostMapping("/saved")
@@ -53,6 +55,7 @@ public class BoardController {
     @PostMapping("")
     public ResponseEntity<ResultResponse> createBoard(HttpServletRequest tokenRequest, @RequestBody @Valid BoardCreateRequest boardCreateRequest) {
         BoardResponseDTO board = boardService.createBoard(tokenRequest, boardCreateRequest);
+        slackService.sendMessageCreateBoard(boardCreateRequest, board);
         return ResponseEntity.ok(ResultResponse.of(BOARD_CREATE_SUCCESS, board));
     }
 
