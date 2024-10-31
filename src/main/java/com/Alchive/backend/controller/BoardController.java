@@ -3,7 +3,6 @@ package com.Alchive.backend.controller;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
 import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
-import com.Alchive.backend.dto.request.PaginationRequest;
 import com.Alchive.backend.dto.request.ProblemNumberRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
@@ -46,8 +45,10 @@ public class BoardController {
 
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
     @GetMapping("")
-    public ResponseEntity<ResultResponse> getBoardList(@ModelAttribute PaginationRequest paginationRequest) {
-        Page<List<BoardDetailResponseDTO>> boardList = boardService.getBoardList(paginationRequest);
+    public ResponseEntity<ResultResponse> getBoardList(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                                       @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        log.info("paginationRequest: {}, {}", offset, limit);
+        Page<List<BoardDetailResponseDTO>> boardList = boardService.getBoardList(offset, limit);
         return ResponseEntity.ok(ResultResponse.of(BOARD_LIST_INFO_SUCCESS, boardList));
     }
 

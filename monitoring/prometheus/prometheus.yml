@@ -5,7 +5,8 @@ scrape_configs:
   - job_name: 'springboot'  # 스프링부트 애플리케이션 모니터링
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'springboot:8080' ] # springboot 서비스의 주소
+      #      - targets: [ 'springboot:8080' ] # springboot 서비스의 주소
+      - targets: [ 'localhost:8080' ] # springboot 서비스의 주소 (로컬)
 
   - job_name: 'cadvisor'  # cAdvisor 모니터링
     static_configs:

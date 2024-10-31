@@ -27,7 +27,6 @@ public class DataInitializer implements CommandLineRunner {
     private final SolutionRepository solutionRepository;
     private final BoardRepository boardRepository;
     private final AlgorithmRepository algorithmRepository;
-    private final AlgorithmProblemRepository algorithmProblemRepository;
 
     public DataInitializer(UserRepository userRepository,
                            ProblemRepository problemRepository,
@@ -40,7 +39,6 @@ public class DataInitializer implements CommandLineRunner {
         this.solutionRepository = solutionRepository;
         this.boardRepository = boardRepository;
         this.algorithmRepository = algorithmRepository;
-        this.algorithmProblemRepository = algorithmProblemRepository;
     }
 
     @Override
@@ -51,7 +49,7 @@ public class DataInitializer implements CommandLineRunner {
             log.info("데이터가 이미 존재하므로 초기화 작업을 건너뜁니다.");
             return;
         }
-        
+
         // User 목업 데이터 생성
         User user1 = User.builder()
                 .userEmail("chohana@alchive.com")
