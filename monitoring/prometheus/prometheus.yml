@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s # 데이터 수집 주기
+
+scrape_configs:
+  - job_name: 'springboot'  # 스프링부트 애플리케이션 모니터링
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'springboot:8080' ] # springboot 서비스의 주소
+
+  - job_name: 'cadvisor'  # cAdvisor 모니터링
+    static_configs:
+      - targets: [ 'cadvisor:8081' ] # cadvisor 서비스의 주소
