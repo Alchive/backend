@@ -24,4 +24,10 @@ public class SlackController {
         slackService.sendMessage(":wave: Hi from a bot written in Alchive!");
         log.info("Slack Test");
     }
+
+    @Operation(summary = "문제 리마인더", description = "30분마다 해결하지 못한 문제를 리마인드해주는 메서드입니다. ")
+    @GetMapping("/reminder")
+    public void sendReminder() {
+        slackService.sendMessageReminderBoard();
+    }
 }

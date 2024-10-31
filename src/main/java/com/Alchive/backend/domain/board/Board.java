@@ -6,7 +6,6 @@ import com.Alchive.backend.dto.request.BoardCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,7 @@ public class Board {
     @Column(name = "id", columnDefinition = "INT")
     private Long id;
 
-    @CreationTimestamp
+    //    @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -62,6 +61,7 @@ public class Board {
                 .memo(boardCreateRequest.getMemo())
                 .status(boardCreateRequest.getStatus())
                 .description(boardCreateRequest.getDescription())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 

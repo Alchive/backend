@@ -67,9 +67,9 @@ public class SlackService {
         sendMessage(message);
     }
 
-    @Scheduled(cron = "0 0 18 * * *") // 매일 오후 6시마다
+    @Scheduled(cron = "0 0 * * * *") // 정각마다 알림
     public void sendMessageReminderBoard() {
-        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(1);
 
         Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo);
 

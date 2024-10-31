@@ -10,7 +10,10 @@ import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.problem.Problem;
 import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.user.User;
-import com.Alchive.backend.dto.request.*;
+import com.Alchive.backend.dto.request.BoardCreateRequest;
+import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
+import com.Alchive.backend.dto.request.ProblemCreateRequest;
+import com.Alchive.backend.dto.request.ProblemNumberRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.dto.response.ProblemResponseDTO;
@@ -65,8 +68,9 @@ public class BoardService {
         return board.map(this::toBoardDetailResponseDTO).orElse(null);
     }
 
-    public Page<List<BoardDetailResponseDTO>> getBoardList(PaginationRequest paginationRequest) {
-        Pageable pageable = PageRequest.of(paginationRequest.getOffset(), paginationRequest.getLimit());
+    public Page<List<BoardDetailResponseDTO>> getBoardList(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        log.info("pageable: {}", pageable);
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
         // Board를 BoardDetailResponseDTO로 변환

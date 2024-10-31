@@ -5,7 +5,13 @@ public enum SolutionLanguage {
     CPP("c++"),
     C("c"),
     JAVASCRIPT("javascript"),
-    JAVA("java");
+    JAVA("java"),
+    CSHARP("c#"),
+    KOTLIN("kotlin"),
+    RUBY("ruby"),
+    GO("go"),
+    SCALA("scala"),
+    SWIFT("swift");
 
     private final String description;
 
