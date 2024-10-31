@@ -50,6 +50,11 @@ dependencies {
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+    
+    // Slack API
+	  implementation("com.slack.api:bolt:1.18.0")
+	  implementation("com.slack.api:bolt-servlet:1.18.0")
+	  implementation("com.slack.api:bolt-jetty:1.18.0")
 }
 
 tasks.named('test') {
