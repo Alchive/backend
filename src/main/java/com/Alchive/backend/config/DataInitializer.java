@@ -1358,7 +1358,7 @@ public class DataInitializer implements CommandLineRunner {
         Random random = new Random();
 
         for (Problem problem : problems) {
-            int numberOfAlgorithms = random.nextInt(3) + 1; // 1에서 3개의 알고리즘 선택
+            int numberOfAlgorithms = random.nextInt(2) + 1; // 1에서 2개의 알고리즘 선택
             Set<Algorithm> selectedAlgorithms = new HashSet<>(); // 선택된 알고리즘을 추적
 
             while (selectedAlgorithms.size() < numberOfAlgorithms) {
