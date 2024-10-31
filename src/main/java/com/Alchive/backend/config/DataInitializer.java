@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -1357,15 +1359,21 @@ public class DataInitializer implements CommandLineRunner {
 
         for (Problem problem : problems) {
             int numberOfAlgorithms = random.nextInt(3) + 1; // 1에서 3개의 알고리즘 선택
-            for (int i = 0; i < numberOfAlgorithms; i++) {
+            Set<Algorithm> selectedAlgorithms = new HashSet<>(); // 선택된 알고리즘을 추적
+
+            while (selectedAlgorithms.size() < numberOfAlgorithms) {
                 Algorithm randomAlgorithm = algorithms.get(random.nextInt(algorithms.size()));
 
-                // AlgorithmProblem을 생성하고 저장
-                AlgorithmProblem algorithmProblem = AlgorithmProblem.of(randomAlgorithm, problem);
-                algorithmProblemRepository.save(algorithmProblem);
+                // 중복이 없을 때만 추가
+                if (!selectedAlgorithms.contains(randomAlgorithm)) {
+                    selectedAlgorithms.add(randomAlgorithm);
+
+                    // AlgorithmProblem을 생성하고 저장
+                    AlgorithmProblem algorithmProblem = AlgorithmProblem.of(randomAlgorithm, problem);
+                    algorithmProblemRepository.save(algorithmProblem);
+                }
             }
         }
-
 
         log.info("목업 데이터가 성공적으로 삽입되었습니다.");
     }
