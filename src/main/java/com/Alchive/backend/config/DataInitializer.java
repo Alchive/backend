@@ -1,6 +1,7 @@
 package com.Alchive.backend.config;
 
 import com.Alchive.backend.domain.algorithm.Algorithm;
+import com.Alchive.backend.domain.algorithmProblem.AlgorithmProblem;
 import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.board.BoardStatus;
 import com.Alchive.backend.domain.problem.Problem;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Component
@@ -27,6 +30,7 @@ public class DataInitializer implements CommandLineRunner {
     private final SolutionRepository solutionRepository;
     private final BoardRepository boardRepository;
     private final AlgorithmRepository algorithmRepository;
+    private final AlgorithmProblemRepository algorithmProblemRepository;
 
     public DataInitializer(UserRepository userRepository,
                            ProblemRepository problemRepository,
@@ -39,6 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         this.solutionRepository = solutionRepository;
         this.boardRepository = boardRepository;
         this.algorithmRepository = algorithmRepository;
+        this.algorithmProblemRepository = algorithmProblemRepository;
     }
 
     @Override
@@ -76,17 +81,11 @@ public class DataInitializer implements CommandLineRunner {
         userRepository.save(user4);
 
         // Algorithm 목업 데이터 생성
-        Algorithm algorithm1 = Algorithm.of("Binary Search");
-        algorithmRepository.save(algorithm1);
-
-        Algorithm algorithm2 = Algorithm.of("Dynamic Programming");
-        algorithmRepository.save(algorithm2);
-
-        Algorithm algorithm3 = Algorithm.of("DFS");
-        algorithmRepository.save(algorithm3);
-
-        Algorithm algorithm4 = Algorithm.of("BFS");
-        algorithmRepository.save(algorithm4);
+        String[] algorithmNames = {"이분탐색", "DP", "BFS", "DFS", "브루트포스", "그리디", "정렬", "구현", "그래프"};
+        for (String name : algorithmNames) {
+            Algorithm algorithm = Algorithm.of(name);
+            algorithmRepository.save(algorithm);
+        }
 
         // Problem1 목업 데이터 생성
         Problem problem1 = Problem.builder()
@@ -109,8 +108,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem1)
                 .user(user1)
                 .memo("Hash Map을 사용하면 되지 않을까?")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: **Hash Map**")
+                .createdAt(LocalDateTime.parse("2024-08-27T15:08:50"))
                 .build();
         boardRepository.save(board1);
 
@@ -270,7 +270,7 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem2)
                 .user(user1)
                 .memo("자스로도 다시 풀어봐야겠다")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.COMPLETED)
                 .description("사진 속 인물은 여러 명이지만 모두를 그리워하진 않는다.<br>" +
                         "그리워하는 인물들은 따로 정해져있는데 이 인물들마다 그리움 점수가 있다.<br>" +
                         "<br>" +
@@ -284,6 +284,7 @@ public class DataInitializer implements CommandLineRunner {
                         "name과 yearning 매칭은 map 사용하거나 for문은 같은 인덱스 별로 묶어 계산<br>" +
                         "배열은 0부터 N까지 돌아가면서 탐색<br>" +
                         "map은 해당 key에 있는 value를 바로 가져온다 → 속도 빠름")
+                .createdAt(LocalDateTime.parse("2024-09-03T15:08:50"))
                 .build();
         boardRepository.save(board2);
 
@@ -367,8 +368,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem3)
                 .user(user1)
                 .memo("Two Pointer를 사용해보자")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: Two Pointer")
+                .createdAt(LocalDateTime.parse("2024-09-16T15:08:50"))
                 .build();
         boardRepository.save(board3);
 
@@ -419,8 +421,10 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem4)
                 .user(user1)
                 .memo("큐와 우선순위 큐 개념 복습 필요")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.COMPLETED)
                 .description("사용 알고리즘: Queue, Priority Queue")
+                .createdAt(LocalDateTime.parse("2024-09-17T22:08:50"))
+
                 .build();
         boardRepository.save(board4);
 
@@ -462,7 +466,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution4);
 
-// Problem5 목업 데이터 생성
+        // Problem5 목업 데이터 생성
         Problem problem5 = Problem.builder()
                 .number(42586)
                 .title("기능개발")
@@ -480,6 +484,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("작업 속도와 진도 계산 방법 이해 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Queue")
+                .createdAt(LocalDateTime.parse("2024-09-18T03:08:50"))
                 .build();
         boardRepository.save(board5);
 
@@ -513,7 +518,7 @@ public class DataInitializer implements CommandLineRunner {
                         "}")
                 .language(SolutionLanguage.JAVA)
                 .description("각 작업의 남은 진도를 작업 속도로 나누어 완료까지 필요한 일수를 계산한 후, 다음 작업을 현재 작업과 비교하여 동시에 배포 가능한 경우를 체크하며 카운트를 증가시킴. 새로운 배포가 필요할 때마다 결과 리스트에 추가.")
-                .status(SolutionStatus.CORRECT)
+                .status(SolutionStatus.INCORRECT)
                 .memory(256)
                 .time(100)
                 .submitAt(LocalDateTime.now())
@@ -537,8 +542,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem6)
                 .user(user1)
                 .memo("Stack 자료구조로 해결해보자")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: Stack")
+                .createdAt(LocalDateTime.parse("2024-09-21T16:08:50"))
                 .build();
         boardRepository.save(board6);
 
@@ -568,7 +574,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution6);
 
-// Problem7 목업 데이터 생성
+        // Problem7 목업 데이터 생성
         Problem problem7 = Problem.builder()
                 .number(12945)
                 .title("피보나치 수")
@@ -586,6 +592,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("Dynamic Programming으로 해결 가능")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Dynamic Programming")
+                .createdAt(LocalDateTime.parse("2024-10-01T15:08:50"))
                 .build();
         boardRepository.save(board7);
 
@@ -606,7 +613,7 @@ public class DataInitializer implements CommandLineRunner {
                         "}")
                 .language(SolutionLanguage.JAVA)
                 .description("Dynamic Programming을 사용하여 피보나치 수를 구하며, 큰 수로 인해 값이 커질 때마다 1234567로 나눈 나머지를 저장함.")
-                .status(SolutionStatus.CORRECT)
+                .status(SolutionStatus.INCORRECT)
                 .memory(256)
                 .time(90)
                 .submitAt(LocalDateTime.now())
@@ -614,7 +621,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution7);
 
-// Problem8 목업 데이터 생성
+        // Problem8 목업 데이터 생성
         Problem problem8 = Problem.builder()
                 .number(12950)
                 .title("행렬의 덧셈")
@@ -630,8 +637,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem8)
                 .user(user1)
                 .memo("2차원 배열에 대한 이해 필요")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.COMPLETED)
                 .description("사용 알고리즘: Array")
+                .createdAt(LocalDateTime.parse("2024-10-02T15:08:50"))
                 .build();
         boardRepository.save(board8);
 
@@ -658,7 +666,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution8);
 
-// Problem9 목업 데이터 생성
+        // Problem9 목업 데이터 생성
         Problem problem9 = Problem.builder()
                 .number(43165)
                 .title("타겟 넘버")
@@ -676,6 +684,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("DFS/BFS 재귀적으로 구현해보기")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: DFS, BFS")
+                .createdAt(LocalDateTime.parse("2024-10-08T15:08:50"))
                 .build();
         boardRepository.save(board9);
 
@@ -707,7 +716,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution9);
 
-// Problem10 목업 데이터 생성
+        // Problem10 목업 데이터 생성
         Problem problem10 = Problem.builder()
                 .number(42842)
                 .title("카펫")
@@ -723,8 +732,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem10)
                 .user(user1)
                 .memo("완전탐색으로 해결 가능")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: Brute Force")
+                .createdAt(LocalDateTime.parse("2024-10-10T15:08:50"))
                 .build();
         boardRepository.save(board10);
 
@@ -771,6 +781,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("이진 탐색을 통해 효율적으로 풀이 가능")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Binary Search")
+                .createdAt(LocalDateTime.parse("2024-10-11T15:08:50"))
                 .build();
         boardRepository.save(board11);
 
@@ -802,7 +813,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution11);
 
-// Problem12 목업 데이터 생성
+        // Problem12 목업 데이터 생성
         Problem problem12 = Problem.builder()
                 .number(60057)
                 .title("문자열 압축")
@@ -820,6 +831,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("압축 단위별로 반복적으로 확인 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: String Manipulation, Brute Force")
+                .createdAt(LocalDateTime.parse("2024-10-11T23:08:50"))
                 .build();
         boardRepository.save(board12);
 
@@ -857,7 +869,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution12);
 
-// Problem13 목업 데이터 생성
+        // Problem13 목업 데이터 생성
         Problem problem13 = Problem.builder()
                 .number(64065)
                 .title("튜플")
@@ -873,8 +885,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem13)
                 .user(user1)
                 .memo("주어진 문자열 파싱과 순서 찾기 필요")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: String Parsing, Set")
+                .createdAt(LocalDateTime.parse("2024-10-15T23:08:50"))
                 .build();
         boardRepository.save(board13);
 
@@ -907,7 +920,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution13);
 
-// Problem14 목업 데이터 생성
+        // Problem14 목업 데이터 생성
         Problem problem14 = Problem.builder()
                 .number(42839)
                 .title("소수 찾기")
@@ -925,6 +938,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("백트래킹을 이용해 조합 생성 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Backtracking, Set")
+                .createdAt(LocalDateTime.parse("2024-10-16T23:08:50"))
                 .build();
         boardRepository.save(board14);
 
@@ -985,8 +999,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem15)
                 .user(user1)
                 .memo("좌표와 Set을 이용해 방문 체크 필요")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.NOT_SUBMITTED)
                 .description("사용 알고리즘: Set, 2D Coordinates")
+                .createdAt(LocalDateTime.parse("2024-10-18T23:08:50"))
                 .build();
         boardRepository.save(board15);
 
@@ -1041,8 +1056,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem16)
                 .user(user1)
                 .memo("유일성과 최소성을 모두 만족하는 조합 찾기 필요")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.COMPLETED)
                 .description("사용 알고리즘: Bit Masking, Set, Combination")
+                .createdAt(LocalDateTime.parse("2024-10-18T23:08:50"))
                 .build();
         boardRepository.save(board16);
 
@@ -1085,7 +1101,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution16);
 
-// Problem17 목업 데이터 생성
+        // Problem17 목업 데이터 생성
         Problem problem17 = Problem.builder()
                 .number(64064)
                 .title("불량 사용자")
@@ -1101,8 +1117,9 @@ public class DataInitializer implements CommandLineRunner {
                 .problem(problem17)
                 .user(user1)
                 .memo("정규 표현식과 DFS/BFS를 통해 조합을 찾기")
-                .status(BoardStatus.CORRECT)
+                .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: DFS, Regex, Set")
+                .createdAt(LocalDateTime.parse("2024-10-20T23:08:50"))
                 .build();
         boardRepository.save(board17);
 
@@ -1141,7 +1158,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution17);
 
-// Problem18 목업 데이터 생성
+        // Problem18 목업 데이터 생성
         Problem problem18 = Problem.builder()
                 .number(60059)
                 .title("자물쇠와 열쇠")
@@ -1159,6 +1176,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("2D 배열 회전과 이동 구현 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Array Manipulation, Brute Force")
+                .createdAt(LocalDateTime.parse("2024-10-22T23:08:50"))
                 .build();
         boardRepository.save(board18);
 
@@ -1212,7 +1230,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution18);
 
-// Problem19 목업 데이터 생성
+        // Problem19 목업 데이터 생성
         Problem problem19 = Problem.builder()
                 .number(42861)
                 .title("섬 연결하기")
@@ -1230,6 +1248,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("최소 비용 신장 트리 문제")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Kruskal's Algorithm, Union-Find")
+                .createdAt(LocalDateTime.parse("2024-10-22T23:08:50"))
                 .build();
         boardRepository.save(board19);
 
@@ -1275,7 +1294,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         solutionRepository.save(solution19);
 
-// Problem20 목업 데이터 생성
+        // Problem20 목업 데이터 생성
         Problem problem20 = Problem.builder()
                 .number(42888)
                 .title("오픈채팅방")
@@ -1293,6 +1312,7 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("Map을 사용해 아이디와 닉네임을 추적")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: HashMap")
+                .createdAt(LocalDateTime.parse("2024-10-24T23:08:50"))
                 .build();
         boardRepository.save(board20);
 
@@ -1329,6 +1349,23 @@ public class DataInitializer implements CommandLineRunner {
                 .board(board20)
                 .build();
         solutionRepository.save(solution20);
+
+        // Problem과 Algorithm 연결
+        List<Problem> problems = problemRepository.findAll();
+        List<Algorithm> algorithms = algorithmRepository.findAll();
+        Random random = new Random();
+
+        for (Problem problem : problems) {
+            int numberOfAlgorithms = random.nextInt(3) + 1; // 1에서 3개의 알고리즘 선택
+            for (int i = 0; i < numberOfAlgorithms; i++) {
+                Algorithm randomAlgorithm = algorithms.get(random.nextInt(algorithms.size()));
+
+                // AlgorithmProblem을 생성하고 저장
+                AlgorithmProblem algorithmProblem = AlgorithmProblem.of(randomAlgorithm, problem);
+                algorithmProblemRepository.save(algorithmProblem);
+            }
+        }
+
 
         log.info("목업 데이터가 성공적으로 삽입되었습니다.");
     }
