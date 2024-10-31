@@ -15,6 +15,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findByProblem_PlatformAndProblem_NumberAndUser_Id(ProblemPlatform platform, int problemNumber, Long userId);
 
 
-    @Query(value = "SELECT * FROM Board WHERE createdAt <= :threeDaysAgo AND status = 'NOT_SUBMITTED' ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM Board WHERE createdAt <= :threeDaysAgo AND status != 'CORRECT' ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Board findUnsolvedBoardAddedBefore(@Param("threeDaysAgo") LocalDateTime threeDaysAgo);
 }
