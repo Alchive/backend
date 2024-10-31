@@ -74,10 +74,10 @@ public class SlackService {
         Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo);
 
         if (unSolvedBoard != null) {
-            String message = String.format(":star-struck: %d. %s 문제를 아직 풀지 못했어요. (%d일 전)\n \n다시 도전해보세요! :facepunch: \n \n<%s|:link: 문제 풀러가기>",
+            String message = String.format(":star-struck: %d일 전 도전했던 %d. %s 문제를 아직 풀지 못했어요. \n \n다시 도전해보세요! :facepunch: \n \n<%s|:link: 문제 풀러가기>",
+                    ChronoUnit.DAYS.between(unSolvedBoard.getCreatedAt(), LocalDateTime.now()),
                     unSolvedBoard.getProblem().getNumber(),
                     unSolvedBoard.getProblem().getTitle(),
-                    ChronoUnit.DAYS.between(unSolvedBoard.getCreatedAt(), LocalDateTime.now()),
                     unSolvedBoard.getProblem().getUrl());
             sendMessage(message);
         } else {
