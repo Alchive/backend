@@ -67,7 +67,7 @@ public class SlackService {
         sendMessage(message);
     }
 
-    @Scheduled(cron = "*/30 * * * *") // 30분마다 알림
+    @Scheduled(cron = "*/30 * * * * *") // 30분마다 알림
     public void sendMessageReminderBoard() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
 
