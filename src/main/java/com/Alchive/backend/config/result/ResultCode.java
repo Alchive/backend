@@ -32,7 +32,8 @@ public enum ResultCode {
     BOARD_DELETE_SUCCESS("B006", "게시물 삭제 성공"),
 
     // SNS
-    SNS_INFO_SUCCESS("N001", "소셜 조회 성공");
+    SNS_INFO_SUCCESS("N001", "소셜 조회 성공"),
+    SNS_CREATE_SUCCESS("N002", "소셜 생성 성공");
     private final String code;
     private final String message;
 }

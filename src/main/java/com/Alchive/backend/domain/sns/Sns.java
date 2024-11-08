@@ -1,6 +1,7 @@
 package com.Alchive.backend.domain.sns;
 
 import com.Alchive.backend.domain.user.User;
+import com.Alchive.backend.dto.request.SnsCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -50,4 +51,16 @@ public class Sns {
 
     @Column(name = "time", length = 30)
     private String time;
+
+    public static Sns of(User user, SnsCreateRequest snsCreateRequest) {
+        return Sns.builder()
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .user(user)
+                .category(snsCreateRequest.getCategory())
+                .token(snsCreateRequest.getToken())
+                .channel(snsCreateRequest.getChannel())
+                .time(snsCreateRequest.getTime())
+                .build();
+    }
 }
