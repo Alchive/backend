@@ -54,8 +54,6 @@ public class Sns {
 
     public static Sns of(User user, SnsCreateRequest snsCreateRequest) {
         return Sns.builder()
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .user(user)
                 .category(snsCreateRequest.getCategory())
                 .token(snsCreateRequest.getToken())
