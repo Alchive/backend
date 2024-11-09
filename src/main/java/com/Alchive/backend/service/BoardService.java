@@ -10,10 +10,7 @@ import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.problem.Problem;
 import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.user.User;
-import com.Alchive.backend.dto.request.BoardCreateRequest;
-import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
-import com.Alchive.backend.dto.request.ProblemCreateRequest;
-import com.Alchive.backend.dto.request.ProblemNumberRequest;
+import com.Alchive.backend.dto.request.*;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.dto.response.ProblemResponseDTO;
@@ -70,7 +67,6 @@ public class BoardService {
 
     public Page<List<BoardDetailResponseDTO>> getBoardList(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset, limit);
-        log.info("pageable: {}", pageable);
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
         // Board를 BoardDetailResponseDTO로 변환
@@ -107,13 +103,12 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDTO updateBoardMemo(HttpServletRequest tokenRequest, Long boardId, BoardMemoUpdateRequest updateRequest) {
+    public BoardResponseDTO updateBoard(HttpServletRequest tokenRequest, Long boardId, BoardUpdateRequest updateRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
         userService.validateUser(userId, board.getUser().getId());
-        board.update(updateRequest.getMemo());
-        return new BoardResponseDTO(boardRepository.save(board));
+        return new BoardResponseDTO(board.updateDescription(updateRequest.getDescription()));
     }
 
     @Transactional
@@ -122,8 +117,16 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
         userService.validateUser(userId, board.getUser().getId());
-        board.softDelete();
-        boardRepository.save(board);
+        boardRepository.delete(board);
+    }
+
+    @Transactional
+    public BoardResponseDTO updateBoardMemo(HttpServletRequest tokenRequest, Long boardId, BoardMemoUpdateRequest updateRequest) {
+        Long userId = tokenService.validateAccessToken(tokenRequest);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(NotFoundBoardException::new);
+        userService.validateUser(userId, board.getUser().getId());
+        return new BoardResponseDTO(board.updateMemo(updateRequest.getMemo()));
     }
 
     // 문제 메서드
@@ -146,8 +149,7 @@ public class BoardService {
     }
 
     public List<String> getProblemAlgorithms(Long problemId) {
-        List<String> algorithmNames = algorithmProblemRepository.findAlgorithmNamesByProblemId(problemId);
-        return algorithmNames;
+        return algorithmProblemRepository.findAlgorithmNamesByProblemId(problemId);
     }
 
     // 알고리즘 메서드

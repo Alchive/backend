@@ -3,6 +3,7 @@ package com.Alchive.backend.controller;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
 import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;
+import com.Alchive.backend.dto.request.BoardUpdateRequest;
 import com.Alchive.backend.dto.request.ProblemNumberRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
@@ -36,7 +37,6 @@ public class BoardController {
     public ResponseEntity<ResultResponse> isBoardSaved(HttpServletRequest tokenRequest, @RequestBody @Valid ProblemNumberRequest problemNumberRequest) {
         BoardDetailResponseDTO board = boardService.isBoardSaved(tokenRequest, problemNumberRequest);
         if (board != null) {
-            log.info(board.toString());
             return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
         } else {
             return ResponseEntity.ok(ResultResponse.of(BOARD_NOT_EXIST, null));
@@ -47,7 +47,6 @@ public class BoardController {
     @GetMapping("")
     public ResponseEntity<ResultResponse> getBoardList(@RequestParam(value = "offset", defaultValue = "0") int offset,
                                                        @RequestParam(value = "limit", defaultValue = "10") int limit) {
-        log.info("paginationRequest: {}, {}", offset, limit);
         Page<List<BoardDetailResponseDTO>> boardList = boardService.getBoardList(offset, limit);
         return ResponseEntity.ok(ResultResponse.of(BOARD_LIST_INFO_SUCCESS, boardList));
     }
@@ -67,10 +66,10 @@ public class BoardController {
         return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
     }
 
-    @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")
+    @Operation(summary = "게시물 업데이트", description = "게시물 설명을 수정하는 메서드입니다. ")
     @PatchMapping("/{boardId}")
-    public ResponseEntity<ResultResponse> updateBoardMemo(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody BoardMemoUpdateRequest updateRequest) {
-        BoardResponseDTO board = boardService.updateBoardMemo(tokenRequest, boardId, updateRequest);
+    public ResponseEntity<ResultResponse> updateBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody BoardUpdateRequest updateRequest) {
+        BoardResponseDTO board = boardService.updateBoard(tokenRequest, boardId, updateRequest);
         return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
     }
 
@@ -79,5 +78,12 @@ public class BoardController {
     public ResponseEntity<ResultResponse> deleteBoard(HttpServletRequest tokenRequest, @PathVariable Long boardId) {
         boardService.deleteBoard(tokenRequest, boardId);
         return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));
+    }
+
+    @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")
+    @PatchMapping("/memo/{boardId}")
+    public ResponseEntity<ResultResponse> updateBoardMemo(HttpServletRequest tokenRequest, @PathVariable Long boardId, @RequestBody BoardMemoUpdateRequest updateRequest) {
+        BoardResponseDTO board = boardService.updateBoardMemo(tokenRequest, boardId, updateRequest);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
     }
 }

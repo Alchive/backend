@@ -5,6 +5,7 @@ import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Builder
 @AllArgsConstructor
@@ -12,6 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 @Getter
 @Entity
 @SQLDelete(sql = "UPDATE problem SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Table(name = "problem")
 public class Problem extends BaseEntity {
 

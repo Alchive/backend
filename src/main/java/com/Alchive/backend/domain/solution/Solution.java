@@ -7,6 +7,7 @@ import com.Alchive.backend.dto.request.SolutionUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @SQLDelete(sql = "UPDATE solution SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Table(name = "solution")
 public class Solution extends BaseEntity {
 
