@@ -1,6 +1,7 @@
 package com.Alchive.backend.controller;
 
 import com.Alchive.backend.config.result.ResultResponse;
+import com.Alchive.backend.domain.sns.Sns;
 import com.Alchive.backend.dto.request.SnsCreateRequest;
 import com.Alchive.backend.dto.response.SnsResponseDTO;
 import com.Alchive.backend.service.SnsService;
@@ -30,7 +31,7 @@ public class SnsController {
     @Operation(summary = "소셜 정보 생성", description = "소셜 정보를 생성하는 메서드입니다. ")
     @PostMapping("")
     public ResponseEntity<ResultResponse> createSns(HttpServletRequest tokenRequest, SnsCreateRequest request) {
-        snsService.createSns(tokenRequest, request);
-        return ResponseEntity.ok(ResultResponse.of(SNS_CREATE_SUCCESS));
+        SnsResponseDTO sns = snsService.createSns(tokenRequest, request);
+        return ResponseEntity.ok(ResultResponse.of(SNS_CREATE_SUCCESS, sns));
     }
 }

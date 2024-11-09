@@ -27,11 +27,12 @@ public class SnsService {
     }
 
     @Transactional
-    public void createSns(HttpServletRequest tokenRequest, SnsCreateRequest request) {
+    public SnsResponseDTO createSns(HttpServletRequest tokenRequest, SnsCreateRequest request) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(NoSuchUserIdException::new);
         Sns sns = Sns.of(user, request);
         snsReporitory.save(sns);
+        return new SnsResponseDTO(sns);
     }
 }
