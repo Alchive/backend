@@ -39,7 +39,7 @@ public class SolutionController {
     @Operation(summary = "풀이 삭제", description = "풀이를 삭제하는 메서드입니다.")
     @DeleteMapping("/{solutionId}")
     public ResponseEntity<ResultResponse> deleteSolution(HttpServletRequest tokenRequest, @PathVariable Long solutionId) {
-        SolutionDetailResponseDTO solution = solutionService.deleteSolution(tokenRequest, solutionId);
-        return ResponseEntity.ok(ResultResponse.of(SOLUTION_DELETE_SUCCESS, solution));
+        solutionService.deleteSolution(tokenRequest, solutionId);
+        return ResponseEntity.ok(ResultResponse.of(SOLUTION_DELETE_SUCCESS));
     }
 }

@@ -7,6 +7,7 @@ import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.solution.SolutionLanguage;
 import com.Alchive.backend.domain.solution.SolutionStatus;
 import com.Alchive.backend.dto.request.SolutionCreateRequest;
+import com.Alchive.backend.dto.request.SolutionUpdateRequest;
 import com.Alchive.backend.dto.response.SolutionDetailResponseDTO;
 import com.Alchive.backend.repository.BoardRepository;
 import com.Alchive.backend.repository.SolutionRepository;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class SolutionServiceTest {
+class SolutionServiceTest {
     @InjectMocks
     private SolutionService solutionService;
 
@@ -40,7 +41,8 @@ public class SolutionServiceTest {
 
     private Board mockBoard;
     private Solution mockSolution;
-    private SolutionCreateRequest mockRequest;
+    private SolutionCreateRequest mockCreateRequest;
+    private SolutionUpdateRequest mockUpdateRequest;
 
     @BeforeEach
     void setUp() {
@@ -57,7 +59,7 @@ public class SolutionServiceTest {
                 .board(mockBoard)
                 .build();
 
-        mockRequest = SolutionCreateRequest.builder()
+        mockCreateRequest = SolutionCreateRequest.builder()
                 .content("Sample content")
                 .language(SolutionLanguage.JAVA)
                 .description("Sample description")
@@ -65,6 +67,10 @@ public class SolutionServiceTest {
                 .memory(128)
                 .time(200)
                 .submitAt(LocalDateTime.now())
+                .build();
+
+        mockUpdateRequest = SolutionUpdateRequest.builder()
+                .description("update description")
                 .build();
     }
 
@@ -74,7 +80,7 @@ public class SolutionServiceTest {
         when(boardRepository.findById(1L)).thenReturn(Optional.of(mockBoard)); // 게시물이 존재하는 경우
         when(solutionRepository.save(any(Solution.class))).thenReturn(mockSolution); // Solution 객체 저장 시 Mock 객체 반환
 
-        SolutionDetailResponseDTO response = solutionService.createSolution(request, 1L, mockRequest);
+        SolutionDetailResponseDTO response = solutionService.createSolution(request, 1L, mockCreateRequest);
 
         assertNotNull(response); // 응답이 null이 아님을 확인
         assertEquals(mockSolution.getId(), response.getId()); // ID가 일치하는지 확인
@@ -88,7 +94,7 @@ public class SolutionServiceTest {
         when(boardRepository.findById(1L)).thenReturn(Optional.empty()); // 게시물이 존재하지 않는 경우
 
         assertThrows(NotFoundBoardException.class, () -> { // NotFoundBoardException이 발생하는지 검증
-            solutionService.createSolution(request, 1L, mockRequest);
+            solutionService.createSolution(request, 1L, mockCreateRequest);
         });
     }
 
@@ -96,9 +102,8 @@ public class SolutionServiceTest {
     @DisplayName("풀이 수정 성공")
     void testUpdateSolution() {
         when(solutionRepository.findById(1L)).thenReturn(Optional.of(mockSolution));
-        when(solutionRepository.save(any(Solution.class))).thenReturn(mockSolution);
 
-        SolutionDetailResponseDTO response = solutionService.updateSolution(request, 1L, mockRequest);
+        SolutionDetailResponseDTO response = solutionService.updateSolution(request, 1L, mockUpdateRequest);
 
         assertNotNull(response);
         assertEquals(mockSolution.getId(), response.getId());
@@ -112,7 +117,7 @@ public class SolutionServiceTest {
         when(solutionRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundSolutionException.class, () -> {
-            solutionService.updateSolution(request, 1L, mockRequest);
+            solutionService.updateSolution(request, 1L, mockUpdateRequest);
         });
     }
 
@@ -122,10 +127,8 @@ public class SolutionServiceTest {
         when(solutionRepository.findById(1L)).thenReturn(Optional.of(mockSolution));
         when(solutionRepository.save(any(Solution.class))).thenReturn(mockSolution);
 
-        SolutionDetailResponseDTO response = solutionService.deleteSolution(request, 1L);
+        solutionService.deleteSolution(request, 1L);
 
-        assertNotNull(response);
-        assertEquals(mockSolution.getId(), response.getId());
         assertTrue(mockSolution.getIsDeleted()); // softDelete가 제대로 동작했는지 확인
         verify(solutionRepository, times(1)).findById(1L);
         verify(solutionRepository, times(1)).save(any(Solution.class));
