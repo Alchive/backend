@@ -59,26 +59,26 @@ public class DataInitializer implements CommandLineRunner {
 
         // User 목업 데이터 생성
         User user1 = User.builder()
-                .userEmail("chohana@alchive.com")
-                .userNickName("조하나")
+                .email("chohana@alchive.com")
+                .name("조하나")
                 .build();
         userRepository.save(user1);
 
         User user2 = User.builder()
-                .userEmail("parknahyun@alchive.com")
-                .userNickName("박나현")
+                .email("parknahyun@alchive.com")
+                .name("박나현")
                 .build();
         userRepository.save(user2);
 
         User user3 = User.builder()
-                .userEmail("songyurim@alchive.com")
-                .userNickName("송유림")
+                .email("songyurim@alchive.com")
+                .name("송유림")
                 .build();
         userRepository.save(user3);
 
         User user4 = User.builder()
-                .userEmail("kimmiyoung@alchive.com")
-                .userNickName("김미영")
+                .email("kimmiyoung@alchive.com")
+                .name("김미영")
                 .build();
         userRepository.save(user4);
 

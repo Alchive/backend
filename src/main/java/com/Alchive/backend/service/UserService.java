@@ -23,8 +23,8 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO createUser(UserCreateRequest request) {
-        String email = request.getUserEmail();
-        String username = request.getUserName();
+        String email = request.getEmail();
+        String username = request.getName();
         if (userRepository.existsByEmail(email)) { // 중복 이메일 검사
             throw new UserEmailExistException();
         }
@@ -42,8 +42,8 @@ public class UserService {
         return new UserResponseDTO(user, accessToken, refreshToken);
     }
 
-    public boolean isDuplicateUsername(String userName) {
-        return userRepository.existsByName(userName);
+    public boolean isDuplicateUsername(String name) {
+        return userRepository.existsByName(name);
     }
 
     public User getUserDetail(HttpServletRequest tokenRequest) {
@@ -53,11 +53,11 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserDetail(HttpServletRequest tokenRequest, UserUpdateRequest updateRequest) {
+    public User updateUserDetail(HttpServletRequest tokenRequest, UserUpdateRequest updateRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(NoSuchUserIdException::new);
-        user.update(updateRequest.getUserDescription(), updateRequest.getAutoSave());
+        return user.update(updateRequest.getDescription(), updateRequest.getAutoSave());
     }
 
     @Transactional
@@ -65,8 +65,7 @@ public class UserService {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         User user = userRepository.findById(userId)
                 .orElseThrow(NoSuchUserIdException::new);
-        user.softDelete();
-        userRepository.save(user);
+        userRepository.delete(user);
     }
 
     public void validateUser(Long userId, Long requestedId) {
