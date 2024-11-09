@@ -29,7 +29,7 @@ public class Solution {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updatedAt")
+    @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder.Default

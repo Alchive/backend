@@ -26,7 +26,7 @@ public class Algorithm {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updatedAt")
+    @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 
     @ColumnDefault("false")

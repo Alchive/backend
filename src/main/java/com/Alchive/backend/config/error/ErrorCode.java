@@ -30,7 +30,10 @@ public enum ErrorCode {
     SOLUTION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "S001", "풀이가 존재하지 않음"),
 
     // PROBLEM
-    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "P001", "문제가 존재하지 않음");
+    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "P001", "문제가 존재하지 않음"),
+
+    // SNS
+    SNS_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "N001", "소셜이 존재하지 않음");
 
     private final int httpStatus;
     private final String code;
