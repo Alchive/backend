@@ -33,7 +33,10 @@ public enum ResultCode {
 
     // SNS
     SNS_INFO_SUCCESS("N001", "소셜 조회 성공"),
-    SNS_CREATE_SUCCESS("N002", "소셜 생성 성공");
+    SNS_CREATE_SUCCESS("N002", "소셜 생성 성공"),
+
+    // DISCORD
+    DISCORD_DM_SEND_SUCCESS("D001", "디스코드 DM 전송 성공");
     private final String code;
     private final String message;
 }

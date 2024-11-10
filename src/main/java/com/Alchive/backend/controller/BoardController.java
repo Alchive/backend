@@ -7,7 +7,7 @@ import com.Alchive.backend.dto.request.ProblemNumberRequest;
 import com.Alchive.backend.dto.response.BoardDetailResponseDTO;
 import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.service.BoardService;
-import com.Alchive.backend.slack.SlackService;
+import com.Alchive.backend.sns.SlackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

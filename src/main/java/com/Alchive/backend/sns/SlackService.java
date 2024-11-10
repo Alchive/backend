@@ -1,4 +1,4 @@
-package com.Alchive.backend.slack;
+package com.Alchive.backend.sns;
 
 import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.board.BoardStatus;
@@ -67,7 +67,7 @@ public class SlackService {
         sendMessage(message);
     }
 
-    @Scheduled(cron = "0 0 * * * *") // 정각마다 알림
+//    @Scheduled(cron = "0 0 * * * *") // 정각마다 알림
     public void sendMessageReminderBoard() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(1);
 

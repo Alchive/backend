@@ -1,4 +1,4 @@
-package com.Alchive.backend.slack;
+package com.Alchive.backend.sns;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
