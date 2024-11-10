@@ -78,8 +78,7 @@ public class DiscordController {
     @PostMapping("dm/send")
     public ResponseEntity<ResultResponse> sendDiscordDm(HttpServletRequest tokenRequest, @RequestParam String message) {
         String discordUserId = discordService.getDiscordUserId(tokenRequest);
-        String channelId = discordService.getDmChannel(discordUserId);
-        discordService.sendDm(channelId, message);
+        discordService.sendDmJda(discordUserId, message);
         return ResponseEntity.ok(ResultResponse.of(DISCORD_DM_SEND_SUCCESS));
     }
 }

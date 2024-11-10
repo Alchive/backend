@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -38,7 +39,7 @@ import java.util.Map;
 @EnableScheduling
 @Slf4j
 public class DiscordService {
-    private JDA jda;
+    private final JDA jda;
     private final BoardRepository boardRepository;
     private final SnsReporitory snsReporitory;
     private final TokenService tokenService;
@@ -93,23 +94,6 @@ public class DiscordService {
         return discordUserId;
     }
 
-    public String getDmChannel(String discordUserId) {
-        String getDMChannelUrl = "https://discord.com/api/v10/users/@me/channels";
-        Map<String, String> getDmParams = new HashMap<>();
-        getDmParams.put("recipient_id", discordUserId);
-
-        HttpHeaders botTokenHeader = new HttpHeaders();
-        botTokenHeader.setContentType(MediaType.APPLICATION_JSON);
-        botTokenHeader.set("Authorization", "Bot " + discordBotToken);
-
-        HttpEntity<Map<String, String>> createDmRequest = new HttpEntity<>(getDmParams, botTokenHeader);
-        ResponseEntity<Map> dmResponse = restTemplate.postForEntity(getDMChannelUrl, createDmRequest, Map.class);
-        Map<String, Object> dmResponseBody = dmResponse.getBody();
-
-        String channelId = (String) dmResponseBody.get("id");
-        return channelId;
-    }
-
     public String getDiscordUserId(HttpServletRequest tokenRequest) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Sns snsInfo = snsReporitory.findByUser_IdAndCategory(userId, SnsCategory.DISCORD)
@@ -131,6 +115,35 @@ public class DiscordService {
         restTemplate.postForEntity(sendMessageUrl, sendMessageRequest, Map.class);
     }
 
+    public String getDmChannel(String discordUserId) {
+        String getDMChannelUrl = "https://discord.com/api/v10/users/@me/channels";
+        Map<String, String> getDmParams = new HashMap<>();
+        getDmParams.put("recipient_id", discordUserId);
+
+        HttpHeaders botTokenHeader = new HttpHeaders();
+        botTokenHeader.setContentType(MediaType.APPLICATION_JSON);
+        botTokenHeader.set("Authorization", "Bot " + discordBotToken);
+
+        HttpEntity<Map<String, String>> createDmRequest = new HttpEntity<>(getDmParams, botTokenHeader);
+        ResponseEntity<Map> dmResponse = restTemplate.postForEntity(getDMChannelUrl, createDmRequest, Map.class);
+        Map<String, Object> dmResponseBody = dmResponse.getBody();
+
+        String channelId = (String) dmResponseBody.get("id");
+        return channelId;
+    }
+
+    // JDA 사용 메서드
+    public void sendDmJda(String discordUserId, String message) {
+        User user = jda.retrieveUserById(discordUserId).complete();
+        if (user != null) {
+            user.openPrivateChannel().queue(channel ->
+                    channel.sendMessage(message).queue()
+            );
+        } else {
+            log.info("유저가 존재하지 않습니다. ");
+        }
+    }
+
 //    @Scheduled(cron = "0 */1 * * * *") // todo: Quartz로 동적 스케줄링 작성하기
     public void sendMessageReminderBoard(HttpServletRequest tokenRequest) {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(1);
@@ -145,8 +158,7 @@ public class DiscordService {
                     unSolvedBoard.getProblem().getTitle(),
                     unSolvedBoard.getProblem().getUrl());
             String discordUserId = getDiscordUserId(tokenRequest);
-            String channelId = getDmChannel(discordUserId);
-            sendDm(channelId,message);
+            sendDmJda(discordUserId,message);
         } else {
             log.info("풀지 못한 문제가 존재하지 않습니다. ");
         }
