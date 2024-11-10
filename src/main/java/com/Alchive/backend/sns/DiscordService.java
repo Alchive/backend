@@ -131,11 +131,12 @@ public class DiscordService {
         restTemplate.postForEntity(sendMessageUrl, sendMessageRequest, Map.class);
     }
 
-//    @Scheduled(cron = "0 */1 * * * *")
+//    @Scheduled(cron = "0 */1 * * * *") // todo: Quartz로 동적 스케줄링 작성하기
     public void sendMessageReminderBoard(HttpServletRequest tokenRequest) {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(1);
+        Long userId = tokenService.validateAccessToken(tokenRequest);
 
-        Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo);
+        Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo, userId);
 
         if (unSolvedBoard != null) {
             String message = String.format(":star-struck: %d일 전 도전했던 %d. %s 문제를 아직 풀지 못했어요. \n \n다시 도전해보세요! :facepunch: \n \n<%s|:link: 문제 풀러가기>",

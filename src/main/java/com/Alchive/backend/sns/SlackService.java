@@ -1,5 +1,6 @@
 package com.Alchive.backend.sns;
 
+import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.board.BoardStatus;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
@@ -8,6 +9,7 @@ import com.Alchive.backend.repository.BoardRepository;
 import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,7 @@ public class SlackService {
     private String token;
 
     private final BoardRepository boardRepository;
+    private final TokenService tokenService;
 
     private String channel = "#alchive-bot";
 
@@ -68,10 +71,11 @@ public class SlackService {
     }
 
 //    @Scheduled(cron = "0 0 * * * *") // 정각마다 알림
-    public void sendMessageReminderBoard() {
+    public void sendMessageReminderBoard(HttpServletRequest tokenRequest) {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(1);
+        Long userId = tokenService.validateAccessToken(tokenRequest);
 
-        Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo);
+        Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo, userId);
 
         if (unSolvedBoard != null) {
             String message = String.format(":star-struck: %d일 전 도전했던 %d. %s 문제를 아직 풀지 못했어요. \n \n다시 도전해보세요! :facepunch: \n \n<%s|:link: 문제 풀러가기>",

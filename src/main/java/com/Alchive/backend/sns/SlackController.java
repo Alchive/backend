@@ -2,6 +2,7 @@ package com.Alchive.backend.sns;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class SlackController {
 
     @Operation(summary = "문제 리마인더", description = "30분마다 해결하지 못한 문제를 리마인드해주는 메서드입니다. ")
     @GetMapping("/reminder")
-    public void sendReminder() {
-        slackService.sendMessageReminderBoard();
+    public void sendReminder(HttpServletRequest tokenRequest) {
+        slackService.sendMessageReminderBoard(tokenRequest);
     }
 }
