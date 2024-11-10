@@ -1,6 +1,5 @@
 package com.Alchive.backend.config.jwt;
 
-import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -66,7 +65,7 @@ public class JwtTokenProvider {
             String header = request.getHeader(headerName);
             return prefix.isEmpty() ? header : header.substring(prefix.length());
         } catch (NullPointerException | IllegalArgumentException e) {
-            throw new TokenNotExistsException();
+            return null;
         }
     }
 
