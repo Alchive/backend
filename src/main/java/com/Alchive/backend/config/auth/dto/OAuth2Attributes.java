@@ -1,6 +1,5 @@
 package com.Alchive.backend.config.auth.dto;
 
-import com.Alchive.backend.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,8 +16,8 @@ public class OAuth2Attributes {
 
     @Builder
     public OAuth2Attributes(Map<String, Object> attributes,
-                           String nameAttributeKey, String name,
-                           String email, boolean isNewUser) {
+                            String nameAttributeKey, String name,
+                            String email, boolean isNewUser) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.name = name;
@@ -27,28 +26,20 @@ public class OAuth2Attributes {
 
     // OAuth2User에서 반환하는 사용자 정보는 Map. 따라서 값 하나하나를 변환해야함.
     public static OAuth2Attributes of(String registrationId,
-                                     String userNameAttributeName,
-                                     Map<String, Object> attributes) {
+                                      String userNameAttributeName,
+                                      Map<String, Object> attributes) {
 
         return ofGoogle(userNameAttributeName, attributes);
     }
 
     // 구글 생성자
     private static OAuth2Attributes ofGoogle(String usernameAttributeName,
-                                            Map<String, Object> attributes) {
+                                             Map<String, Object> attributes) {
         return OAuth2Attributes.builder()
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .attributes(attributes)
                 .nameAttributeKey(usernameAttributeName)
-                .build();
-    }
-
-    // User 엔티티 생성
-    public User toEntity() {
-        return User.builder()
-                .userEmail(email)
-                .userNickName(name)
                 .build();
     }
 }

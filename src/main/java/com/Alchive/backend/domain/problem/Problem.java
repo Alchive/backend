@@ -1,39 +1,26 @@
 package com.Alchive.backend.domain.problem;
 
+import com.Alchive.backend.domain.BaseEntity;
 import com.Alchive.backend.dto.request.ProblemCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@SQLDelete(sql = "UPDATE problem SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Table(name = "problem")
-public class Problem {
+public class Problem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT")
     private Long id;
-
-    @CreationTimestamp
-    @Column(name = "createdAt", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updatedAt", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @Builder.Default
-    @ColumnDefault("false")
-    @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted = false;
 
     @Column(name = "number", nullable = false)
     private int number;

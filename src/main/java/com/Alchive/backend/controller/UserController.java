@@ -34,9 +34,9 @@ public class UserController {
     }
 
     @Operation(summary = "username 중복 확인 메서드", description = "username 중복을 검사하는 메서드입니다.")
-    @GetMapping("/username/{userName}")
-    public ResponseEntity<ResultResponse> isDuplicateUsername(@PathVariable String userName) {
-        if(userService.isDuplicateUsername(userName)) {
+    @GetMapping("/username/{name}")
+    public ResponseEntity<ResultResponse> isDuplicateUsername(@PathVariable String name) {
+        if (userService.isDuplicateUsername(name)) {
             return ResponseEntity.ok(ResultResponse.of(USER_USERNAME_DUPLICATED, true));
         }
         return ResponseEntity.ok(ResultResponse.of(USER_USERNAME_NOT_DUPLICATED, false));
@@ -52,8 +52,8 @@ public class UserController {
     @Operation(summary = "프로필 수정 메서드", description = "특정 사용자의 프로필 정보를 수정하는 메서드입니다.")
     @PutMapping
     public ResponseEntity<ResultResponse> updateUser(HttpServletRequest request, @RequestBody UserUpdateRequest updateRequest) {
-        userService.updateUserDetail(request, updateRequest);
-        return ResponseEntity.ok(ResultResponse.of(USER_UPDATE_SUCCESS));
+        User user = userService.updateUserDetail(request, updateRequest);
+        return ResponseEntity.ok(ResultResponse.of(USER_UPDATE_SUCCESS, new UserDetailResponseDTO(user)));
     }
 
     @Operation(summary = "사용자 삭제 메서드", description = "특정 사용자를 삭제하는 메서드입니다.")

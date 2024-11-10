@@ -1,13 +1,13 @@
 package com.Alchive.backend.domain.solution;
 
+import com.Alchive.backend.domain.BaseEntity;
 import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.dto.request.SolutionCreateRequest;
 import com.Alchive.backend.dto.request.SolutionUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
@@ -16,29 +16,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@SQLDelete(sql = "UPDATE solution SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Table(name = "solution")
-public class Solution {
+public class Solution extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT")
     private Long id;
 
-    @CreationTimestamp
-    @Column(name = "createdAt", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updatedAt", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @Builder.Default
-    @ColumnDefault("false")
-    @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted = false;
-
     @ManyToOne
-    @JoinColumn(name = "boardId", nullable = false)
+    @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
     @Lob
@@ -63,7 +52,7 @@ public class Solution {
     @Column(name = "time")
     private Integer time;
 
-    @Column(name = "submitAt")
+    @Column(name = "submit_at")
     private LocalDateTime submitAt;
 
     public static Solution of(Board board, SolutionCreateRequest solutionRequest) {
@@ -83,10 +72,4 @@ public class Solution {
         this.description = solutionRequest.getDescription();
         return this;
     }
-
-    public Solution softDelete() {
-        this.isDeleted = true;
-        return this;
-    }
-
 }

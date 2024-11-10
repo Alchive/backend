@@ -46,9 +46,9 @@ public class UserServiceTest {
 
         // 테스트용 Builder 패턴을 이용해 userId까지 직접 입력
         user = User.userTestBuilder()
-                .userId(1L)
-                .userEmail("user1@test.com")
-                .userNickName("user1")
+                .id(1L)
+                .email("user1@test.com")
+                .name("user1")
                 .build();
     }
 
@@ -57,11 +57,11 @@ public class UserServiceTest {
     void createUser_success() {
         // given
         UserCreateRequest createRequest = UserCreateRequest.builder()
-                .userEmail(user.getEmail())
-                .userName(user.getName())
+                .email(user.getEmail())
+                .name(user.getName())
                 .build();
 
-        when(userRepository.existsByEmail(createRequest.getUserEmail())).thenReturn(false);
+        when(userRepository.existsByEmail(createRequest.getEmail())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         doNothing().when(tokenService).validateAccessToken(request);
@@ -72,9 +72,9 @@ public class UserServiceTest {
 
         // then
         assertNotNull(returnedUser);
-        assertEquals(user.getId(),returnedUser.getUserId());
-        assertEquals(user.getName(),returnedUser.getUserName());
-        assertEquals(user.getEmail(),returnedUser.getUserEmail());
+        assertEquals(user.getId(), returnedUser.getUserId());
+        assertEquals(user.getName(), returnedUser.getUserName());
+        assertEquals(user.getEmail(), returnedUser.getUserEmail());
     }
 
     @DisplayName("사용자 생성 - 유저 닉네임 중복")
@@ -82,13 +82,13 @@ public class UserServiceTest {
     void createUser_username_exists() {
         // given
         UserCreateRequest createRequest = UserCreateRequest.builder()
-                .userEmail("testEmail@test.com")
-                .userName("duplicatedUserName")
+                .email("testEmail@test.com")
+                .name("duplicatedUserName")
                 .build();
-        when(userService.isDuplicateUsername(createRequest.getUserName())).thenReturn(true);
+        when(userService.isDuplicateUsername(createRequest.getName())).thenReturn(true);
 
         // when
-        boolean returnedAnswer = userService.isDuplicateUsername(createRequest.getUserName());
+        boolean returnedAnswer = userService.isDuplicateUsername(createRequest.getName());
 
         // then
         assertTrue(returnedAnswer);
@@ -99,10 +99,10 @@ public class UserServiceTest {
     void createUser_userEmail_exists() {
         // given
         UserCreateRequest createRequest = UserCreateRequest.builder()
-                .userEmail("duplicatedEmail@test.com")
-                .userName("user1")
+                .email("duplicatedEmail@test.com")
+                .name("user1")
                 .build();
-        when(userRepository.existsByEmail(createRequest.getUserEmail())).thenReturn(true);
+        when(userRepository.existsByEmail(createRequest.getEmail())).thenReturn(true);
 
         // when, then
         assertThrows(UserEmailExistException.class, () -> userService.createUser(createRequest));
@@ -121,9 +121,9 @@ public class UserServiceTest {
 
         // then
         assertNotNull(returnedUser);
-        assertEquals(user.getId(),returnedUser.getId());
-        assertEquals(user.getEmail(),returnedUser.getEmail());
-        assertEquals(user.getName(),returnedUser.getName());
+        assertEquals(user.getId(), returnedUser.getId());
+        assertEquals(user.getEmail(), returnedUser.getEmail());
+        assertEquals(user.getName(), returnedUser.getName());
     }
 
     @DisplayName("프로필 조회 - 존재하지 않는 유저 아이디")
@@ -143,7 +143,7 @@ public class UserServiceTest {
     void updateUser_success() {
         // given
         UserUpdateRequest updateRequest = UserUpdateRequest.builder()
-                .userDescription("updatedUserDescription")
+                .description("updatedUserDescription")
                 .build();
         doNothing().when(tokenService).validateAccessToken(request);
         when(tokenService.validateAccessToken(request)).thenReturn(user.getId());
@@ -151,11 +151,11 @@ public class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
-        userService.updateUserDetail(request,updateRequest);
+        userService.updateUserDetail(request, updateRequest);
 
         // then
         assertNotNull(user);
-        assertEquals(user.getDescription(),"updatedUserDescription");
+        assertEquals(user.getDescription(), "updatedUserDescription");
     }
 
     @DisplayName("사용자 삭제 - 성공")

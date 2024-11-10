@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 public class UserUpdateRequest {
-    private String userDescription;
+    private String description;
     private Boolean autoSave;
 }

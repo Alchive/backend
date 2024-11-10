@@ -1,38 +1,27 @@
 package com.Alchive.backend.domain.user;
 
+import com.Alchive.backend.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Table(name = "user")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT")
     private Long id;
-
-    @CreationTimestamp
-    @Column(name = "createdAt", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updatedAt", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @ColumnDefault("false")
-    @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted = false;
 
     @Column(name = "email", length = 300, nullable = false)
     private String email;
@@ -43,40 +32,31 @@ public class User {
     @Column(name = "description", length = 2048)
     private String description;
 
-    @Column(name = "autoSave", nullable = false)
+    @Column(name = "auto_save", nullable = false)
     @ColumnDefault("true")
     private Boolean autoSave = true;
 
-    public User(Long userId) {
-        this.id = userId;
+    public User(Long id) {
+        this.id = id;
     }
 
     @Builder // 빌더 패턴 구현
-    public User(String userEmail, String userNickName) {
-        this.email = userEmail;
-        this.name = userNickName;
-        this.createdAt = LocalDateTime.now(); // 현재 시간
+    public User(String email, String name) {
+        this.email = email;
+        this.name = name;
     }
 
     // 단위 테스트용 빌더 패턴 구현
     @Builder(builderMethodName = "userTestBuilder")
-    public User(Long userId, String userEmail, String userNickName) {
-        this.id = userId;
-        this.email = userEmail;
-        this.name = userNickName;
-        this.createdAt = LocalDateTime.now(); // 현재 시간
+    public User(Long id, String email, String name) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
     }
 
-    public User update(String userDescription, Boolean autoSave) { // 프로필 수정 시 사용
-        this.description = userDescription;
+    public User update(String description, Boolean autoSave) { // 프로필 수정 시 사용
+        this.description = description;
         this.autoSave = autoSave;
-        this.updatedAt = LocalDateTime.now();
-
-        return this;
-    }
-
-    public User softDelete() {
-        this.isDeleted = true;
         return this;
     }
 }

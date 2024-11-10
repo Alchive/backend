@@ -1,42 +1,29 @@
 package com.Alchive.backend.domain.sns;
 
+import com.Alchive.backend.domain.BaseEntity;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.SnsCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Entity
-@Table(name = "sns")
 @Getter
-public class Sns {
+@Entity
+@SQLDelete(sql = "UPDATE sns SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
+@Table(name = "sns")
+public class Sns extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT")
     private Long id;
 
-    @CreationTimestamp
-    @Column(name = "createdAt", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updatedAt", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @Builder.Default
-    @ColumnDefault("false")
-    @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted = false;
-
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
