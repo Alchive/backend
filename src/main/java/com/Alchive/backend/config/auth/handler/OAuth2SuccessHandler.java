@@ -1,6 +1,6 @@
 package com.Alchive.backend.config.auth.handler;
 
-import com.Alchive.backend.config.jwt.TokenService;
+import com.Alchive.backend.config.jwt.JwtTokenProvider;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +20,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private final TokenService tokenService;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 검증 완료된 유저의 정보를 가져와서 토큰 생성, 로그인/회원가입 요청에 맞게 리다이렉트
     @Override
@@ -32,20 +32,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String email = oAuth2User.getAttribute("email");
         Optional<User> user = userRepository.findByEmail(email);
         String targetUrl;
-        Long userId;
+        String userEmail;
 
-        if ( user.isPresent() ) { // 로그인인 경우
-            userId = user.get().getId();
-            String accessToken = tokenService.generateAccessToken(userId);
-            String refreshToken = tokenService.generateRefreshToken();
+        if (user.isPresent()) { // 로그인인 경우
+            userEmail = user.get().getEmail();
+            String accessToken = jwtTokenProvider.createAccessToken(userEmail);
+            String refreshToken = jwtTokenProvider.createRefreshToken(userEmail);
             targetUrl = UriComponentsBuilder.fromUriString("/")
                     .queryParam("access", accessToken)
                     .queryParam("refresh", refreshToken)
                     .build().toUriString();
-        }
-        else { // 회원가입인 경우
+        } else { // 회원가입인 경우
             targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/sign")
-                    .queryParam("email",email)
+                    .queryParam("email", email)
                     .build().toUriString();
         }
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

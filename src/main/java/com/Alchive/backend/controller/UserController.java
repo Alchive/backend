@@ -1,6 +1,5 @@
 package com.Alchive.backend.controller;
 
-import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
@@ -10,7 +9,6 @@ import com.Alchive.backend.dto.response.UserResponseDTO;
 import com.Alchive.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,13 +23,12 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @RequestMapping("/api/v2/users") // 공통 url
 public class UserController {
     private final UserService userService;
-    private final TokenService tokenService;
 
     @Operation(summary = "사용자 생성 메서드", description = "user를 생성하는 메서드입니다.")
     @PostMapping
     public ResponseEntity<ResultResponse> createUser(@RequestBody UserCreateRequest createRequest) {
-        UserResponseDTO newUser = userService.createUser(createRequest);
-        return ResponseEntity.ok(ResultResponse.of(USER_CREATE_SUCCESS, newUser));
+        UserResponseDTO user = userService.createUser(createRequest);
+        return ResponseEntity.ok(ResultResponse.of(USER_CREATE_SUCCESS, user));
     }
 
     @Operation(summary = "username 중복 확인 메서드", description = "username 중복을 검사하는 메서드입니다.")
@@ -44,36 +41,24 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 조회 메서드", description = "특정 사용자의 프로필 정보를 조회하는 메서드입니다.")
-    @GetMapping
-    public ResponseEntity<ResultResponse> findUser(HttpServletRequest request) {
-        User user = userService.getUserDetail(request);
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResultResponse> getUserDetail(@PathVariable Long userId) {
+        User user = userService.getUserDetail(userId);
         return ResponseEntity.ok(ResultResponse.of(USER_DETAIL_INFO_SUCCESS, new UserDetailResponseDTO(user)));
     }
 
     @Operation(summary = "프로필 수정 메서드", description = "특정 사용자의 프로필 정보를 수정하는 메서드입니다.")
     @PutMapping
-    public ResponseEntity<ResultResponse> updateUser(HttpServletRequest request, @RequestBody UserUpdateRequest updateRequest) {
-        User user = userService.updateUserDetail(request, updateRequest);
-        return ResponseEntity.ok(ResultResponse.of(USER_UPDATE_SUCCESS, new UserDetailResponseDTO(user)));
+    public ResponseEntity<ResultResponse> updateUser(@AuthenticationPrincipal User user, @RequestBody UserUpdateRequest updateRequest) {
+        User newUser = userService.updateUserDetail(user, updateRequest);
+        return ResponseEntity.ok(ResultResponse.of(USER_UPDATE_SUCCESS, new UserDetailResponseDTO(newUser)));
     }
 
     @Operation(summary = "사용자 삭제 메서드", description = "특정 사용자를 삭제하는 메서드입니다.")
     @DeleteMapping
-    public ResponseEntity<ResultResponse> deleteUser(HttpServletRequest request) {
-        userService.deleteUserDetail(request);
+    public ResponseEntity<ResultResponse> deleteUser(@AuthenticationPrincipal User user) {
+        userService.deleteUserDetail(user);
         return ResponseEntity.ok(ResultResponse.of(USER_DELETE_SUCCESS));
     }
 
-    @Operation(summary = "액세스 토큰 재발급 메서드", description = "리프레시 토큰으로 액세스 토큰을 재발급하는 메서드입니다.")
-    @GetMapping("/auth/token")
-    public ResponseEntity<ResultResponse> refreshAccessToken(HttpServletRequest request) {
-        String accessToken = tokenService.refreshAccessToken(request);
-        return ResponseEntity.ok(ResultResponse.of(TOKEN_ACCESS_SUCCESS, accessToken));
-    }
-
-    @Operation(summary = "유저 정보 테스트", description = "테스트")
-    @GetMapping("/profile")
-    public ResponseEntity<ResultResponse> getProfile(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(ResultResponse.of(USER_UPDATE_SUCCESS, new UserDetailResponseDTO(user)));
-    }
 }
