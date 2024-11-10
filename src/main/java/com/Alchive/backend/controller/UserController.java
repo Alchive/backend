@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.Alchive.backend.config.result.ResultCode.*;
@@ -21,7 +22,7 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @Tag(name = "사용자", description = "사용자 관련 api입니다.")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/users") // 공통 url
+@RequestMapping("/api/v2/users") // 공통 url
 public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
@@ -68,5 +69,11 @@ public class UserController {
     public ResponseEntity<ResultResponse> refreshAccessToken(HttpServletRequest request) {
         String accessToken = tokenService.refreshAccessToken(request);
         return ResponseEntity.ok(ResultResponse.of(TOKEN_ACCESS_SUCCESS, accessToken));
+    }
+
+    @Operation(summary = "유저 정보 테스트", description = "테스트")
+    @GetMapping("/profile")
+    public ResponseEntity<ResultResponse> getProfile(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(ResultResponse.of(USER_UPDATE_SUCCESS, new UserDetailResponseDTO(user)));
     }
 }

@@ -18,7 +18,7 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @Tag(name = "풀이", description = "풀이 관련 api입니다.")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/solutions")
+@RequestMapping("/api/v2/solutions")
 public class SolutionController {
     private final SolutionService solutionService;
 

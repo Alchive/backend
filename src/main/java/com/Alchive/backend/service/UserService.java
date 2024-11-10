@@ -4,6 +4,7 @@ import com.Alchive.backend.config.error.exception.token.UnmatchedUserIdException
 import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
 import com.Alchive.backend.config.error.exception.user.UserNameExistException;
+import com.Alchive.backend.config.jwt.JwtTokenProvider;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public UserResponseDTO createUser(UserCreateRequest request) {
@@ -36,9 +38,11 @@ public class UserService {
         user = userRepository.save(user); // db에 유저 저장 - 회원 가입
 
         // 토큰 생성 후 전달
-        Long userId = user.getId();
-        String accessToken = tokenService.generateAccessToken(userId);
-        String refreshToken = tokenService.generateRefreshToken();
+//        Long userId = user.getId();
+//        String accessToken = tokenService.generateAccessToken(userId);
+//        String refreshToken = tokenService.generateRefreshToken();
+        String accessToken = jwtTokenProvider.createAccessToken(email);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email);
         return new UserResponseDTO(user, accessToken, refreshToken);
     }
 
@@ -72,5 +76,9 @@ public class UserService {
         if (requestedId != userId) {
             throw new UnmatchedUserIdException();
         }
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(NoSuchUserIdException::new);
     }
 }

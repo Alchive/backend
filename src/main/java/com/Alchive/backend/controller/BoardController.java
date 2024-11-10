@@ -27,7 +27,7 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @Tag(name = "게시물", description = "게시물 관련 api입니다. ")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/boards")
+@RequestMapping("/api/v2/boards")
 public class BoardController {
     private final BoardService boardService;
     private final SlackService slackService;

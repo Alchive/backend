@@ -16,7 +16,7 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @Tag(name = "소셜", description = "소셜 관련 api입니다. ")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/sns")
+@RequestMapping("/api/v2/sns")
 public class SnsController {
     private final SnsService snsService;
 
