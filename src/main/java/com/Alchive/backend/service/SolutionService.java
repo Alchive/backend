@@ -35,16 +35,14 @@ public class SolutionService {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Solution solution = solutionRepository.findById(solutionId).orElseThrow(NotFoundSolutionException::new);
         userService.validateUser(userId, solution.getBoard().getUser().getId());
-        solution.update(solutionRequest);
-        return new SolutionDetailResponseDTO(solutionRepository.save(solution));
+        return new SolutionDetailResponseDTO(solution.update(solutionRequest));
     }
 
     @Transactional
-    public SolutionDetailResponseDTO deleteSolution(HttpServletRequest tokenRequest, Long solutionId) {
+    public void deleteSolution(HttpServletRequest tokenRequest, Long solutionId) {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Solution solution = solutionRepository.findById(solutionId).orElseThrow(NotFoundSolutionException::new);
         userService.validateUser(userId, solution.getBoard().getUser().getId());
-        solution.softDelete();
-        return new SolutionDetailResponseDTO(solutionRepository.save(solution));
+        solutionRepository.delete(solution);
     }
 }

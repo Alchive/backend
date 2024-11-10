@@ -59,26 +59,26 @@ public class DataInitializer implements CommandLineRunner {
 
         // User 목업 데이터 생성
         User user1 = User.builder()
-                .userEmail("chohana@alchive.com")
-                .userNickName("조하나")
+                .email("chohana@alchive.com")
+                .name("조하나")
                 .build();
         userRepository.save(user1);
 
         User user2 = User.builder()
-                .userEmail("parknahyun@alchive.com")
-                .userNickName("박나현")
+                .email("parknahyun@alchive.com")
+                .name("박나현")
                 .build();
         userRepository.save(user2);
 
         User user3 = User.builder()
-                .userEmail("songyurim@alchive.com")
-                .userNickName("송유림")
+                .email("songyurim@alchive.com")
+                .name("송유림")
                 .build();
         userRepository.save(user3);
 
         User user4 = User.builder()
-                .userEmail("kimmiyoung@alchive.com")
-                .userNickName("김미영")
+                .email("kimmiyoung@alchive.com")
+                .name("김미영")
                 .build();
         userRepository.save(user4);
 
@@ -112,7 +112,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("Hash Map을 사용하면 되지 않을까?")
                 .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: **Hash Map**")
-                .createdAt(LocalDateTime.parse("2024-08-27T15:08:50"))
                 .build();
         boardRepository.save(board1);
 
@@ -286,7 +285,6 @@ public class DataInitializer implements CommandLineRunner {
                         "name과 yearning 매칭은 map 사용하거나 for문은 같은 인덱스 별로 묶어 계산<br>" +
                         "배열은 0부터 N까지 돌아가면서 탐색<br>" +
                         "map은 해당 key에 있는 value를 바로 가져온다 → 속도 빠름")
-                .createdAt(LocalDateTime.parse("2024-09-03T15:08:50"))
                 .build();
         boardRepository.save(board2);
 
@@ -372,7 +370,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("Two Pointer를 사용해보자")
                 .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: Two Pointer")
-                .createdAt(LocalDateTime.parse("2024-09-16T15:08:50"))
                 .build();
         boardRepository.save(board3);
 
@@ -425,8 +422,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("큐와 우선순위 큐 개념 복습 필요")
                 .status(BoardStatus.COMPLETED)
                 .description("사용 알고리즘: Queue, Priority Queue")
-                .createdAt(LocalDateTime.parse("2024-09-17T22:08:50"))
-
                 .build();
         boardRepository.save(board4);
 
@@ -486,7 +481,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("작업 속도와 진도 계산 방법 이해 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Queue")
-                .createdAt(LocalDateTime.parse("2024-09-18T03:08:50"))
                 .build();
         boardRepository.save(board5);
 
@@ -546,7 +540,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("Stack 자료구조로 해결해보자")
                 .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: Stack")
-                .createdAt(LocalDateTime.parse("2024-09-21T16:08:50"))
                 .build();
         boardRepository.save(board6);
 
@@ -594,7 +587,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("Dynamic Programming으로 해결 가능")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Dynamic Programming")
-                .createdAt(LocalDateTime.parse("2024-10-01T15:08:50"))
                 .build();
         boardRepository.save(board7);
 
@@ -641,7 +633,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("2차원 배열에 대한 이해 필요")
                 .status(BoardStatus.COMPLETED)
                 .description("사용 알고리즘: Array")
-                .createdAt(LocalDateTime.parse("2024-10-02T15:08:50"))
                 .build();
         boardRepository.save(board8);
 
@@ -686,7 +677,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("DFS/BFS 재귀적으로 구현해보기")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: DFS, BFS")
-                .createdAt(LocalDateTime.parse("2024-10-08T15:08:50"))
                 .build();
         boardRepository.save(board9);
 
@@ -736,7 +726,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("완전탐색으로 해결 가능")
                 .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: Brute Force")
-                .createdAt(LocalDateTime.parse("2024-10-10T15:08:50"))
                 .build();
         boardRepository.save(board10);
 
@@ -783,7 +772,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("이진 탐색을 통해 효율적으로 풀이 가능")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Binary Search")
-                .createdAt(LocalDateTime.parse("2024-10-11T15:08:50"))
                 .build();
         boardRepository.save(board11);
 
@@ -833,7 +821,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("압축 단위별로 반복적으로 확인 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: String Manipulation, Brute Force")
-                .createdAt(LocalDateTime.parse("2024-10-11T23:08:50"))
                 .build();
         boardRepository.save(board12);
 
@@ -889,7 +876,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("주어진 문자열 파싱과 순서 찾기 필요")
                 .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: String Parsing, Set")
-                .createdAt(LocalDateTime.parse("2024-10-15T23:08:50"))
                 .build();
         boardRepository.save(board13);
 
@@ -940,7 +926,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("백트래킹을 이용해 조합 생성 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Backtracking, Set")
-                .createdAt(LocalDateTime.parse("2024-10-16T23:08:50"))
                 .build();
         boardRepository.save(board14);
 
@@ -1003,7 +988,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("좌표와 Set을 이용해 방문 체크 필요")
                 .status(BoardStatus.NOT_SUBMITTED)
                 .description("사용 알고리즘: Set, 2D Coordinates")
-                .createdAt(LocalDateTime.parse("2024-10-18T23:08:50"))
                 .build();
         boardRepository.save(board15);
 
@@ -1060,7 +1044,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("유일성과 최소성을 모두 만족하는 조합 찾기 필요")
                 .status(BoardStatus.COMPLETED)
                 .description("사용 알고리즘: Bit Masking, Set, Combination")
-                .createdAt(LocalDateTime.parse("2024-10-18T23:08:50"))
                 .build();
         boardRepository.save(board16);
 
@@ -1121,7 +1104,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("정규 표현식과 DFS/BFS를 통해 조합을 찾기")
                 .status(BoardStatus.INCORRECT)
                 .description("사용 알고리즘: DFS, Regex, Set")
-                .createdAt(LocalDateTime.parse("2024-10-20T23:08:50"))
                 .build();
         boardRepository.save(board17);
 
@@ -1178,7 +1160,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("2D 배열 회전과 이동 구현 필요")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Array Manipulation, Brute Force")
-                .createdAt(LocalDateTime.parse("2024-10-22T23:08:50"))
                 .build();
         boardRepository.save(board18);
 
@@ -1250,7 +1231,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("최소 비용 신장 트리 문제")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: Kruskal's Algorithm, Union-Find")
-                .createdAt(LocalDateTime.parse("2024-10-22T23:08:50"))
                 .build();
         boardRepository.save(board19);
 
@@ -1314,7 +1294,6 @@ public class DataInitializer implements CommandLineRunner {
                 .memo("Map을 사용해 아이디와 닉네임을 추적")
                 .status(BoardStatus.CORRECT)
                 .description("사용 알고리즘: HashMap")
-                .createdAt(LocalDateTime.parse("2024-10-24T23:08:50"))
                 .build();
         boardRepository.save(board20);
 
