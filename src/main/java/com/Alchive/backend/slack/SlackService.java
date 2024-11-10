@@ -45,7 +45,7 @@ public class SlackService {
             methods.chatPostMessage(request);
             log.info("Slack - Message 전송 완료 : {}", message);
         } catch (Exception e) {
-            log.warn("Slack Error - {}", e.getMessage());
+            log.error("Slack Error - {}", e.getMessage());
         }
     }
 
@@ -80,8 +80,6 @@ public class SlackService {
                     unSolvedBoard.getProblem().getTitle(),
                     unSolvedBoard.getProblem().getUrl());
             sendMessage(message);
-        } else {
-            log.info("풀지 못한 문제가 존재하지 않습니다. ");
         }
     }
 }
