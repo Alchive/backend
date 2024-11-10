@@ -1,6 +1,7 @@
 package com.Alchive.backend.sns;
 
 import com.Alchive.backend.config.error.exception.sns.InvalidGrantException;
+import com.Alchive.backend.config.error.exception.sns.NoSuchDiscordUserException;
 import com.Alchive.backend.config.error.exception.sns.NoSuchSnsIdException;
 import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.board.Board;
@@ -140,7 +141,7 @@ public class DiscordService {
                     channel.sendMessage(message).queue()
             );
         } else {
-            log.info("유저가 존재하지 않습니다. ");
+            throw new NoSuchDiscordUserException();
         }
     }
 

@@ -36,7 +36,8 @@ public enum ErrorCode {
     SNS_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "N001", "소셜이 존재하지 않음"),
 
     // DISCORD
-    INVALID_GRANT(HttpStatus.FORBIDDEN.value(), "D001", "승인되지 않은 코드");
+    INVALID_GRANT(HttpStatus.FORBIDDEN.value(), "D001", "승인되지 않은 코드"),
+    DISCORD_USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "D002", "존재하지 않는 디스코드 유저");
 
     private final int httpStatus;
     private final String code;
