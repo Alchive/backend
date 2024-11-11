@@ -105,13 +105,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // 토큰 검증 중 토큰이 없거나 유효하지 않은 경우 예외 처리
     private void handleException(HttpServletResponse response, BusinessException exception) throws IOException {
-        ErrorCode errorCode = exception.getErrorCode(); // ErrorCode.INVALID_TOKEN을 사용할 수 있습니다
+        ErrorCode errorCode = exception.getErrorCode();
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(String.valueOf(errorCode.getCode()))
                 .message(errorCode.getMessage())
                 .build();
         response.setStatus(errorCode.getHttpStatus());
-        response.setContentType("application/json; charset=UTF-8");
+        response.setContentType("application/json; charset=UTF-8"); // 한글을 위해 UTF-8 인코딩 설정
 
         // ErrorResponse를 JSON 형식으로 변환하여 응답
         ObjectMapper objectMapper = new ObjectMapper();
