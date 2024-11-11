@@ -1,8 +1,12 @@
 package com.Alchive.backend.config.jwt;
 
+import com.Alchive.backend.config.error.ErrorCode;
+import com.Alchive.backend.config.error.ErrorResponse;
+import com.Alchive.backend.config.error.exception.BusinessException;
 import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,31 +61,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 액세스 토큰 추출 및 검증
-        String accessToken = jwtTokenProvider.resolveAccessToken(request);
-        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-            authenticateWithToken(accessToken);
-        }
-        // 액세스 토큰이 없거나 만료된 경우 리프레시 토큰 확인
-        else {
-            // 리프레시 토큰 추출 및 검증
-            String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
-            if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-                String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-                // 새로운 액세스, 리프레시 토큰 발급
-                String newAccessToken = jwtTokenProvider.createAccessToken(email);
-                String newRefreshToken = jwtTokenProvider.createRefreshToken(email);
-                response.setHeader("Authorization", "Bearer " + newAccessToken);
-                response.setHeader("Refresh-Token", newRefreshToken);
-                // 새로 발급된 액세스 토큰으로 인증 처리
-                authenticateWithToken(newAccessToken);
-            } else {
-                // 토큰이 없는 경우나 유효하지 않은 경우 에러 응답을 반환
-                throw new TokenNotExistsException();
+        try {
+            // 액세스 토큰 추출 및 검증
+            String accessToken = jwtTokenProvider.resolveAccessToken(request);
+            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+                authenticateWithToken(accessToken);
             }
-        }
+            // 액세스 토큰이 없거나 만료된 경우 리프레시 토큰 확인
+            else {
+                // 리프레시 토큰 추출 및 검증
+                String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
+                if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
+                    String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+                    // 새로운 액세스, 리프레시 토큰 발급
+                    String newAccessToken = jwtTokenProvider.createAccessToken(email);
+                    String newRefreshToken = jwtTokenProvider.createRefreshToken(email);
+                    response.setHeader("Authorization", "Bearer " + newAccessToken);
+                    response.setHeader("Refresh-Token", newRefreshToken);
+                    // 새로 발급된 액세스 토큰으로 인증 처리
+                    authenticateWithToken(newAccessToken);
+                } else {
+                    // 토큰이 없는 경우
+                    throw new TokenNotExistsException();
+                }
+            }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (BusinessException e) {
+            handleException(response, e);
+        }
     }
 
     private void authenticateWithToken(String token) {
@@ -93,5 +101,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 new UsernamePasswordAuthenticationToken(user, null);
         // SecurityContext에 인증 정보 설정
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    // 토큰 검증 중 토큰이 없거나 유효하지 않은 경우 예외 처리
+    private void handleException(HttpServletResponse response, BusinessException exception) throws IOException {
+        ErrorCode errorCode = exception.getErrorCode(); // ErrorCode.INVALID_TOKEN을 사용할 수 있습니다
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(String.valueOf(errorCode.getCode()))
+                .message(errorCode.getMessage())
+                .build();
+        response.setStatus(errorCode.getHttpStatus());
+        response.setContentType("application/json; charset=UTF-8");
+
+        // ErrorResponse를 JSON 형식으로 변환하여 응답
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+
+        response.getWriter().write(jsonResponse);
     }
 }

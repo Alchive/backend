@@ -1,5 +1,6 @@
 package com.Alchive.backend.config.jwt;
 
+import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -78,7 +79,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            return false;
+            throw new TokenExpiredException();
         }
     }
 
