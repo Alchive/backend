@@ -1,6 +1,5 @@
 package com.Alchive.backend.sns;
 
-import com.Alchive.backend.config.error.exception.sns.InvalidGrantException;
 import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.domain.sns.SnsCategory;
 import com.Alchive.backend.dto.request.SnsCreateRequest;
@@ -11,12 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import static com.Alchive.backend.config.result.ResultCode.DISCORD_DM_SEND_SUCCESS;
 
@@ -26,26 +21,12 @@ import static com.Alchive.backend.config.result.ResultCode.DISCORD_DM_SEND_SUCCE
 @Slf4j
 @RequestMapping("/api/v1/discord")
 public class DiscordController {
-    @Value("${DISCORD_CLIENT_ID}")
-    private String clientId;
-
-    @Value("${DISCORD_CLIENT_SECRET}")
-    private String clientSecret;
-
-    @Value("${DISCORD_REDIRECT_URI}")
-    private String redirectUri;
-
-    @Value("${DISCORD_BOT_TOKEN}")
-    private String discordBotToken;
-
     private final SnsService snsService;
     private final DiscordService discordService;
 
     @Operation(summary = "디스코드 봇 연결", description = "디스코드 액세스 토큰을 요청하고 DM 채널을 연결하는 api입니다. ")
     @GetMapping("/dm/open")
-    public ResponseEntity<ResultResponse> installDiscordBot(HttpServletRequest tokenRequest, @RequestParam String code) {
-        RestTemplate restTemplate = new RestTemplate();
-
+    public ResponseEntity<ResultResponse> openDiscordDm(HttpServletRequest tokenRequest, @RequestParam String code) {
         // Access Token 요청
         String accessToken = discordService.getAccessToken(code);
         log.info("Access Token 반환 완료: " + accessToken);
@@ -61,8 +42,8 @@ public class DiscordController {
         // Discord SNS 정보 저장
         SnsCreateRequest snsCreateRequest = SnsCreateRequest.builder()
                 .category(SnsCategory.DISCORD)
-                .token(discordUserId) // Discord User Id
-                .channel(channelId) // Discord Channel Id
+                .sns_id(discordUserId) // Discord User Id
+                .channel_id(channelId) // Discord Channel Id
                 .time("0 0 18 ? * MON")
                 .build();
         snsService.createSns(tokenRequest, snsCreateRequest);

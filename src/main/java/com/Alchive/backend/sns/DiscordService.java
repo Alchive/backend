@@ -99,7 +99,7 @@ public class DiscordService {
         Long userId = tokenService.validateAccessToken(tokenRequest);
         Sns snsInfo = snsReporitory.findByUser_IdAndCategory(userId, SnsCategory.DISCORD)
                 .orElseThrow(NoSuchSnsIdException::new);
-        String discordUserId = snsInfo.getToken();
+        String discordUserId = snsInfo.getSns_id();
         return discordUserId;
     }
 
