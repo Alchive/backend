@@ -25,8 +25,8 @@ public class SolutionController {
 
     @Operation(summary = "풀이 생성", description = "새로운 풀이를 생성하는 메서드입니다.")
     @PostMapping("/{boardId}")
-    public ResponseEntity<ResultResponse> createSolution(@PathVariable Long boardId, @RequestBody @Valid SolutionCreateRequest solutionRequest) {
-        SolutionDetailResponseDTO solution = solutionService.createSolution(boardId, solutionRequest);
+    public ResponseEntity<ResultResponse> createSolution(@AuthenticationPrincipal User user, @PathVariable Long boardId, @RequestBody @Valid SolutionCreateRequest solutionRequest) {
+        SolutionDetailResponseDTO solution = solutionService.createSolution(user, boardId, solutionRequest);
         return ResponseEntity.ok(ResultResponse.of(SOLUTION_CREATE_SUCCESS, solution));
     }
 

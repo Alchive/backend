@@ -2,8 +2,11 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.error.exception.board.NotFoundBoardException;
 import com.Alchive.backend.config.error.exception.solution.NotFoundSolutionException;
+import com.Alchive.backend.config.error.exception.token.UnmatchedUserIdException;
 import com.Alchive.backend.domain.board.Board;
+import com.Alchive.backend.domain.board.BoardStatus;
 import com.Alchive.backend.domain.solution.Solution;
+import com.Alchive.backend.domain.solution.SolutionStatus;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.SolutionCreateRequest;
 import com.Alchive.backend.dto.request.SolutionUpdateRequest;
@@ -21,8 +24,14 @@ public class SolutionService {
     private final BoardRepository boardRepository;
     private final UserService userService;
 
-    public SolutionDetailResponseDTO createSolution(Long boardId, SolutionCreateRequest solutionRequest) {
+    public SolutionDetailResponseDTO createSolution(User user, Long boardId, SolutionCreateRequest solutionRequest) {
         Board board = boardRepository.findById(boardId).orElseThrow(NotFoundBoardException::new);
+        if (board.getUser().getId() != user.getId()) {
+            throw new UnmatchedUserIdException();
+        }
+        if (solutionRequest.getStatus() == SolutionStatus.CORRECT) {
+            board.updateStatus(BoardStatus.CORRECT);
+        }
         Solution solution = Solution.of(board, solutionRequest);
         return new SolutionDetailResponseDTO(solutionRepository.save(solution));
     }

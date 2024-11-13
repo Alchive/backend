@@ -56,7 +56,7 @@ public class BoardController {
     @PostMapping("")
     public ResponseEntity<ResultResponse> createBoard(@AuthenticationPrincipal User user, @RequestBody @Valid BoardCreateRequest boardCreateRequest) {
         BoardResponseDTO board = boardService.createBoard(user, boardCreateRequest);
-        slackService.sendMessageCreateBoard(boardCreateRequest, board);
+//        slackService.sendMessageCreateBoard(boardCreateRequest, board);
         return ResponseEntity.ok(ResultResponse.of(BOARD_CREATE_SUCCESS, board));
     }
 
