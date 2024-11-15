@@ -3,6 +3,9 @@ package com.Alchive.backend.config.auth;
 import com.Alchive.backend.config.auth.handler.OAuth2FailureHandler;
 import com.Alchive.backend.config.auth.handler.OAuth2SuccessHandler;
 import com.Alchive.backend.config.auth.service.CustomOAuth2UserService;
+import com.Alchive.backend.config.jwt.JwtAuthenticationFilter;
+import com.Alchive.backend.config.jwt.JwtTokenProvider;
+import com.Alchive.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -21,20 +25,26 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(
-                        AbstractHttpConfigurer::disable
-                )
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))	// H2 콘솔 사용을 위한 설정
+                // CSRF 보호 비활성화
+                .csrf(AbstractHttpConfigurer::disable)
+                // H2 콘솔 사용을 위한 Frame-Options 설정
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(requests ->
                         requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
                 )
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider, userService),
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )	// 세션을 사용하지 않으므로 STATELESS 설정
+                )    // 세션을 사용하지 않으므로 STATELESS 설정
                 .logout( // 로그아웃 성공 시 / 주소로 이동
                         (logoutConfig) -> logoutConfig.logoutSuccessUrl("/")
                 )

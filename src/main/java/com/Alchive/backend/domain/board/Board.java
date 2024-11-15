@@ -62,4 +62,8 @@ public class Board extends BaseEntity {
         return this;
     }
 
+    public Board updateStatus(BoardStatus status) {
+        this.status = status;
+        return this;
+    }
 }
