@@ -1,16 +1,19 @@
-package com.Alchive.backend.sns;
+package com.Alchive.backend.controller;
 
 import com.Alchive.backend.config.result.ResultResponse;
+import com.Alchive.backend.domain.sns.Sns;
 import com.Alchive.backend.domain.sns.SnsCategory;
+import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.SnsCreateRequest;
 import com.Alchive.backend.service.SnsService;
+import com.Alchive.backend.service.DiscordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.Alchive.backend.config.result.ResultCode.DISCORD_DM_SEND_SUCCESS;
@@ -19,14 +22,14 @@ import static com.Alchive.backend.config.result.ResultCode.DISCORD_DM_SEND_SUCCE
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/discord")
+@RequestMapping("/api/v2/discord")
 public class DiscordController {
     private final SnsService snsService;
     private final DiscordService discordService;
 
     @Operation(summary = "디스코드 봇 연결", description = "디스코드 액세스 토큰을 요청하고 DM 채널을 연결하는 api입니다. ")
     @GetMapping("/dm/open")
-    public ResponseEntity<ResultResponse> openDiscordDm(HttpServletRequest tokenRequest, @RequestParam String code) {
+    public ResponseEntity<ResultResponse> openDiscordDm(@AuthenticationPrincipal User user, @RequestParam String code) {
         // Access Token 요청
         String accessToken = discordService.getAccessToken(code);
         log.info("Access Token 반환 완료: " + accessToken);
@@ -46,7 +49,7 @@ public class DiscordController {
                 .channel_id(channelId) // Discord Channel Id
                 .time("0 0 18 ? * MON")
                 .build();
-        snsService.createSns(tokenRequest, snsCreateRequest);
+        snsService.createSns(user, snsCreateRequest);
         log.info("SNS 정보 저장 완료");
 
         // DM 전송 요청
@@ -57,9 +60,9 @@ public class DiscordController {
 
     @Operation(summary = "디스코드 DM 전송", description = "디스코드 DM으로 메시지를 전송하는 api입니다. ")
     @PostMapping("dm/send")
-    public ResponseEntity<ResultResponse> sendDiscordDm(HttpServletRequest tokenRequest, @RequestParam String message) {
-        String discordUserId = discordService.getDiscordUserId(tokenRequest);
-        discordService.sendDmJda(discordUserId, message);
+    public ResponseEntity<ResultResponse> sendDiscordDm(@AuthenticationPrincipal User user, @RequestParam String message) {
+        Sns discordInfo = discordService.getDiscordInfo(user);
+        discordService.sendDmJda(discordInfo.getSns_id(), message);
         return ResponseEntity.ok(ResultResponse.of(DISCORD_DM_SEND_SUCCESS));
     }
 }

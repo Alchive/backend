@@ -2,8 +2,6 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.error.exception.board.NotFoundBoardException;
 import com.Alchive.backend.config.error.exception.problem.NotFoundProblemException;
-import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
-import com.Alchive.backend.config.jwt.TokenService;
 import com.Alchive.backend.domain.algorithm.Algorithm;
 import com.Alchive.backend.domain.algorithmProblem.AlgorithmProblem;
 import com.Alchive.backend.domain.board.Board;
@@ -16,7 +14,6 @@ import com.Alchive.backend.dto.response.BoardResponseDTO;
 import com.Alchive.backend.dto.response.ProblemResponseDTO;
 import com.Alchive.backend.dto.response.SolutionResponseDTO;
 import com.Alchive.backend.repository.*;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +31,10 @@ import java.util.Optional;
 @Service
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
     private final AlgorithmRepository algorithmRepository;
     private final AlgorithmProblemRepository algorithmProblemRepository;
     private final SolutionRepository solutionRepository;
-    private final TokenService tokenService;
     private final UserService userService;
 
     private BoardDetailResponseDTO toBoardDetailResponseDTO(Board board) {
@@ -59,9 +54,8 @@ public class BoardService {
     }
 
     // Board 저장 여부 구현
-    public BoardDetailResponseDTO isBoardSaved(HttpServletRequest tokenRequest, ProblemNumberRequest problemNumberRequest) {
-        Long userId = tokenService.validateAccessToken(tokenRequest);
-        Optional<Board> board = boardRepository.findByProblem_PlatformAndProblem_NumberAndUser_Id(problemNumberRequest.getPlatform(), problemNumberRequest.getProblemNumber(), userId);
+    public BoardDetailResponseDTO isBoardSaved(User user, ProblemNumberRequest problemNumberRequest) {
+        Optional<Board> board = boardRepository.findByProblem_PlatformAndProblem_NumberAndUser_Id(problemNumberRequest.getPlatform(), problemNumberRequest.getProblemNumber(), user.getId());
         return board.map(this::toBoardDetailResponseDTO).orElse(null);
     }
 
@@ -80,10 +74,7 @@ public class BoardService {
 
     // 게시물 메서드
     @Transactional
-    public BoardResponseDTO createBoard(HttpServletRequest tokenRequest, BoardCreateRequest boardCreateRequest) {
-        Long userId = tokenService.validateAccessToken(tokenRequest);
-        User user = userRepository.findById(userId)
-                .orElseThrow(NoSuchUserIdException::new);
+    public BoardResponseDTO createBoard(User user, BoardCreateRequest boardCreateRequest) {
         ProblemCreateRequest problemCreateRequest = boardCreateRequest.getProblemCreateRequest();
         // 문제 정보 저장 여부 확인
         if (!problemRepository.existsByNumberAndPlatform(problemCreateRequest.getNumber(), problemCreateRequest.getPlatform())) {
@@ -103,29 +94,26 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDTO updateBoard(HttpServletRequest tokenRequest, Long boardId, BoardUpdateRequest updateRequest) {
-        Long userId = tokenService.validateAccessToken(tokenRequest);
+    public BoardResponseDTO updateBoard(User user, Long boardId, BoardUpdateRequest updateRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
-        userService.validateUser(userId, board.getUser().getId());
+        userService.validateUser(user.getId(), board.getUser().getId());
         return new BoardResponseDTO(board.updateDescription(updateRequest.getDescription()));
     }
 
     @Transactional
-    public void deleteBoard(HttpServletRequest tokenRequest, Long boardId) {
-        Long userId = tokenService.validateAccessToken(tokenRequest);
+    public void deleteBoard(User user, Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
-        userService.validateUser(userId, board.getUser().getId());
+        userService.validateUser(user.getId(), board.getUser().getId());
         boardRepository.delete(board);
     }
 
     @Transactional
-    public BoardResponseDTO updateBoardMemo(HttpServletRequest tokenRequest, Long boardId, BoardMemoUpdateRequest updateRequest) {
-        Long userId = tokenService.validateAccessToken(tokenRequest);
+    public BoardResponseDTO updateBoardMemo(User user, Long boardId, BoardMemoUpdateRequest updateRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
-        userService.validateUser(userId, board.getUser().getId());
+        userService.validateUser(user.getId(), board.getUser().getId());
         return new BoardResponseDTO(board.updateMemo(updateRequest.getMemo()));
     }
 

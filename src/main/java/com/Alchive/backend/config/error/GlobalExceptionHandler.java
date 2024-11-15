@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException exception) {
-        log.info(exception.getMessage() + ", " + exception.getClass());
+        log.error(exception.getMessage() + ", " + exception.getClass());
         ErrorCode errorCode = ErrorCode._INTERNAL_SERVER_ERROR;
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(ErrorResponse.builder()
