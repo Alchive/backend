@@ -54,7 +54,9 @@ public class UserService {
 
     @Transactional
     public User updateUserDetail(User user, UserUpdateRequest updateRequest) {
-        return user.update(updateRequest.getDescription(), updateRequest.getAutoSave());
+        User updatedUser = userRepository.findById(user.getId())
+                .orElseThrow(NoSuchUserIdException::new);
+        return updatedUser.update(updateRequest.getDescription(), updateRequest.getAutoSave());
     }
 
     @Transactional
