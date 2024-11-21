@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @AllArgsConstructor
 @Getter
-@RedisHash(value = "jwtToken")
+@RedisHash(value = "refreshToken")
 public class RefreshToken {
     @Id
     @Indexed
