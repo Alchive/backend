@@ -5,6 +5,7 @@ import com.Alchive.backend.config.auth.handler.OAuth2SuccessHandler;
 import com.Alchive.backend.config.auth.service.CustomOAuth2UserService;
 import com.Alchive.backend.config.jwt.JwtAuthenticationFilter;
 import com.Alchive.backend.config.jwt.JwtTokenProvider;
+import com.Alchive.backend.config.redis.RefreshTokenService;
 import com.Alchive.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,7 +41,7 @@ public class SecurityConfig {
                         requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider, userService),
+                        new JwtAuthenticationFilter(jwtTokenProvider, userService, refreshTokenService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .sessionManagement(sessionManagement ->

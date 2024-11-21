@@ -3,7 +3,9 @@ package com.Alchive.backend.config.jwt;
 import com.Alchive.backend.config.error.ErrorCode;
 import com.Alchive.backend.config.error.ErrorResponse;
 import com.Alchive.backend.config.error.exception.BusinessException;
+import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
 import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
+import com.Alchive.backend.config.redis.RefreshTokenService;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -24,9 +27,11 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 
@@ -42,7 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Map.entry("/api/v2/users/username/{name}", List.of("GET")),
             Map.entry("/api/v2/sns/{snsId}", List.of("GET")),
             Map.entry("/api/v2/slack/reminder", List.of("GET")),
-            Map.entry("/api/v2/slack/added", List.of("GET"))
+            Map.entry("/api/v2/slack/added", List.of("GET")),
+            Map.entry("/api/v2/jwt/**", List.of("GET")),
+            Map.entry("/api/v2/refreshTokens/**", List.of("GET", "POST"))
     );
 
     // EXCLUDE_URL과 메서드에 일치할 경우 현재 필터를 진행하지 않고 다음 필터 진행
@@ -64,25 +71,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // 액세스 토큰 추출 및 검증
             String accessToken = jwtTokenProvider.resolveAccessToken(request);
-            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            String email = jwtTokenProvider.getEmailFromToken(accessToken);
+            if ( jwtTokenProvider.validateToken(accessToken) ) {
                 authenticateWithToken(accessToken);
             }
-            // 액세스 토큰이 없거나 만료된 경우 리프레시 토큰 확인
             else {
+                // 액세스 토큰이 만료된 경우 리프레시 토큰 확인
+                log.info("액세스 토큰 만료");
                 // 리프레시 토큰 추출 및 검증
-                String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
-                if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-                    String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-                    // 새로운 액세스, 리프레시 토큰 발급
+                String refreshToken = refreshTokenService.getRefreshToken(email);
+                if ( jwtTokenProvider.validateToken(refreshToken) ) {
+                    // 이메일로 새로운 액세스 토큰 발급
                     String newAccessToken = jwtTokenProvider.createAccessToken(email);
-                    String newRefreshToken = jwtTokenProvider.createRefreshToken(email);
+                    log.info("새 액세스 토큰: " + newAccessToken);
                     response.setHeader("Authorization", "Bearer " + newAccessToken);
-                    response.setHeader("Refresh-Token", newRefreshToken);
                     // 새로 발급된 액세스 토큰으로 인증 처리
                     authenticateWithToken(newAccessToken);
-                } else {
-                    // 토큰이 없는 경우
-                    throw new TokenNotExistsException();
+                }
+                else {
+                    log.info("리프레시 토큰 만료");
+                    throw new TokenExpiredException();
                 }
             }
 

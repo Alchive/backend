@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.Alchive.backend.config.result.ResultCode.TOKEN_ACCESS_SUCCESS;
+import static com.Alchive.backend.config.result.ResultCode.*;
 
 @Tag(name = "JWT", description = "[Test] JWT 관련 api입니다.")
 @RequiredArgsConstructor
@@ -18,10 +18,17 @@ import static com.Alchive.backend.config.result.ResultCode.TOKEN_ACCESS_SUCCESS;
 public class JwtController {
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Operation(summary = "토큰 재발급 메서드", description = "액세스 토큰을 재발급하는 메서드입니다.")
-    @GetMapping("")
-    public ResponseEntity<ResultResponse> createToken(String email) {
+    @Operation(summary = "액세스 토큰 재발급 메서드", description = "액세스 토큰을 재발급하는 메서드입니다.")
+    @GetMapping("/access")
+    public ResponseEntity<ResultResponse> createAccessToken(String email) {
         String accessToken = jwtTokenProvider.createAccessToken(email);
         return ResponseEntity.ok(ResultResponse.of(TOKEN_ACCESS_SUCCESS, accessToken));
+    }
+
+    @Operation(summary = "리프레시 토큰 재발급 메서드", description = "리프레시 토큰을 재발급하는 메서드입니다.")
+    @GetMapping("/refresh")
+    public ResponseEntity<ResultResponse> createRefreshToken(String email) {
+        String refreshToken = jwtTokenProvider.createRefreshToken(email);
+        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_SUCCESS, refreshToken));
     }
 }
