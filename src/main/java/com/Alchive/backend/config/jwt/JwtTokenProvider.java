@@ -1,13 +1,14 @@
 package com.Alchive.backend.config.jwt;
 
 import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -66,7 +67,7 @@ public class JwtTokenProvider {
             String header = request.getHeader(headerName);
             return prefix.isEmpty() ? header : header.substring(prefix.length());
         } catch (NullPointerException | IllegalArgumentException e) {
-            return null;
+            throw new TokenNotExistsException();
         }
     }
 
@@ -78,18 +79,24 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            throw new TokenExpiredException();
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (JwtException e) {
+            throw e;
         }
     }
 
     // 이메일 추출
     public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (ExpiredJwtException exception) {
+            return exception.getClaims().getSubject();
+        }
     }
 }
