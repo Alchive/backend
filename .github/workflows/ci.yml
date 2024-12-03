@@ -54,6 +54,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: 35.216.106.69
+          username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: GITHUB_SHA
           script: |
