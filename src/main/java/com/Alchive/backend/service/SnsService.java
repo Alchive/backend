@@ -8,10 +8,12 @@ import com.Alchive.backend.dto.response.SnsResponseDTO;
 import com.Alchive.backend.repository.SnsReporitory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class SnsService {
     private final SnsReporitory snsReporitory;
 

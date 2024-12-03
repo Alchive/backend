@@ -39,3 +39,7 @@ management:
     web:
       exposure:
         include: "prometheus"
+
+discord:
+  bot:
+    token: ${DISCORD_BOT_TOKEN}

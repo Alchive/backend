@@ -43,7 +43,7 @@ public class SwaggerConfig {
     private Info apiInfo() {
         return new Info()
                 .title("Alchive API")
-                .description("[ Base URL: http://localhost:8080/api/v1]\n\nAlchive의 API 문서")
+                .description("[ Base URL: http://localhost:8080/api/v2]\n\nAlchive의 API 문서")
                 .version("1.0.0");
     }
 }
