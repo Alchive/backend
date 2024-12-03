@@ -40,3 +40,11 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: clean build -x test
+
+      # Docker build
+      - name: Docker build
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB.USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          docker build -t alchive .
+          docker tag alchive alchive/alchive:${GITHUB_SHA::7}
+          docker push alchive/alchive:${GITHUB_SHA::7}
