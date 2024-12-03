@@ -21,6 +21,7 @@ services:
       - alchive
 
   springboot:
+    image: springboot
     container_name: springboot
     build:
       context: .
