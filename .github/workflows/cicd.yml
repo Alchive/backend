@@ -35,7 +35,7 @@ jobs:
           echo "${{ secrets.ENV_PROPERTIES }}" > ./src/main/resources/env.properties
 
         shell: bash
-      # Gradle build (Test 제외)
+      # Gradle build
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
