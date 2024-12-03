@@ -24,11 +24,4 @@ public class JwtController {
         String accessToken = jwtTokenProvider.createAccessToken(email);
         return ResponseEntity.ok(ResultResponse.of(TOKEN_ACCESS_SUCCESS, accessToken));
     }
-
-    @Operation(summary = "리프레시 토큰 재발급 메서드", description = "리프레시 토큰을 재발급하는 메서드입니다.")
-    @GetMapping("/refresh")
-    public ResponseEntity<ResultResponse> createRefreshToken(String email) {
-        String refreshToken = jwtTokenProvider.createRefreshToken(email);
-        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_SUCCESS, refreshToken));
-    }
 }
