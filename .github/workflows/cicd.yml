@@ -33,6 +33,9 @@ jobs:
         run: |
           touch ./.env
           echo "${{ secrets.ENV }}" > ./.env
+          run: |
+          touch ./src/main/resources/env.properties
+          echo "${{ secrets.ENV_PROPERTIES }}" > ./src/main/resources/env.properties
 
         shell: bash
       # Gradle build
