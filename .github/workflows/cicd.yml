@@ -58,25 +58,8 @@ jobs:
           host: 35.216.106.69
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: |
-            GITHUB_SHA
-            SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
-            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
-            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-            SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-            MYSQL_USER=${{ secrets.MYSQL_USER }}
-            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          envs: GITHUB_SHA
           script: |
             sudo echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            export SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL
-            export SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME
-            export SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD
-            export SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
-            export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
-            export MYSQL_DATABASE=$MYSQL_DATABASE
-            export MYSQL_USER=$MYSQL_USER
-            export MYSQL_PASSWORD=$MYSQL_PASSWORD
-            docker-compose down
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7}
             docker-compose up -d
