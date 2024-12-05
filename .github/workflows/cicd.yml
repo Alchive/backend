@@ -59,5 +59,6 @@ jobs:
           envs: GITHUB_SHA
           script: |
             sudo echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::7}
+            sudo docker-compose down
+            sudo docker-compose pull
             sudo docker-compose up -d
