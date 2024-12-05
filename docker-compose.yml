@@ -23,7 +23,6 @@ services:
       - alchive
 
   springboot:
-    image: "alchive/alchive:latest"
     container_name: springboot
     restart: always
     depends_on:
