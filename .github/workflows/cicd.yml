@@ -31,8 +31,8 @@ jobs:
       # 환경 변수 설정
       - name: Set environment values
         run: |
-          touch ./src/main/resources/env.properties
-          echo "${{ secrets.ENV_PROPERTIES }}" > ./src/main/resources/env.properties
+          touch ./.env
+          echo "${{ secrets.ENV }}" > ./.env
 
         shell: bash
       # Gradle build
@@ -68,21 +68,13 @@ jobs:
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
           script: |
             sudo echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            sudo SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
-                 SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME \
-                 SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD \
-                 SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE \
-                 MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-                 MYSQL_DATABASE=$MYSQL_DATABASE \
-                 MYSQL_USER=$MYSQL_USER \
-                 MYSQL_PASSWORD=$MYSQL_PASSWORD \
-                 docker-compose down
-            sudo SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
-                 SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME \
-                 SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD \
-                 SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE \
-                 MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-                 MYSQL_DATABASE=$MYSQL_DATABASE \
-                 MYSQL_USER=$MYSQL_USER \
-                 MYSQL_PASSWORD=$MYSQL_PASSWORD \
-                 docker-compose up -d
+            export SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL
+            export SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME
+            export SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD
+            export SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+            export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+            export MYSQL_DATABASE=$MYSQL_DATABASE
+            export MYSQL_USER=$MYSQL_USER
+            export MYSQL_PASSWORD=$MYSQL_PASSWORD
+            docker-compose down
+            docker-compose up -d
