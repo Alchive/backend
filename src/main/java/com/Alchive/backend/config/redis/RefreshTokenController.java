@@ -34,6 +34,7 @@ public class RefreshTokenController {
     @GetMapping("/newToken")
     public ResponseEntity<ResultResponse> createRefreshToken(@RequestParam String email) {
         String refreshToken = refreshTokenService.createRefreshToken(email);
+        refreshTokenService.saveRefreshToken(email, refreshToken);
         return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_SUCCESS, refreshToken));
     }
 }
