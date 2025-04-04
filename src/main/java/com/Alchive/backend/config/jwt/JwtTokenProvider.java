@@ -35,15 +35,16 @@ public class JwtTokenProvider {
 
     // 액세스 및 리프레시 토큰 생성
     public String createAccessToken(String email) {
-        return createToken(email, ACCESS_EXPIRE_LENGTH);
+        return createToken(email, ACCESS_EXPIRE_LENGTH, "ACCESS");
     }
 
     public String createRefreshToken(String email) {
-        return createToken(email, REFRESH_EXPIRE_LENGTH);
+        return createToken(email, REFRESH_EXPIRE_LENGTH, "REFRESH");
     }
 
-    private String createToken(String email, Long expireLength) {
+    private String createToken(String email, Long expireLength, String type) {
         Claims claims = Jwts.claims().setSubject(email);
+        claims.put("type", type);
         return Jwts.builder().setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expireLength))
@@ -74,10 +75,15 @@ public class JwtTokenProvider {
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseClaimsJws(token)
+                    .getBody();
+            String type = (String) claims.get("type");
+            if (!type.equals("ACCESS")) {
+                throw new TokenNotExistsException();
+            }
             return true;
         } catch (ExpiredJwtException e) {
             return false;

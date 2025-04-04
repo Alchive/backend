@@ -22,6 +22,6 @@ public class JwtController {
     @GetMapping("/access")
     public ResponseEntity<ResultResponse> createAccessToken(String email) {
         String accessToken = jwtTokenProvider.createAccessToken(email);
-        return ResponseEntity.ok(ResultResponse.of(TOKEN_ACCESS_SUCCESS, accessToken));
+        return ResponseEntity.ok(ResultResponse.of(TOKEN_ACCESS_CREATE_SUCCESS, accessToken));
     }
 }

@@ -20,14 +20,14 @@ public class RefreshTokenController {
     @PostMapping("")
     public ResponseEntity<ResultResponse> saveRefreshToken(@RequestBody CreateRefreshTokenRequest request) {
         refreshTokenService.saveRefreshToken(request.getEmail(), request.getRefreshToken());
-        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_SUCCESS, request.getRefreshToken()));
+        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_SAVE_SUCCESS, request.getRefreshToken()));
     }
 
     @Operation(summary = "리프레시 토큰 검색 메서드", description = "이메일로 리프레시 토큰을 가져오는 메서드입니다. ")
     @GetMapping("")
     public ResponseEntity<ResultResponse> getResfreshToken(@RequestParam String email) {
         String refreshToken = refreshTokenService.getRefreshToken(email);
-        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_SUCCESS, refreshToken));
+        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_GET_SUCCESS, refreshToken));
     }
 
     @Operation(summary = "리프레시 토큰 재발급 메서드", description = "이메일로 리프레시 토큰을 재발급하는 메서드입니다. ")
@@ -35,6 +35,6 @@ public class RefreshTokenController {
     public ResponseEntity<ResultResponse> createRefreshToken(@RequestParam String email) {
         String refreshToken = refreshTokenService.createRefreshToken(email);
         refreshTokenService.saveRefreshToken(email, refreshToken);
-        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_SUCCESS, refreshToken));
+        return ResponseEntity.ok(ResultResponse.of(TOKEN_REFRESH_CREATE_SUCCESS, refreshToken));
     }
 }
