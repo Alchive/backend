@@ -1,5 +1,7 @@
 package com.Alchive.backend.config;
 
+import com.Alchive.backend.config.redis.RefreshTokenRepository;
+import com.Alchive.backend.config.redis.RefreshTokenService;
 import com.Alchive.backend.domain.algorithm.Algorithm;
 import com.Alchive.backend.domain.algorithmProblem.AlgorithmProblem;
 import com.Alchive.backend.domain.board.Board;
@@ -33,19 +35,22 @@ public class DataInitializer implements CommandLineRunner {
     private final BoardRepository boardRepository;
     private final AlgorithmRepository algorithmRepository;
     private final AlgorithmProblemRepository algorithmProblemRepository;
+    private final RefreshTokenService refreshTokenService;
 
     public DataInitializer(UserRepository userRepository,
                            ProblemRepository problemRepository,
                            SolutionRepository solutionRepository,
                            BoardRepository boardRepository,
                            AlgorithmRepository algorithmRepository,
-                           AlgorithmProblemRepository algorithmProblemRepository) {
+                           AlgorithmProblemRepository algorithmProblemRepository,
+                           RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.problemRepository = problemRepository;
         this.solutionRepository = solutionRepository;
         this.boardRepository = boardRepository;
         this.algorithmRepository = algorithmRepository;
         this.algorithmProblemRepository = algorithmProblemRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -81,6 +86,19 @@ public class DataInitializer implements CommandLineRunner {
                 .name("김미영")
                 .build();
         userRepository.save(user4);
+
+        // Redis token 생성
+        String refreshToken1 = refreshTokenService.createRefreshToken("chohana@alchive.com");
+        refreshTokenService.saveRefreshToken("chohana@alchive.com", refreshToken1);
+
+        String refreshToken2 = refreshTokenService.createRefreshToken("parknahyun@alchive.com");
+        refreshTokenService.saveRefreshToken("parknahyun@alchive.com", refreshToken2);
+
+        String refreshToken3 = refreshTokenService.createRefreshToken("songyurim@alchive.com");
+        refreshTokenService.saveRefreshToken("songyurim@alchive.com", refreshToken3);
+
+        String refreshToken4 = refreshTokenService.createRefreshToken("kimmiyoung@alchive.com");
+        refreshTokenService.saveRefreshToken("kimmiyoung@alchive.com", refreshToken4);
 
         // Algorithm 목업 데이터 생성
         String[] algorithmNames = {"이분탐색", "DP", "BFS", "DFS", "브루트포스", "그리디", "정렬", "구현", "그래프"};
