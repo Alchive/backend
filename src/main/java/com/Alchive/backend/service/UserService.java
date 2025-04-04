@@ -65,6 +65,7 @@ public class UserService {
     @Transactional
     public void deleteUserDetail(User user) {
         userRepository.delete(user);
+        refreshTokenService.deleteRefreshToken(user.getEmail());
     }
 
     public void validateUser(Long userId, Long requestedId) {
