@@ -12,8 +12,9 @@ import lombok.Getter;
 public class SnsCreateRequest {
     @NotNull(message = "소셜 카테고리는 필수입니다. ")
     private SnsCategory category;
-    @NotNull(message = "토큰은 필수입니다. ")
-    private String token;
-    private String channel;
+    private String bot_token;
+    private String user_token;
+    private String channel_id;
+    private String sns_id;
     private String time;
 }
