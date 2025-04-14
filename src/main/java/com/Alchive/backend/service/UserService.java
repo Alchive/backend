@@ -5,6 +5,7 @@ import com.Alchive.backend.config.error.exception.user.NoSuchUserIdException;
 import com.Alchive.backend.config.error.exception.user.UserEmailExistException;
 import com.Alchive.backend.config.error.exception.user.UserNameExistException;
 import com.Alchive.backend.config.jwt.JwtTokenProvider;
+import com.Alchive.backend.config.redis.RefreshTokenService;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.UserCreateRequest;
 import com.Alchive.backend.dto.request.UserUpdateRequest;
@@ -21,6 +22,7 @@ import java.util.Objects;
 public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public UserResponseDTO createUser(UserCreateRequest request) {
@@ -39,8 +41,9 @@ public class UserService {
         user = userRepository.save(user);
         // 토큰 생성 후 전달
         String accessToken = jwtTokenProvider.createAccessToken(email);
-        String refreshToken = jwtTokenProvider.createRefreshToken(email);
-        return new UserResponseDTO(user, accessToken, refreshToken);
+        String refreshToken = refreshTokenService.createRefreshToken(email);
+        refreshTokenService.saveRefreshToken(email, refreshToken);
+        return new UserResponseDTO(user, accessToken);
     }
 
     public boolean isDuplicateUsername(String name) {
@@ -54,12 +57,15 @@ public class UserService {
 
     @Transactional
     public User updateUserDetail(User user, UserUpdateRequest updateRequest) {
-        return user.update(updateRequest.getDescription(), updateRequest.getAutoSave());
+        User updatedUser = userRepository.findById(user.getId())
+                .orElseThrow(NoSuchUserIdException::new);
+        return updatedUser.update(updateRequest.getDescription(), updateRequest.getAutoSave());
     }
 
     @Transactional
     public void deleteUserDetail(User user) {
         userRepository.delete(user);
+        refreshTokenService.deleteRefreshToken(user.getEmail());
     }
 
     public void validateUser(Long userId, Long requestedId) {

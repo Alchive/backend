@@ -26,13 +26,8 @@ public class SwaggerConfig {
                 .bearerFormat("JWT")
                 .in(SecurityScheme.In.HEADER)
                 .name(HttpHeaders.AUTHORIZATION);
-        SecurityScheme refreshTokenSecurityScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.APIKEY)
-                .in(SecurityScheme.In.HEADER)
-                .name("REFRESH-TOKEN");
         Components components = new Components()
-                .addSecuritySchemes(key, accessTokenSecurityScheme)
-                .addSecuritySchemes(refreshKey, refreshTokenSecurityScheme);
+                .addSecuritySchemes(key, accessTokenSecurityScheme);
 
         return new OpenAPI()
                 .info(apiInfo())

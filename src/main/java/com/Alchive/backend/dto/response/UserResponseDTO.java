@@ -11,13 +11,11 @@ public class UserResponseDTO {
     private String userEmail;
     private String userName;
     private String accessToken;
-    private String refreshToken;
 
-    public UserResponseDTO(User user, String accessToken, String refreshToken) {
+    public UserResponseDTO(User user, String accessToken) {
         this.userId=user.getId();
         this.userEmail=user.getEmail();
         this.userName=user.getName();
         this.accessToken=accessToken;
-        this.refreshToken=refreshToken;
     }
 }

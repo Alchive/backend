@@ -1,13 +1,14 @@
 package com.Alchive.backend.config.jwt;
 
 import com.Alchive.backend.config.error.exception.token.TokenExpiredException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.Alchive.backend.config.error.exception.token.TokenNotExistsException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -34,15 +35,16 @@ public class JwtTokenProvider {
 
     // 액세스 및 리프레시 토큰 생성
     public String createAccessToken(String email) {
-        return createToken(email, ACCESS_EXPIRE_LENGTH);
+        return createToken(email, ACCESS_EXPIRE_LENGTH, "ACCESS");
     }
 
     public String createRefreshToken(String email) {
-        return createToken(email, REFRESH_EXPIRE_LENGTH);
+        return createToken(email, REFRESH_EXPIRE_LENGTH, "REFRESH");
     }
 
-    private String createToken(String email, Long expireLength) {
+    private String createToken(String email, Long expireLength, String type) {
         Claims claims = Jwts.claims().setSubject(email);
+        claims.put("type", type);
         return Jwts.builder().setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expireLength))
@@ -66,30 +68,41 @@ public class JwtTokenProvider {
             String header = request.getHeader(headerName);
             return prefix.isEmpty() ? header : header.substring(prefix.length());
         } catch (NullPointerException | IllegalArgumentException e) {
-            return null;
+            throw new TokenNotExistsException();
         }
     }
 
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseClaimsJws(token)
+                    .getBody();
+            String type = (String) claims.get("type");
+            if (!type.equals("ACCESS")) {
+                throw new TokenNotExistsException();
+            }
             return true;
-        } catch (Exception e) {
-            throw new TokenExpiredException();
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (JwtException e) {
+            throw e;
         }
     }
 
     // 이메일 추출
     public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (ExpiredJwtException exception) {
+            return exception.getClaims().getSubject();
+        }
     }
 }
