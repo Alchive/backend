@@ -36,6 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
+### Mac OS ###
+.DS_Store
+
 ### 환경 변수
 .env
 /src/main/resources/env.properties
