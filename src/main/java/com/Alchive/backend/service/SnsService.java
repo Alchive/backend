@@ -3,6 +3,8 @@ package com.Alchive.backend.service;
 import com.Alchive.backend.config.error.exception.sns.InvalidGrantException;
 import com.Alchive.backend.config.error.exception.sns.NoSuchSnsIdException;
 import com.Alchive.backend.domain.sns.Sns;
+import com.Alchive.backend.domain.user.User;
+import com.Alchive.backend.dto.request.SnsCreateRequest;
 import com.Alchive.backend.dto.response.SnsResponseDTO;
 import com.Alchive.backend.repository.SnsReporitory;
 import jakarta.transaction.Transactional;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -29,7 +32,8 @@ public class SnsService {
     }
 
     @Transactional
-    public void createSns(Sns sns) {
+    public void createSns(User user, SnsCreateRequest request) {
+        Sns sns = Sns.of(user, request);
         snsReporitory.save(sns);
     }
 
@@ -47,7 +51,7 @@ public class SnsService {
     }
 
     private void checkInvalidGrant(Map<String, Object> responseBody) {
-        if ((responseBody.containsKey("error") && responseBody.get("error") == "invalid_grant") || (responseBody.containsKey("ok") && responseBody.get("ok") == "false")) {
+        if ((responseBody.containsKey("error") && responseBody.get("error").equals("invalid_grant")) || (responseBody.containsKey("ok") && responseBody.get("ok").equals("false"))) {
             throw new InvalidGrantException();
         }
     }

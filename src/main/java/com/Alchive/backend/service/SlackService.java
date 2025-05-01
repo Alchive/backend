@@ -62,8 +62,7 @@ public class SlackService {
                 .user_token(userAccessToken)
                 .time("0 0 18 ? * MON")
                 .build();
-        Sns slackSns = Sns.of(user, snsCreateRequest);
-        snsService.createSns(slackSns);
+        snsService.createSns(user, snsCreateRequest);
     }
 
     private ResponseEntity<Map> getSlackAuthUserInfo (String code) {

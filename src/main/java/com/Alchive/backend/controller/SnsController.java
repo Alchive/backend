@@ -32,9 +32,8 @@ public class SnsController {
 
     @Operation(summary = "소셜 정보 생성", description = "소셜 정보를 생성하는 메서드입니다. ")
     @PostMapping("")
-    public ResponseEntity<ResultResponse> createSns(@AuthenticationPrincipal User user, SnsCreateRequest request) {
-        Sns sns = Sns.of(user, request);
-        snsService.createSns(sns);
+    public ResponseEntity<ResultResponse> createSns(@AuthenticationPrincipal User user, @RequestBody SnsCreateRequest request) {
+        snsService.createSns(user, request);
         return ResponseEntity.ok(ResultResponse.of(SNS_CREATE_SUCCESS));
     }
 }

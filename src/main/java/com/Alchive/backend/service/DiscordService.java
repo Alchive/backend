@@ -47,7 +47,7 @@ public class DiscordService {
 
     @Value("${DISCORD_BOT_TOKEN}")
     private String discordBotToken;
-    public void initializeDiscordChannleAndSaveSnsInfo(com.Alchive.backend.domain.user.User user, String code) {
+    public void initializeDiscordChannelAndSaveSnsInfo(com.Alchive.backend.domain.user.User user, String code) {
         String accessToken = getAccessToken(code);
         String discordUserId = getDiscordUserIdFromAccessToken(accessToken);
         String channelId = getDmChannel(discordUserId);
@@ -58,8 +58,7 @@ public class DiscordService {
                 .channel_id(channelId) // Discord Channel Id
                 .time("0 0 18 ? * MON")
                 .build();
-        Sns discordInfo = Sns.of(user, snsCreateRequest);
-        snsService.createSns(discordInfo);
+        snsService.createSns(user, snsCreateRequest);
     }
 
     private String getAccessToken(String code) {
