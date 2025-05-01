@@ -31,7 +31,6 @@ import static com.Alchive.backend.config.result.ResultCode.*;
 @RequestMapping("/api/v2/boards")
 public class BoardController {
     private final BoardService boardService;
-    private final SlackService slackService;
 
     @Operation(summary = "게시물 저장 여부 조회", description = "게시물의 저장 여부를 조회하는 메서드입니다. ")
     @PostMapping("/saved")
