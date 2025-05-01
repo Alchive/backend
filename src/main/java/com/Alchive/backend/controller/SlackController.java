@@ -33,7 +33,8 @@ public class SlackController {
          log.info("사용자 slack 정보를 불러왔습니다. ");
 
         // Slack SNS 정보 저장
-        snsService.createSns(user, snsCreateRequest);
+        Sns slackSns = Sns.of(user, snsCreateRequest);
+        snsService.createSns(slackSns);
         log.info("사용자 slack 정보를 저장했습니다. ");
 
         // DM 전송 요청

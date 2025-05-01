@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class SnsService {
+public class SnsService{
     private final SnsReporitory snsReporitory;
 
     public SnsResponseDTO getSns(Long snsId) {
@@ -23,8 +23,7 @@ public class SnsService {
     }
 
     @Transactional
-    public void createSns(User user, SnsCreateRequest request) {
-        Sns sns = Sns.of(user, request);
+    public void createSns(Sns sns) {
         snsReporitory.save(sns);
     }
 }

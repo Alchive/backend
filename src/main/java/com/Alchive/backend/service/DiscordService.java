@@ -6,6 +6,7 @@ import com.Alchive.backend.config.error.exception.sns.NoSuchSnsIdException;
 import com.Alchive.backend.domain.board.Board;
 import com.Alchive.backend.domain.sns.Sns;
 import com.Alchive.backend.domain.sns.SnsCategory;
+import com.Alchive.backend.dto.request.SnsCreateRequest;
 import com.Alchive.backend.repository.BoardRepository;
 import com.Alchive.backend.repository.SnsReporitory;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 @EnableScheduling
 @Slf4j
-public class DiscordService {
+public class DiscordService{
+    private final static String DISCORD_USER_INFO_REQUEST_URL = "https://discord.com/api/v10/users/@me";
+    private final static String DISCORD_ACCESS_TOKEN_REQUEST_URL = "https://discord.com/api/oauth2/token";
+    private final static String DISCORD_DM_CHANNEL_REQUEST_URL = "https://discord.com/api/v10/users/@me/channels";
     private final JDA jda;
     private final BoardRepository boardRepository;
     private final SnsReporitory snsReporitory;
-
+    private final SnsService snsService;
     @Value("${DISCORD_CLIENT_ID}")
     private String clientId;
 
@@ -47,94 +51,83 @@ public class DiscordService {
     private String discordBotToken;
     private RestTemplate restTemplate = new RestTemplate();
 
-    public String getAccessToken(String code) {
-        String getTokenUrl = "https://discord.com/api/oauth2/token";
+    public void initializeDiscordChannleAndSaveSnsInfo(com.Alchive.backend.domain.user.User user, String code) {
+        String accessToken = getAccessToken(code);
+        String discordUserId = getDiscordUserIdFromAccessToken(accessToken);
+        String channelId = getDmChannel(discordUserId);
 
-        HttpHeaders getTokenHeaders = new HttpHeaders();
-        getTokenHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        SnsCreateRequest snsCreateRequest = SnsCreateRequest.builder()
+                .category(SnsCategory.DISCORD)
+                .sns_id(discordUserId) // Discord User Id
+                .channel_id(channelId) // Discord Channel Id
+                .time("0 0 18 ? * MON")
+                .build();
+        Sns discordInfo = Sns.of(user, snsCreateRequest);
+        saveDiscordInfo(discordInfo);
+    }
 
-        MultiValueMap<String, String> getTokenParams = new LinkedMultiValueMap<>();
-        getTokenParams.add("client_id", clientId);
-        getTokenParams.add("client_secret", clientSecret);
-        getTokenParams.add("code", code);
-        getTokenParams.add("grant_type", "authorization_code");
-        getTokenParams.add("redirect_uri", redirectUri);
+    private String getAccessToken(String code) {
+        HttpHeaders httpHeader = new HttpHeaders();
+        httpHeader.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, String> httpBody = new LinkedMultiValueMap<>();
+        httpBody.add("client_id", clientId);
+        httpBody.add("client_secret", clientSecret);
+        httpBody.add("grant_type", "authorization_code");
+        httpBody.add("redirect_uri", redirectUri);
+        httpBody.add("code", code);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(getTokenParams, getTokenHeaders);
-        ResponseEntity<Map> response = restTemplate.postForEntity(getTokenUrl, request, Map.class);
-        Map<String, Object> responseBody = response.getBody();
-
-        if (responseBody.containsKey("error") && responseBody.get("error") == "invalid_grant" ) {
-            throw new InvalidGrantException();
-        }
-        String accessToken = (String) responseBody.get("access_token");
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(httpBody, httpHeader);
+        ResponseEntity<Map> response = sendRestTemplateExchange(DISCORD_ACCESS_TOKEN_REQUEST_URL, HttpMethod.POST, request);
+        String accessToken = parseResponse(response, "access_token");
         return accessToken;
     }
 
-    public String getDiscordUserIdFromAccessToken(String accessToken) {
-        String getUserInfoUrl = "https://discord.com/api/v10/users/@me";
-        HttpHeaders accessTokenHeaders = new HttpHeaders();
-        accessTokenHeaders.setBearerAuth(accessToken);
-
-        HttpEntity<String> authRequest = new HttpEntity<>(accessTokenHeaders);
-        ResponseEntity<Map> userInfoResponse = restTemplate.exchange(getUserInfoUrl, HttpMethod.GET, authRequest, Map.class);
-        Map<String, Object> userInfo = userInfoResponse.getBody();
-
-        String discordUserId = (String) userInfo.get("id");
-        return discordUserId;
+    private ResponseEntity<Map> sendRestTemplateExchange(String requestUrl, HttpMethod method, HttpEntity request) {
+        ResponseEntity<Map> response = restTemplate.exchange(requestUrl, method, request, Map.class);
+        return response;
     }
 
-    public Sns getDiscordInfo(com.Alchive.backend.domain.user.User user) {
-        Long userId = user.getId();
-        Sns discordInfo = snsReporitory.findByUser_IdAndCategory(userId, SnsCategory.DISCORD)
-                .orElseThrow(NoSuchSnsIdException::new);
-        return discordInfo;
+    private String parseResponse(ResponseEntity<Map> response, String targetParam) {
+        Map<String, Object> responseBody = response.getBody();
+        checkInvalidGrant(responseBody);
+        String targetResult = (String) responseBody.get(targetParam);
+        return targetResult;
     }
 
-    public void sendDm(String channelId, String message) {
-        String sendMessageUrl = "https://discord.com/api/v10/channels/" + channelId + "/messages";
-        HttpHeaders sendDmHeaders = new HttpHeaders();
-        sendDmHeaders.set("Authorization", "Bot " + discordBotToken);
-        sendDmHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, String> sendDmParams = new HashMap<>();
-        sendDmParams.put("content", message);
-
-        HttpEntity<Map<String, String>> sendMessageRequest = new HttpEntity<>(sendDmParams, sendDmHeaders);
-        restTemplate.postForEntity(sendMessageUrl, sendMessageRequest, Map.class);
-    }
-
-    public String getDmChannel(String discordUserId) {
-        String getDMChannelUrl = "https://discord.com/api/v10/users/@me/channels";
-        Map<String, String> getDmParams = new HashMap<>();
-        getDmParams.put("recipient_id", discordUserId);
-
-        HttpHeaders botTokenHeader = new HttpHeaders();
-        botTokenHeader.setContentType(MediaType.APPLICATION_JSON);
-        botTokenHeader.set("Authorization", "Bot " + discordBotToken);
-
-        HttpEntity<Map<String, String>> createDmRequest = new HttpEntity<>(getDmParams, botTokenHeader);
-        ResponseEntity<Map> dmResponse = restTemplate.postForEntity(getDMChannelUrl, createDmRequest, Map.class);
-        Map<String, Object> dmResponseBody = dmResponse.getBody();
-
-        String channelId = (String) dmResponseBody.get("id");
-        return channelId;
-    }
-
-    // JDA 사용 메서드
-    public void sendDmJda(String discordUserId, String message) {
-        User user = jda.retrieveUserById(discordUserId).complete();
-        if (user != null) {
-            user.openPrivateChannel().queue(channel ->
-                    channel.sendMessage(message).queue()
-            );
-        } else {
-            throw new NoSuchDiscordUserException();
+    private void checkInvalidGrant(Map<String, Object> responseBody) {
+        if (responseBody.containsKey("error") && responseBody.get("error") == "invalid_grant" ) {
+            throw new InvalidGrantException();
         }
     }
 
-//    @Scheduled(cron = "0 */1 * * * *") // todo: Quartz로 동적 스케줄링 작성하기
-    public void sendMessageReminderBoard(com.Alchive.backend.domain.user.User user) {
+    private String getDiscordUserIdFromAccessToken(String accessToken) {
+        HttpHeaders accessTokenHeaders = new HttpHeaders();
+        accessTokenHeaders.setBearerAuth(accessToken);
+        HttpEntity<String> request = new HttpEntity<>(accessTokenHeaders);
+        ResponseEntity<Map> response = sendRestTemplateExchange(DISCORD_USER_INFO_REQUEST_URL, HttpMethod.GET, request);
+        String discordUserId = parseResponse(response, "id");
+        return discordUserId;
+    }
+
+    private String getDmChannel(String discordUserId) {
+        Map<String, String> httpBody = new HashMap<>();
+        httpBody.put("recipient_id", discordUserId);
+        HttpHeaders httpHeader = new HttpHeaders();
+        httpHeader.setContentType(MediaType.APPLICATION_JSON);
+        httpHeader.set("Authorization", "Bot " + discordBotToken);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(httpBody, httpHeader);
+
+        ResponseEntity<Map> response = sendRestTemplateExchange(DISCORD_DM_CHANNEL_REQUEST_URL, HttpMethod.POST, request);
+        String channelId = parseResponse(response, "id");
+        return channelId;
+    }
+
+    private void saveDiscordInfo(Sns discordInfo) {
+        snsService.createSns(discordInfo);
+    }
+
+    //    @Scheduled(cron = "0 */1 * * * *") // todo: Quartz로 동적 스케줄링 작성하기
+    private void sendMessageReminderBoard(com.Alchive.backend.domain.user.User user) {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(1);
 
         Board unSolvedBoard = boardRepository.findUnsolvedBoardAddedBefore(threeDaysAgo, user.getId());
@@ -146,9 +139,49 @@ public class DiscordService {
                     unSolvedBoard.getProblem().getUrl());
 
             Sns discordInfo = getDiscordInfo(user);
-            sendDmJda(discordInfo.getSns_id(), message);
+            sendDmJda(user, message);
         } else {
             log.info("풀지 못한 문제가 존재하지 않습니다. ");
+        }
+    }
+
+    public void sendDm(com.Alchive.backend.domain.user.User user, String message) {
+        String channelId = getUserChannelId(user);
+        String sendMessageUrl = "https://discord.com/api/v10/channels/" + channelId + "/messages";
+
+        HttpHeaders sendDmHeaders = new HttpHeaders();
+        sendDmHeaders.set("Authorization", "Bot " + discordBotToken);
+        sendDmHeaders.setContentType(MediaType.APPLICATION_JSON);
+        Map<String, String> sendDmParams = new HashMap<>();
+        sendDmParams.put("content", message);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(sendDmParams, sendDmHeaders);
+
+        sendRestTemplateExchange(sendMessageUrl, HttpMethod.POST, request);
+    }
+
+    private String getUserChannelId(com.Alchive.backend.domain.user.User user) {
+        return getDiscordInfo(user).getChannel_id();
+    }
+
+    private Sns getDiscordInfo(com.Alchive.backend.domain.user.User user) {
+        Long userId = user.getId();
+        Sns discordInfo = snsReporitory.findByUser_IdAndCategory(userId, SnsCategory.DISCORD)
+                .orElseThrow(NoSuchSnsIdException::new);
+        return discordInfo;
+    }
+
+    // JDA 사용 메서드
+    public void sendDmJda(com.Alchive.backend.domain.user.User user, String message) {
+        String discordUserId = getDiscordInfo(user).getSns_id();
+        User jdaUser = jda.retrieveUserById(discordUserId).complete();
+        checkUserNull(jdaUser);
+        jdaUser.openPrivateChannel().queue(channel ->
+                channel.sendMessage(message).queue());
+    }
+
+    private void checkUserNull(User user) {
+        if (user == null) {
+            throw new NoSuchDiscordUserException();
         }
     }
 }
