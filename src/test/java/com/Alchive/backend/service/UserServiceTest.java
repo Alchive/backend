@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -83,7 +84,7 @@ public class UserServiceTest {
         String description = "updatedDescription";
         UserUpdateRequest request = UserUpdateRequest.builder()
                 .description(description).build();
-        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(nullable(Long.class))).thenReturn(Optional.ofNullable(user));
 
         User result = sut.updateUserDetail(user, request);
 
