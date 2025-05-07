@@ -26,19 +26,19 @@ public class UserControllerTest {
     @DisplayName("UserController 유저네임 중복 - 성공")
     @Test
     public void isDuplicateUsernameSuccess() {
-        when(userService.isDuplicatedUsername("testNameUnique")).thenReturn(true);
+        when(userService.isDuplicatedUsername("testNameUnique")).thenReturn(false);
 
         ResponseEntity<ResultResponse> result = sut.isDuplicateUsername("testNameUnique");
 
-        Assertions.assertEquals(true, result.getBody().getData());
+        Assertions.assertEquals(false, result.getBody().getData());
     }
     @DisplayName("UserController 유저네임 중복 - 실패")
     @Test
     public void isDuplicateUsernameFail() {
-        when(userService.isDuplicatedUsername("testNameDuplicated")).thenReturn(false);
+        when(userService.isDuplicatedUsername("testNameDuplicated")).thenReturn(true);
 
         ResponseEntity<ResultResponse> result = sut.isDuplicateUsername("testNameDuplicated");
 
-        Assertions.assertEquals(false, result.getBody().getData());
+        Assertions.assertEquals(true, result.getBody().getData());
     }
 }
