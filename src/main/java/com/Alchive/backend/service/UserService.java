@@ -28,26 +28,41 @@ public class UserService {
     public UserResponseDTO createUser(UserCreateRequest request) {
         String email = request.getEmail();
         String username = request.getName();
-        // 중복 이메일 검사
-        if (userRepository.existsByEmail(email)) {
+
+        isDuplicatedEmailUsername(email, username);
+        User savedUser = createSaveUser(email, username);
+        String accessToken = createUserTokens(email);
+
+        return new UserResponseDTO(savedUser, accessToken);
+    }
+
+    private void isDuplicatedEmailUsername(String email, String username) {
+        if (isDuplicatedEmail(email)) {
             throw new UserEmailExistException();
         }
-        // 중복 유저 이름 검사
-        if (userRepository.existsByName(username)) {
+        if (isDuplicatedUsername(username)) {
             throw new UserNameExistException();
         }
-        // db에 유저 저장 - 회원 가입
+    }
+
+    private boolean isDuplicatedEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean isDuplicatedUsername(String name) {
+        return userRepository.existsByName(name);
+    }
+
+    private User createSaveUser(String email, String username) {
         User user = new User(email, username);
-        user = userRepository.save(user);
-        // 토큰 생성 후 전달
+        return userRepository.save(user);
+    }
+
+    public String createUserTokens(String email) {
         String accessToken = jwtTokenProvider.createAccessToken(email);
         String refreshToken = refreshTokenService.createRefreshToken(email);
         refreshTokenService.saveRefreshToken(email, refreshToken);
-        return new UserResponseDTO(user, accessToken);
-    }
-
-    public boolean isDuplicateUsername(String name) {
-        return userRepository.existsByName(name);
+        return accessToken;
     }
 
     public User getUserDetail(Long userId) {

@@ -13,9 +13,9 @@ public class UserResponseDTO {
     private String accessToken;
 
     public UserResponseDTO(User user, String accessToken) {
-        this.userId=user.getId();
-        this.userEmail=user.getEmail();
-        this.userName=user.getName();
-        this.accessToken=accessToken;
+        this.userId = user.getId();
+        this.userEmail = user.getEmail();
+        this.userName = user.getName();
+        this.accessToken = accessToken;
     }
 }

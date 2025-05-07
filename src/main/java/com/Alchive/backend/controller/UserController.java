@@ -34,10 +34,7 @@ public class UserController {
     @Operation(summary = "username 중복 확인 메서드", description = "username 중복을 검사하는 메서드입니다.")
     @GetMapping("/username/{name}")
     public ResponseEntity<ResultResponse> isDuplicateUsername(@PathVariable String name) {
-        if (userService.isDuplicateUsername(name)) {
-            return ResponseEntity.ok(ResultResponse.of(USER_USERNAME_DUPLICATED, true));
-        }
-        return ResponseEntity.ok(ResultResponse.of(USER_USERNAME_NOT_DUPLICATED, false));
+        return ResponseEntity.ok(ResultResponse.of(USER_USERNAME_NOT_DUPLICATED, userService.isDuplicatedUsername(name)));
     }
 
     @Operation(summary = "프로필 조회 메서드", description = "특정 사용자의 프로필 정보를 조회하는 메서드입니다.")
