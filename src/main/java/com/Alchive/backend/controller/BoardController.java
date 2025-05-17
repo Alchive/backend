@@ -40,7 +40,7 @@ public class BoardController {
             return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
         } else {
             return ResponseEntity.ok(ResultResponse.of(BOARD_NOT_EXIST, null));
-        }
+        } // todo: board 저장 여부 반환 메시지 재정의, 중복 제거
     }
 
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
@@ -55,7 +55,6 @@ public class BoardController {
     @PostMapping("")
     public ResponseEntity<ResultResponse> createBoard(@AuthenticationPrincipal User user, @RequestBody @Valid BoardCreateRequest boardCreateRequest) {
         BoardResponseDTO board = boardService.createBoard(user, boardCreateRequest);
-//        slackService.sendMessageCreateBoard(boardCreateRequest, board);
         return ResponseEntity.ok(ResultResponse.of(BOARD_CREATE_SUCCESS, board));
     }
 
