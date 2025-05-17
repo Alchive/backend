@@ -68,17 +68,17 @@ public class BoardController {
         return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
     }
 
-    @Operation(summary = "게시물 삭제", description = "게시물을 삭제하는 메서드입니다. ")
-    @DeleteMapping("/{boardId}")
-    public ResponseEntity<ResultResponse> deleteBoard(@AuthenticationPrincipal User user, @PathVariable Long boardId) {
-        boardService.deleteBoard(user, boardId);
-        return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));
-    }
-
     @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")
     @PatchMapping("/memo/{boardId}")
     public ResponseEntity<ResultResponse> updateBoardMemo(@AuthenticationPrincipal User user, @PathVariable Long boardId, @RequestBody BoardMemoUpdateRequest updateRequest) {
         BoardResponseDTO board = boardService.updateBoardMemo(user, boardId, updateRequest);
         return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
+    }
+
+    @Operation(summary = "게시물 삭제", description = "게시물을 삭제하는 메서드입니다. ")
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<ResultResponse> deleteBoard(@AuthenticationPrincipal User user, @PathVariable Long boardId) {
+        boardService.deleteBoard(user, boardId);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));
     }
 }

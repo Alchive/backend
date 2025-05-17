@@ -129,18 +129,37 @@ public class BoardServiceTest {
         Assertions.assertEquals(boardDescription, result.getDescription());
     }
 
+    @DisplayName("게시물 저장 - 새로운 문제")
+    @Test
+    public void createBoardWithNewProblem() {
+        when(problemRepository.existsByNumberAndPlatform(problemNumber, problemPlatform)).thenReturn(false);
+        when(problemRepository.save(any(Problem.class))).thenReturn(problem);
+        when(algorithmRepository.existsByName(anyString())).thenReturn(true);
+        when(algorithmRepository.findByName(anyString())).thenReturn(new Algorithm(1L, "BFS"));
+        when(problemRepository.findByNumberAndPlatform(problemNumber, problemPlatform)).thenReturn(problem);
+        when(boardRepository.save(any(Board.class))).thenReturn(board);
+        ProblemCreateRequest request1 = new ProblemCreateRequest(problemNumber, problemTitle, problemContent, problemUrl, problemDifficulty, problemPlatform, algorithms);
+        BoardCreateRequest request = new BoardCreateRequest(request1, boardMemo, boardDescription, boardStatus);
+
+        sut.createBoard(user, request);
+    }
+
     @DisplayName("문제 생성 - 성공")
     @Test
     public void createProblemSuccess() {
+        when(problemRepository.existsByNumberAndPlatform(anyInt(), any(ProblemPlatform.class))).thenReturn(false);
         when(problemRepository.save(any(Problem.class))).thenReturn(problem);
-        when(algorithmRepository.save(any(Algorithm.class))).thenReturn(Algorithm.of("algorithm"));
+        when(algorithmRepository.existsByName(anyString())).thenReturn(true);
         when(algorithmRepository.findByName(any(String.class))).thenReturn(Algorithm.of("algorithm"));
         AlgorithmProblem algorithmProblem = new AlgorithmProblem(1L, Algorithm.of("algorithm"), problem);
         when(algorithmProblemRepository.save(any(AlgorithmProblem.class))).thenReturn(algorithmProblem);
+
         ProblemCreateRequest request = new ProblemCreateRequest(problemNumber, problemTitle, problemContent, problemUrl, problemDifficulty, problemPlatform, algorithms);
 
         sut.createProblem(request);
     }
+
+
 
     @DisplayName("게시물 수정 - 작성자가 수정")
     @Test
