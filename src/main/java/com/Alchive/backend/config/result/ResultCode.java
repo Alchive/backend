@@ -32,6 +32,7 @@ public enum ResultCode {
     BOARD_NOT_EXIST("B004", "존재하지 않는 게시물"),
     BOARD_MEMO_UPDATE_SUCCESS("B005", "게시물 메모 수정 성공"),
     BOARD_DELETE_SUCCESS("B006", "게시물 삭제 성공"),
+    BOARD_ALREADY_EXIST("B007", "존재하는 게시물"),
 
     // SNS
     SNS_INFO_SUCCESS("N001", "소셜 조회 성공"),

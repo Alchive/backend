@@ -36,11 +36,7 @@ public class BoardController {
     @PostMapping("/saved")
     public ResponseEntity<ResultResponse> isBoardSaved(@AuthenticationPrincipal User user, @RequestBody @Valid ProblemNumberRequest problemNumberRequest) {
         BoardDetailResponseDTO board = boardService.isBoardSaved(user, problemNumberRequest);
-        if (board != null) {
-            return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
-        } else {
-            return ResponseEntity.ok(ResultResponse.of(BOARD_NOT_EXIST, null));
-        }
+        return ResponseEntity.ok(ResultResponse.of(boardService.boardSavedStatus(board), board));
     }
 
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
@@ -55,7 +51,6 @@ public class BoardController {
     @PostMapping("")
     public ResponseEntity<ResultResponse> createBoard(@AuthenticationPrincipal User user, @RequestBody @Valid BoardCreateRequest boardCreateRequest) {
         BoardResponseDTO board = boardService.createBoard(user, boardCreateRequest);
-//        slackService.sendMessageCreateBoard(boardCreateRequest, board);
         return ResponseEntity.ok(ResultResponse.of(BOARD_CREATE_SUCCESS, board));
     }
 
@@ -73,17 +68,17 @@ public class BoardController {
         return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
     }
 
-    @Operation(summary = "게시물 삭제", description = "게시물을 삭제하는 메서드입니다. ")
-    @DeleteMapping("/{boardId}")
-    public ResponseEntity<ResultResponse> deleteBoard(@AuthenticationPrincipal User user, @PathVariable Long boardId) {
-        boardService.deleteBoard(user, boardId);
-        return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));
-    }
-
     @Operation(summary = "게시물 메모 업데이트", description = "게시물 메모를 수정하는 메서드입니다. ")
     @PatchMapping("/memo/{boardId}")
     public ResponseEntity<ResultResponse> updateBoardMemo(@AuthenticationPrincipal User user, @PathVariable Long boardId, @RequestBody BoardMemoUpdateRequest updateRequest) {
         BoardResponseDTO board = boardService.updateBoardMemo(user, boardId, updateRequest);
         return ResponseEntity.ok(ResultResponse.of(BOARD_MEMO_UPDATE_SUCCESS, board));
+    }
+
+    @Operation(summary = "게시물 삭제", description = "게시물을 삭제하는 메서드입니다. ")
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<ResultResponse> deleteBoard(@AuthenticationPrincipal User user, @PathVariable Long boardId) {
+        boardService.deleteBoard(user, boardId);
+        return ResponseEntity.ok(ResultResponse.of(BOARD_DELETE_SUCCESS));
     }
 }

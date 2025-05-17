@@ -2,6 +2,8 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.error.exception.board.NotFoundBoardException;
 import com.Alchive.backend.config.error.exception.problem.NotFoundProblemException;
+import com.Alchive.backend.config.result.ResultCode;
+import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.domain.algorithm.Algorithm;
 import com.Alchive.backend.domain.algorithmProblem.AlgorithmProblem;
 import com.Alchive.backend.domain.board.Board;
@@ -37,60 +39,42 @@ public class BoardService {
     private final SolutionRepository solutionRepository;
     private final UserService userService;
 
-    private BoardDetailResponseDTO toBoardDetailResponseDTO(Board board) {
-        BoardResponseDTO boardResponseDTO = new BoardResponseDTO(board);
-
-        // 문제 정보
-        Long problemId = board.getProblem().getId();
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(NotFoundProblemException::new);
-        ProblemResponseDTO problemResponseDTO = new ProblemResponseDTO(problem, getProblemAlgorithms(problemId));
-
-        // 풀이 정보
-        List<SolutionResponseDTO> solutions = getSolutions(board.getId());
-
-        // DTO로 묶어서 반환
-        return new BoardDetailResponseDTO(boardResponseDTO, problemResponseDTO, solutions);
-    }
-
-    // Board 저장 여부 구현
     public BoardDetailResponseDTO isBoardSaved(User user, ProblemNumberRequest problemNumberRequest) {
         Optional<Board> board = boardRepository.findByProblem_PlatformAndProblem_NumberAndUser_Id(problemNumberRequest.getPlatform(), problemNumberRequest.getProblemNumber(), user.getId());
         return board.map(this::toBoardDetailResponseDTO).orElse(null);
+    }
+
+    public ResultCode boardSavedStatus(BoardDetailResponseDTO board) {
+        if (board != null) {
+            return ResultCode.BOARD_ALREADY_EXIST;
+        }
+        return ResultCode.BOARD_NOT_EXIST;
     }
 
     public Page<List<BoardDetailResponseDTO>> getBoardList(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset, limit);
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
-        // Board를 BoardDetailResponseDTO로 변환
         List<BoardDetailResponseDTO> boardList = boardPage.getContent().stream()
                 .map(this::toBoardDetailResponseDTO)
                 .toList();
 
-        // 변환된 리스트를 새로운 Page 객체로 감싸서 반환
         return new PageImpl<>(List.of(boardList), pageable, boardPage.getTotalElements());
     }
 
-    // 게시물 메서드
-    @Transactional
-    public BoardResponseDTO createBoard(User user, BoardCreateRequest boardCreateRequest) {
-        ProblemCreateRequest problemCreateRequest = boardCreateRequest.getProblemCreateRequest();
-        // 문제 정보 저장 여부 확인
-        if (!problemRepository.existsByNumberAndPlatform(problemCreateRequest.getNumber(), problemCreateRequest.getPlatform())) {
-            // 문제가 저장되지 않은 경우
-            createProblem(problemCreateRequest);
-        }
-        Problem problem = problemRepository.findByNumberAndPlatform(problemCreateRequest.getNumber(), problemCreateRequest.getPlatform());
-        Board board = Board.of(problem, user, boardCreateRequest);
-        return new BoardResponseDTO(boardRepository.save(board));
-    }
-
     public BoardDetailResponseDTO getBoardDetail(Long boardId) {
-        // 게시물 정보
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
         return toBoardDetailResponseDTO(board);
+    }
+
+    @Transactional
+    public BoardResponseDTO createBoard(User user, BoardCreateRequest boardCreateRequest) {
+        ProblemCreateRequest problemCreateRequest = boardCreateRequest.getProblemCreateRequest();
+        createProblem(problemCreateRequest);
+        Problem problem = problemRepository.findByNumberAndPlatform(problemCreateRequest.getNumber(), problemCreateRequest.getPlatform());
+        Board board = Board.of(problem, user, boardCreateRequest);
+        return new BoardResponseDTO(boardRepository.save(board));
     }
 
     @Transactional
@@ -102,14 +86,6 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard(User user, Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(NotFoundBoardException::new);
-        userService.validateUser(user.getId(), board.getUser().getId());
-        boardRepository.delete(board);
-    }
-
-    @Transactional
     public BoardResponseDTO updateBoardMemo(User user, Long boardId, BoardMemoUpdateRequest updateRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(NotFoundBoardException::new);
@@ -117,40 +93,67 @@ public class BoardService {
         return new BoardResponseDTO(board.updateMemo(updateRequest.getMemo()));
     }
 
-    // 문제 메서드
     @Transactional
-    public void createProblem(ProblemCreateRequest problemCreateRequest) {
-        Problem problem = problemRepository.save(Problem.of(problemCreateRequest));
-        List<String> algorithms = problemCreateRequest.getAlgorithms();
+    public void deleteBoard(User user, Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(NotFoundBoardException::new);
+        userService.validateUser(user.getId(), board.getUser().getId());
+        boardRepository.delete(board);
+    }
 
-        for (String algorithmName : algorithms) {
-            // 알고리즘 저장 여부 확인
-            if (!algorithmRepository.existsByName(algorithmName)) {
-                // 알고리즘이 저장되지 않은 경우
-                createAlgorithm(algorithmName);
-            }
-            Algorithm algorithm = algorithmRepository.findByName(algorithmName);
-            // Algorithm - Problem 연결
-            AlgorithmProblem algorithmProblem = AlgorithmProblem.of(algorithm, problem);
-            algorithmProblemRepository.save(algorithmProblem);
-        }
+    private BoardDetailResponseDTO toBoardDetailResponseDTO(Board board) {
+        BoardResponseDTO boardResponseDTO = new BoardResponseDTO(board);
+        ProblemResponseDTO problemResponseDTO = getBoardProblem(board);
+        List<SolutionResponseDTO> solutions = getBoardSolutions(board.getId());
+
+        return new BoardDetailResponseDTO(boardResponseDTO, problemResponseDTO, solutions);
+    }
+
+    private ProblemResponseDTO getBoardProblem(Board board) {
+        Long problemId = board.getProblem().getId();
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(NotFoundProblemException::new);
+        return new ProblemResponseDTO(problem, getProblemAlgorithms(problemId));
+    }
+
+    public List<SolutionResponseDTO> getBoardSolutions(Long boardId) {
+        List<Solution> solutions = solutionRepository.findAllByBoard_Id(boardId);
+        return solutions.stream()
+                .map(SolutionResponseDTO::new)
+                .toList();
     }
 
     public List<String> getProblemAlgorithms(Long problemId) {
         return algorithmProblemRepository.findAlgorithmNamesByProblemId(problemId);
     }
 
-    // 알고리즘 메서드
     @Transactional
-    public void createAlgorithm(String name) {
-        Algorithm newAlgorithm = Algorithm.of(name);
+    public void createProblem(ProblemCreateRequest problemCreateRequest) {
+        if (problemRepository.existsByNumberAndPlatform(problemCreateRequest.getNumber(), problemCreateRequest.getPlatform())) {
+            return;
+        }
+        Problem problem = problemRepository.save(Problem.of(problemCreateRequest));
+        connectProblemAlgorithm(problem, problemCreateRequest.getAlgorithms());
+    }
+
+    private void connectProblemAlgorithm(Problem problem, List<String> algorithms) {
+        for (String algorithmName : algorithms) {
+            createAlgorithm(algorithmName);
+            createAlgorithmProblem(algorithmName, problem);
+        }
+    }
+
+    private void createAlgorithm(String algorithmName) {
+        if (algorithmRepository.existsByName(algorithmName)) {
+            return;
+        }
+        Algorithm newAlgorithm = Algorithm.of(algorithmName);
         algorithmRepository.save(newAlgorithm);
     }
 
-    public List<SolutionResponseDTO> getSolutions(Long boardId) {
-        List<Solution> solutions = solutionRepository.findAllByBoard_Id(boardId);
-        return solutions.stream()
-                .map(SolutionResponseDTO::new)
-                .toList();
+    private void createAlgorithmProblem(String algorithmName, Problem problem) {
+        Algorithm algorithm = algorithmRepository.findByName(algorithmName);
+        AlgorithmProblem algorithmProblem = AlgorithmProblem.of(algorithm, problem);
+        algorithmProblemRepository.save(algorithmProblem);
     }
 }
