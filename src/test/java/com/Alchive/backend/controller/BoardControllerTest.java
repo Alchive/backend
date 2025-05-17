@@ -69,11 +69,11 @@ public class BoardControllerTest {
     public void existBoard() {
         BoardDetailResponseDTO response = new BoardDetailResponseDTO(new BoardResponseDTO(board), new ProblemResponseDTO(problem, algorithms), new ArrayList<>());
         when(boardService.isBoardSaved(any(User.class), any(ProblemNumberRequest.class))).thenReturn(response);
-        when(boardService.boardSavedStatus(response)).thenReturn(BOARD_ALREADY_EXSIST);
+        when(boardService.boardSavedStatus(response)).thenReturn(BOARD_ALREADY_EXIST);
 
         ResponseEntity<ResultResponse> result = sut.isBoardSaved(user, new ProblemNumberRequest(problemPlatform, problemNumber));
 
-        Assertions.assertEquals(BOARD_ALREADY_EXSIST.getMessage(), result.getBody().getMessage());
+        Assertions.assertEquals(BOARD_ALREADY_EXIST.getMessage(), result.getBody().getMessage());
     }
 
     @DisplayName("게시물 저장 여부 조회 - 존재하지 않는 문제")

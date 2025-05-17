@@ -3,6 +3,7 @@ package com.Alchive.backend.service;
 import com.Alchive.backend.config.error.exception.board.NotFoundBoardException;
 import com.Alchive.backend.config.error.exception.problem.NotFoundProblemException;
 import com.Alchive.backend.config.result.ResultCode;
+import com.Alchive.backend.config.result.ResultResponse;
 import com.Alchive.backend.domain.algorithm.Algorithm;
 import com.Alchive.backend.domain.algorithmProblem.AlgorithmProblem;
 import com.Alchive.backend.domain.board.Board;
@@ -45,7 +46,7 @@ public class BoardService {
 
     public ResultCode boardSavedStatus(BoardDetailResponseDTO board) {
         if (board != null) {
-            return ResultCode.BOARD_ALREADY_EXSIST;
+            return ResultCode.BOARD_ALREADY_EXIST;
         }
         return ResultCode.BOARD_NOT_EXIST;
     }
@@ -142,8 +143,7 @@ public class BoardService {
         }
     }
 
-    @Transactional
-    public void createAlgorithm(String algorithmName) {
+    private void createAlgorithm(String algorithmName) {
         if (algorithmRepository.existsByName(algorithmName)) {
             return;
         }
