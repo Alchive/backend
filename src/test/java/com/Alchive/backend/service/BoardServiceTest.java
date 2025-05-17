@@ -8,7 +8,6 @@ import com.Alchive.backend.domain.board.BoardStatus;
 import com.Alchive.backend.domain.problem.Problem;
 import com.Alchive.backend.domain.problem.ProblemDifficulty;
 import com.Alchive.backend.domain.problem.ProblemPlatform;
-import com.Alchive.backend.domain.solution.Solution;
 import com.Alchive.backend.domain.user.User;
 import com.Alchive.backend.dto.request.BoardCreateRequest;
 import com.Alchive.backend.dto.request.BoardMemoUpdateRequest;

@@ -2,6 +2,7 @@ package com.Alchive.backend.service;
 
 import com.Alchive.backend.config.error.exception.board.NotFoundBoardException;
 import com.Alchive.backend.config.error.exception.problem.NotFoundProblemException;
+import com.Alchive.backend.config.result.ResultCode;
 import com.Alchive.backend.domain.algorithm.Algorithm;
 import com.Alchive.backend.domain.algorithmProblem.AlgorithmProblem;
 import com.Alchive.backend.domain.board.Board;
@@ -15,6 +16,7 @@ import com.Alchive.backend.dto.response.ProblemResponseDTO;
 import com.Alchive.backend.dto.response.SolutionResponseDTO;
 import com.Alchive.backend.repository.*;
 import jakarta.transaction.Transactional;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -152,5 +154,12 @@ public class BoardService {
         return solutions.stream()
                 .map(SolutionResponseDTO::new)
                 .toList();
+    }
+
+    public ResultCode boardSavedStatus(BoardDetailResponseDTO board) {
+        if (board != null) {
+            return ResultCode.BOARD_ALREADY_EXSIST;
+        }
+        return ResultCode.BOARD_NOT_EXIST;
     }
 }

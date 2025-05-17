@@ -36,11 +36,7 @@ public class BoardController {
     @PostMapping("/saved")
     public ResponseEntity<ResultResponse> isBoardSaved(@AuthenticationPrincipal User user, @RequestBody @Valid ProblemNumberRequest problemNumberRequest) {
         BoardDetailResponseDTO board = boardService.isBoardSaved(user, problemNumberRequest);
-        if (board != null) {
-            return ResponseEntity.ok(ResultResponse.of(BOARD_INFO_SUCCESS, board));
-        } else {
-            return ResponseEntity.ok(ResultResponse.of(BOARD_NOT_EXIST, null));
-        } // todo: board 저장 여부 반환 메시지 재정의, 중복 제거
+        return ResponseEntity.ok(ResultResponse.of(boardService.boardSavedStatus(board), board));
     }
 
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회하는 메서드입니다. ")
